@@ -1,0 +1,14 @@
+{% with t=title|default:"Sterr Agency — Müşteri Getiren Dijital Pazarlama Ajansı" d=description|default:"Reklam, SEO ve AI destekli içerik yayılımını tek büyüme sisteminde birleştiren dijital pazarlama ajansı. Türkiye'nin 81 ilinde işletmelere müşteri getiriyoruz." %}
+  <title>{{ t }}</title>
+  <meta name="description" content="{{ d }}">
+  <meta name="robots" content="{{ robots|default:'index, follow, max-image-preview:large' }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <meta property="og:type" content="{{ og_type|default:'website' }}">
+  <meta property="og:site_name" content="Sterr Agency">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:title" content="{{ t }}">
+  <meta property="og:description" content="{{ d }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  {% if site.og_image %}<meta property="og:image" content="{{ SITE_URL }}{{ site.og_image.url }}">{% endif %}
+  <meta name="twitter:card" content="summary_large_image">
+{% endwith %}

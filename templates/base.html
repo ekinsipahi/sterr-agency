@@ -1,0 +1,38 @@
+{% load static l10n %}<!doctype html>
+<html lang="tr" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% block meta %}{% include "partials/meta.html" %}{% endblock %}
+  <meta name="theme-color" content="#0a0a09">
+  {% if GOOGLE_SITE_VERIFICATION %}<meta name="google-site-verification" content="{{ GOOGLE_SITE_VERIFICATION }}">{% endif %}
+  {% if site.favicon %}<link rel="icon" href="{{ site.favicon.url }}">{% else %}<link rel="icon" href="{% static 'img/favicon.ico' %}" sizes="48x48">
+  <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">{% endif %}
+  <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
+  <link rel="manifest" href="{% static 'site.webmanifest' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+
+  {% localize off %}<script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"ProfessionalService","@id":"{{ SITE_URL }}/#org","name":"Sterr Agency","legalName":"{{ company.legal_name }}","url":"{{ SITE_URL }}/","telephone":"+{{ whatsapp_number }}","email":"{{ contact_email }}","slogan":"{{ company.motto }}","priceRange":"₺₺₺","areaServed":{"@type":"Country","name":"Türkiye"},"address":{"@type":"PostalAddress","streetAddress":"{{ company.street }}","addressLocality":"{{ company.locality }}","postalCode":"{{ company.postal_code }}","addressCountry":"{{ company.country }}"}{% if site.google_rating and site.google_review_count %},"aggregateRating":{"@type":"AggregateRating","ratingValue":"{{ site.google_rating }}","reviewCount":"{{ site.google_review_count }}"}{% endif %}}
+  </script>{% endlocalize %}
+  {% block schema %}{% endblock %}
+  <script>window.sterrPage = {% block ga_page %}{"content_group": "sayfa", "page_type": "page"}{% endblock %};</script>
+  {% include "partials/analytics.html" %}
+</head>
+<body>
+  <a href="#main" class="sr-only">İçeriğe geç</a>
+  {% include "partials/nav.html" %}
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+  {% include "partials/footer.html" %}
+  <a class="wa-float" href="{{ whatsapp_url }}" target="_blank" rel="noopener" aria-label="WhatsApp ile yazın">
+    {% include "partials/icons/whatsapp.svg" %}<span>WhatsApp</span>
+  </a>
+  {% include "partials/consent.html" %}
+  <script src="{% static 'js/site.js' %}" defer></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "pseo_hub", "page_type": "pseo_hub", "service": "{{ cluster.slug }}"}{% endblock %}
+{% block meta %}{% with t=cluster.name|add:" | 81 İlde Hizmet — Sterr Agency" %}{% include "partials/meta.html" with title=t description=cluster.national_intro|truncatechars:158 %}{% endwith %}{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container">
+    {% include "partials/breadcrumbs.html" %}
+    <p class="eyebrow reveal">Türkiye geneli · 81 il</p>
+    <h1 class="h1 hero__title reveal" style="max-width:1000px">{{ cluster.name }}: <span class="serif">konum fark etmez.</span></h1>
+    <p class="lede reveal">{{ cluster.national_intro }}</p>
+    <div class="btn-row mt-m reveal">
+      <a class="btn btn--signal btn--lg" href="{% url 'leads:apply' %}">Başvuru yap {% include "partials/icons/arrow.svg" %}</a>
+      <a class="btn btn--ghost btn--lg" href="#iller">İlinizi seçin</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--line" id="iller">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">İl il {{ cluster.name|lower }}</p>
+      <h2 class="h2">İlinizi <span class="serif">seçin</span></h2>
+    </div>
+    {% for region, cities in regions %}
+    <div class="region reveal">
+      <h3>{{ region.name }} <small>{{ cities|length }} il</small></h3>
+      <div class="city-grid">{% for c in cities %}<a href="{% url 'seo:city' cluster.slug c.slug %}"><span>{{ c.name }}</span><span class="plate">{{ c.plate|stringformat:"02d" }}</span></a>{% endfor %}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head section-head--center reveal"><p class="eyebrow">Paketler</p><h2 class="h2">{{ cluster.name }} <span class="serif">fiyatları</span></h2></div>
+    {% include "partials/packages.html" %}
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container grid grid-2">
+    <div class="reveal"><p class="eyebrow">Diğer hizmetler</p><div class="chips">{% for c in other_clusters %}<a class="chip" href="{% url 'seo:cluster' c.slug %}">{{ c.name }}</a>{% endfor %}</div></div>
+    {% if guides %}<div class="reveal"><p class="eyebrow">Rehber</p><div class="chips">{% for g in guides %}<a class="chip" href="{% url 'seo:guide' g.slug %}">{{ g.h1 }}</a>{% endfor %}</div></div>{% endif %}
+  </div>
+</section>
+{% include "partials/cta.html" %}
+{% endblock %}

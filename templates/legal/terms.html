@@ -1,0 +1,33 @@
+{% extends "legal/_base.html" %}
+{% block meta %}{% include "partials/meta.html" with title="Kullanım Koşulları | Sterr Agency" description="Sterr Agency web sitesinin ve hizmetlerinin kullanımına ilişkin koşullar. Sterr Technologies OÜ." %}{% endblock %}
+{% block legal_title %}Kullanım Koşulları{% endblock %}
+{% block legal_body %}
+<p>Bu Kullanım Koşulları ("Koşullar"), <strong>{{ company.legal_name }}</strong> — Estonya'da kayıtlı özel limited şirket ({{ company.registry }}, sicil kodu {{ company.registry_code }}), {{ company.address }} ("Sterr Agency", "biz") — tarafından işletilen web sitesinin ("Site") kullanımını düzenler. Site'yi kullanarak bu Koşulları kabul etmiş sayılırsınız.</p>
+
+<h2>1. Hizmetler</h2>
+<p>Sterr Agency; dijital pazarlama, reklam yönetimi, arama motoru optimizasyonu, sosyal medya yönetimi, içerik prodüksiyonu ve marka danışmanlığı hizmetleri sunar. Site'deki bilgiler genel tanıtım amaçlıdır; bağlayıcı hizmet kapsamı, fiyat ve koşullar taraflar arasında ayrıca imzalanan hizmet sözleşmesiyle belirlenir.</p>
+
+<h2>2. Fiyatlandırma ve ödeme</h2>
+<p>Site'de belirtilen paket fiyatları başlangıç fiyatlarıdır ve aksi belirtilmedikçe KDV hariçtir. Hizmetler aylık abonelik modeliyle sunulur: ilk ay bedeli hizmet başlamadan önce peşin ödenir, sonraki aylar aylık olarak faturalandırılır. Reklam platformlarına ödenecek reklam bütçesi hizmet bedeline dahil değildir. Fiyatlarda değişiklik yapma hakkımız saklıdır; değişiklikler mevcut sözleşmeleri, sözleşmede aksi öngörülmedikçe etkilemez.</p>
+
+<h2>3. Sonuçlara ilişkin açıklama</h2>
+<p>Pazarlama sonuçları; sektör, rekabet, bütçe, ürün/hizmet kalitesi ve müşterinin süreçleri gibi birçok etkene bağlıdır. Site'de yer alan vaka çalışmaları ve rakamlar geçmiş çalışmaları yansıtır; aynı sonucun her işletmede elde edileceği anlamına gelmez. Hedefler ve ölçüm yöntemi hizmet sözleşmesinde birlikte belirlenir.</p>
+
+<h2>4. Başvurular</h2>
+<p>Başvuru formunu göndermeniz, taraflar arasında bir sözleşme kurulduğu anlamına gelmez. Başvuruları değerlendirme ve kabul etmeme hakkımız saklıdır. Formda verdiğiniz bilgilerin doğru olmasından siz sorumlusunuz.</p>
+
+<h2>5. Fikri mülkiyet</h2>
+<p>Site'deki metin, tasarım, logo ve diğer içeriklerin tüm hakları {{ company.legal_name }}'ye veya lisans verenlerine aittir. Yazılı izin olmaksızın kopyalanamaz, çoğaltılamaz ve ticari amaçla kullanılamaz. Müşterilere ait vaka çalışmaları, müşteri onayı ile yayımlanır.</p>
+
+<h2>6. Sorumluluğun sınırlandırılması</h2>
+<p>Site "olduğu gibi" sunulur. Yürürlükteki hukukun izin verdiği azami ölçüde, Site'nin kullanımından doğan dolaylı zararlardan sorumlu değiliz. Üçüncü taraf sitelere verilen bağlantıların içeriğinden sorumluluk kabul etmeyiz.</p>
+
+<h2>7. Kişisel veriler</h2>
+<p>Kişisel verileriniz <a href="{% url 'core:privacy' %}">Gizlilik Politikası</a> ve <a href="{% url 'core:kvkk' %}">KVKK Aydınlatma Metni</a>'ne uygun olarak işlenir.</p>
+
+<h2>8. Uygulanacak hukuk</h2>
+<p>Bu Koşullar Estonya hukukuna tabidir. Tüketici sıfatıyla hareket ediyorsanız, bu hüküm ikamet ettiğiniz ülkenin emredici tüketici koruma hükümlerinden doğan haklarınızı ortadan kaldırmaz.</p>
+
+<h2>9. İletişim</h2>
+<p><a href="mailto:{{ contact_email }}">{{ contact_email }}</a> · WhatsApp: <a href="{{ whatsapp_url }}">{{ whatsapp_display }}</a></p>
+{% endblock %}

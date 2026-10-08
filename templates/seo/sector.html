@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "sektor", "page_type": "sector", "sector": "{{ sector.slug }}"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=sector.title description=sector.description %}{% endblock %}
+{% block schema %}{% with faqs=sector.faqs %}{% include "partials/faq_schema.html" %}{% endwith %}{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container">
+    {% include "partials/breadcrumbs.html" %}
+    <p class="eyebrow reveal">{{ sector.name }}</p>
+    <h1 class="h1 hero__title reveal" style="max-width:1000px">{{ sector.headline }}</h1>
+    <p class="lede reveal">{{ sector.lede }}</p>
+    <div class="btn-row mt-m reveal">
+      <a class="btn btn--signal btn--lg" href="{% url 'leads:apply' %}">Başvuru yap {% include "partials/icons/arrow.svg" %}</a>
+      <a class="btn btn--ghost btn--lg" href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal"><p class="eyebrow">Tanıdık geldi mi?</p><h2 class="h2">Bugün <span class="serif">yaşadıklarınız</span></h2></div>
+    <ul class="check pains reveal" style="font-size:18px">{% for p in sector.pains %}<li>{% include "partials/icons/x.svg" %}<span>{{ p }}</span></li>{% endfor %}</ul>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">Sistem</p><h2 class="h2">{{ sector.name }} için <span class="serif">müşteri makinesi</span></h2></div>
+    <div class="grid grid-2">{% for t, b in sector.system %}<div class="card reveal"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ t }}</h3><p>{{ b }}</p></div>{% endfor %}</div>
+    <p class="eyebrow mt-l reveal">Müşterilerinizin aradıkları</p>
+    <div class="chips reveal">{% for q in sector.searches %}<span class="chip">“{{ q }}”</span>{% endfor %}</div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head section-head--center reveal"><p class="eyebrow">Paketler</p><h2 class="h2">Aylık <span class="serif">50.000 ₺'den</span></h2></div>
+    {% include "partials/packages.html" %}
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal"><p class="eyebrow">Sık sorulanlar</p><h2 class="h2">{{ sector.name }}</h2>
+      <div class="chips mt-m">{% for o in others %}<a class="chip" href="{% url 'seo:sector' o.slug %}">{{ o.name }}</a>{% endfor %}</div></div>
+    <div class="reveal">{% with faqs=sector.faqs %}{% include "partials/faq.html" %}{% endwith %}</div>
+  </div>
+</section>
+{% include "partials/cta.html" %}
+{% endblock %}

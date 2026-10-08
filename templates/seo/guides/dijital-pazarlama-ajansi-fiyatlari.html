@@ -1,0 +1,25 @@
+{% load humanize %}<p>Dijital pazarlama ajansı fiyatları, Türkiye'de aylık birkaç bin liradan yüz binlerce liraya kadar geniş bir aralıkta değişir. Bu farkın nedeni ajansların "aynı işi" farklı fiyata yapması değil; <strong>bambaşka işler</strong> yapmasıdır.</p>
+
+<h2>Fiyatı belirleyen 5 unsur</h2>
+<ol>
+  <li><strong>Kanal sayısı:</strong> Yalnızca Instagram mı, yoksa Google + Meta + SEO + içerik mi?</li>
+  <li><strong>İçerik prodüksiyonu:</strong> Hazır görsel mi kullanılıyor, yoksa yerinde çekim ve kurgu mu yapılıyor?</li>
+  <li><strong>Uzmanlık seviyesi:</strong> Stajyer mi yönetiyor, kıdemli bir ekip mi?</li>
+  <li><strong>Strateji ve funnel:</strong> Sadece yayın mı yapılıyor, yoksa müşteri getiren bir sistem mi kuruluyor?</li>
+  <li><strong>Raporlama:</strong> Beğeni raporu mu, satış raporu mu?</li>
+</ol>
+
+<h2>Ajans ücreti ve reklam bütçesi ayrı şeylerdir</h2>
+<p>Ajans ücreti; strateji, yönetim, içerik ve raporlamanın bedelidir. <strong>Reklam bütçesi</strong> ise doğrudan Google, Meta veya TikTok'a ödenir. Şeffaf bir ajans bu ikisini birbirinden ayırır ve reklam bütçesine gizli komisyon eklemez.</p>
+
+<h2>Sterr Agency paketleri</h2>
+<div class="table-wrap"><table>
+  <tr><th>Paket</th><th>Aylık</th><th>Kimler için</th></tr>
+  {% for p in packages %}<tr><td>{{ p.name }}</td><td>{{ p.price|intcomma }} ₺{% if p.price_prefix %}'den{% endif %}</td><td>{{ p.ideal_for }}</td></tr>{% endfor %}
+</table></div>
+<p>Tüm paketlerde ilk ay peşin başlanır; sonraki aylar raporla birlikte aylık faturalandırılır. Detaylar için <a href="{% url 'core:packages' %}">paketler sayfası</a>.</p>
+
+<div class="callout">Ucuz teklif cazip görünür; ama müşteri getirmeyen her ay, ödediğiniz en pahalı aydır. Fiyatı değil, <strong>müşteri başı maliyeti</strong> karşılaştırın.</div>
+
+<h2>Şehre göre fiyat değişir mi?</h2>
+<p>Hizmet bedelimiz değişmez; reklam maliyetleri ise rekabete göre değişir. Örneğin <a href="{% url 'seo:city' 'dijital-pazarlama-ajansi' 'istanbul' %}">İstanbul</a>'da tıklama maliyetleri, <a href="{% url 'seo:city' 'dijital-pazarlama-ajansi' 'eskisehir' %}">Eskişehir</a>'e göre genellikle daha yüksektir. Strateji bu farka göre kurulur.</p>

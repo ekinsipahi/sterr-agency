@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "sektor", "page_type": "sector_list"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title="Sektörler | Özel Ders, E-Ticaret, Klinik — Sterr Agency" description="Özel ders öğretmenleri, matematik ve fizik hocaları, e-ticaret markaları, klinikler ve profesyonel hizmetler için müşteri getiren dijital pazarlama." %}{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    {% include "partials/breadcrumbs.html" %}
+    <p class="eyebrow reveal">Sektörler</p>
+    <h1 class="h1 reveal" style="max-width:960px">Talep olan her sektöre <span class="serif">müşteri getiririz.</span></h1>
+  </div>
+</section>
+<section class="section--tight">
+  <div class="container grid grid-3">
+    {% for s in sectors %}
+    <a class="card reveal" href="{% url 'seo:sector' s.slug %}"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h2 class="h3">{{ s.name }}</h2><p>{{ s.lede|truncatewords:24 }}</p><span class="card__foot link-arrow">İncele {% include "partials/icons/arrow.svg" %}</span></a>
+    {% endfor %}
+  </div>
+</section>
+{% include "partials/cta.html" %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "yasal", "page_type": "legal"}{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container container--narrow">
+    <p class="eyebrow">Yasal</p>
+    <h1 class="h1">{% block legal_title %}{% endblock %}</h1>
+    <p class="muted">Son güncelleme: {{ company.legal_updated }}</p>
+  </div>
+</section>
+<section class="section--tight">
+  <div class="container container--narrow">
+    <article class="prose">{% block legal_body %}{% endblock %}</article>
+  </div>
+</section>
+{% endblock %}

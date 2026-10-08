@@ -1,0 +1,5 @@
+{% if site.google_rating %}
+<a class="rating" {% if site.google_business_url %}href="{{ site.google_business_url }}" target="_blank" rel="noopener"{% endif %}>
+  <span class="rating__stars">★★★★★</span><b>{{ site.google_rating }}</b><span class="muted">Google{% if site.google_review_count %} · {{ site.google_review_count }} yorum{% endif %}</span>
+</a>
+{% endif %}

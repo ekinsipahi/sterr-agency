@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "basvuru", "page_type": "lead_thanks"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title="Başvurunuz alındı | Sterr Agency" robots="noindex, nofollow" %}{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container container--narrow center">
+    <p class="eyebrow reveal">Başvurunuz alındı</p>
+    <h1 class="h1 reveal">Teşekkürler. <span class="serif">Sıra bizde.</span></h1>
+    <p class="lede reveal" style="margin:18px auto 0">Başvurunuzu inceliyoruz. 24 saat içinde WhatsApp veya telefonla size dönüş yapacağız. Beklemek istemiyorsanız hemen yazabilirsiniz.</p>
+    {% if below_min %}<p class="hint reveal" style="max-width:560px;margin:18px auto 0">Not: Paketlerimiz aylık 50.000 ₺'den başlıyor. Bütçeniz buna uygun değilse de sizinle iletişime geçip en doğru yolu önereceğiz.</p>{% endif %}
+    <div class="btn-row mt-m reveal" style="justify-content:center">
+      <a class="btn btn--signal btn--lg" href="{{ whatsapp_url }}" target="_blank" rel="noopener">{% include "partials/icons/whatsapp.svg" %} WhatsApp'tan yazın</a>
+      <a class="btn btn--ghost btn--lg" href="tel:{{ phone_tel }}">Hemen arayın: {{ whatsapp_display }}</a>
+    </div>
+  </div>
+</section>
+{% if lead_event %}{{ lead_event|json_script:"lead-event" }}{% endif %}
+{% endblock %}

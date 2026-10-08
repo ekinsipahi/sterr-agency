@@ -1,0 +1,5 @@
+<nav class="crumbs" aria-label="Sayfa yolu">
+  <a href="{% url 'core:home' %}">Ana sayfa</a>
+  {% for label, url in crumbs %}<span aria-hidden="true">/</span>{% if url %}<a href="{{ url }}">{{ label }}</a>{% else %}<span>{{ label }}</span>{% endif %}{% endfor %}
+</nav>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana sayfa","item":"{{ SITE_URL }}/"}{% for label, url in crumbs %},{"@type":"ListItem","position":{{ forloop.counter|add:1 }},"name":"{{ label|escapejs }}"{% if url %},"item":"{{ SITE_URL }}{{ url }}"{% endif %}}{% endfor %}]}</script>

@@ -1,0 +1,58 @@
+<footer class="footer">
+  <div class="container">
+    <p class="footer__big">Müşterinizin ne istediğini<br><span class="serif">size biz anlatırız.</span></p>
+    <div class="footer__grid">
+      <div>
+        <a href="{% url 'core:home' %}" class="brand">{% if site.logo %}<img src="{{ site.logo.url }}" alt="Sterr Agency" width="140" height="30">{% else %}<span class="brand__mark">{% include "partials/icons/mark.svg" %}</span>sterr<span class="brand__sub">agency</span>{% endif %}</a>
+        <p class="muted mt-s" style="max-width:340px;font-size:15px">Reklam, SEO ve AI destekli içerik yayılımını tek bir büyüme sisteminde birleştiren dijital pazarlama ajansı. Türkiye'nin 81 ilinde.</p>
+        <div class="btn-row mt-s">
+          <a class="btn btn--signal btn--sm" href="{% url 'leads:apply' %}">Başvuru yap {% include "partials/icons/arrow.svg" %}</a>
+          <a class="btn btn--ghost btn--sm" href="{{ whatsapp_url }}" target="_blank" rel="noopener">{{ whatsapp_display }}</a>
+        </div>
+      </div>
+      <div>
+        <h4>Ajans</h4>
+        <ul>
+          <li><a href="{% url 'core:services' %}">Hizmetler</a></li>
+          <li><a href="{% url 'core:method' %}">Yöntemimiz</a></li>
+          <li><a href="{% url 'core:packages' %}">Paketler</a></li>
+          <li><a href="{% url 'works:list' %}">Çalışmalarımız</a></li>
+          <li><a href="{% url 'core:about' %}">Hakkımızda</a></li>
+          <li><a href="{% url 'seo:guides' %}">Rehber</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Hizmet bölgeleri</h4>
+        <ul>
+          <li><a href="{% url 'seo:city' 'dijital-pazarlama-ajansi' 'istanbul' %}">İstanbul dijital pazarlama</a></li>
+          <li><a href="{% url 'seo:city' 'sosyal-medya-ajansi' 'ankara' %}">Ankara sosyal medya ajansı</a></li>
+          <li><a href="{% url 'seo:city' 'sosyal-medya-ajansi' 'izmir' %}">İzmir sosyal medya ajansı</a></li>
+          <li><a href="{% url 'seo:city' 'dijital-pazarlama-ajansi' 'bursa' %}">Bursa dijital pazarlama</a></li>
+          <li><a href="{% url 'seo:city' 'dijital-pazarlama-ajansi' 'antalya' %}">Antalya dijital pazarlama</a></li>
+          <li><a href="{% url 'seo:regions' %}">Tüm 81 il →</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>İletişim</h4>
+        <ul>
+          <li><a href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp'tan yazın</a></li>
+          <li><a href="tel:{{ phone_tel }}">Ara: {{ whatsapp_display }}</a></li>
+          <li><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
+          {% if site.instagram_url %}<li><a href="{{ site.instagram_url }}" target="_blank" rel="noopener">Instagram</a></li>{% endif %}
+          {% if site.linkedin_url %}<li><a href="{{ site.linkedin_url }}" target="_blank" rel="noopener">LinkedIn</a></li>{% endif %}
+          {% if site.youtube_url %}<li><a href="{{ site.youtube_url }}" target="_blank" rel="noopener">YouTube</a></li>{% endif %}
+          {% if site.tiktok_url %}<li><a href="{{ site.tiktok_url }}" target="_blank" rel="noopener">TikTok</a></li>{% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="footer__legal">
+      <span>© {% now "Y" %} {{ company.legal_name }} · Sicil kodu {{ company.registry_code }} · {{ company.address }}</span>
+      <span class="btn-row" style="gap:18px">
+        <a href="{% url 'core:privacy' %}">Gizlilik</a>
+        <a href="{% url 'core:kvkk' %}">KVKK</a>
+        <a href="{% url 'core:cookies' %}">Çerezler</a>
+        <a href="{% url 'core:terms' %}">Kullanım koşulları</a>
+      </span>
+    </div>
+  </div>
+</footer>

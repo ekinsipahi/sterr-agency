@@ -1,0 +1,11 @@
+{% if site.google_rating or site.stats %}
+<section class="section--tight">
+  <div class="container">
+    {% if site.stats %}
+    <div class="stats reveal">
+      {% for value, label in site.stats %}<div class="stat"><div class="stat__value">{{ value }}</div><div class="stat__label">{{ label }}</div></div>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}

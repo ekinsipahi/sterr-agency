@@ -1,0 +1,52 @@
+{% extends "legal/_base.html" %}
+{% block meta %}{% include "partials/meta.html" with title="KVKK Aydınlatma Metni | Sterr Agency" description="6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında Sterr Technologies OÜ tarafından hazırlanan aydınlatma metni." %}{% endblock %}
+{% block legal_title %}KVKK Aydınlatma Metni{% endblock %}
+{% block legal_body %}
+<p>6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") md. 10 uyarınca, veri sorumlusu sıfatıyla <strong>{{ company.legal_name }}</strong> ("Sterr Agency") olarak kişisel verilerinizin işlenmesine ilişkin sizi bilgilendirmek isteriz.</p>
+
+<h2>1. Veri sorumlusu</h2>
+<div class="table-wrap"><table>
+  <tr><th>Unvan</th><td>{{ company.legal_name }}</td></tr>
+  <tr><th>Sicil</th><td>{{ company.registry }} — {{ company.registry_code }}</td></tr>
+  <tr><th>Adres</th><td>{{ company.address }}</td></tr>
+  <tr><th>E-posta</th><td><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></td></tr>
+</table></div>
+
+<h2>2. İşlenen kişisel veriler</h2>
+<ul>
+  <li><strong>Kimlik:</strong> ad, soyad.</li>
+  <li><strong>İletişim:</strong> telefon numarası, e-posta adresi, il bilgisi.</li>
+  <li><strong>Müşteri işlem:</strong> işletme adı, web sitesi / sosyal medya hesabı, sektör, hedef, bütçe aralığı, içerik durumu, başlangıç zamanı, mesaj içeriği.</li>
+  <li><strong>İşlem güvenliği:</strong> IP adresi, tarayıcı bilgisi, form gönderim zamanı.</li>
+  <li><strong>Pazarlama:</strong> başvurunun geldiği sayfa ve kampanya parametreleri (UTM), çerez verileri.</li>
+</ul>
+
+<h2>3. İşleme amaçları</h2>
+<ul>
+  <li>Başvurunuzun değerlendirilmesi ve sizinle iletişime geçilmesi,</li>
+  <li>Hizmet teklifinin hazırlanması ve sözleşme süreçlerinin yürütülmesi,</li>
+  <li>Bilgi güvenliği süreçlerinin yürütülmesi ve kötüye kullanımın önlenmesi,</li>
+  <li>Pazarlama faaliyetlerinin performansının ölçülmesi,</li>
+  <li>Hukuki yükümlülüklerin yerine getirilmesi.</li>
+</ul>
+
+<h2>4. Hukuki sebepler ve toplama yöntemi</h2>
+<p>Kişisel verileriniz; web sitemizdeki başvuru formu, WhatsApp, telefon ve e-posta kanalları ile çerezler aracılığıyla elektronik ortamda toplanır. Veriler, KVKK md. 5/2 kapsamında <em>bir sözleşmenin kurulması veya ifasıyla doğrudan ilgili olması</em>, <em>veri sorumlusunun hukuki yükümlülüğünü yerine getirebilmesi</em> ve <em>ilgili kişinin temel hak ve özgürlüklerine zarar vermemek kaydıyla veri sorumlusunun meşru menfaatleri</em> hukuki sebeplerine; zorunlu olmayan çerezler ve pazarlama iletişimi bakımından ise md. 5/1 uyarınca <em>açık rızanıza</em> dayanılarak işlenir.</p>
+
+<h2>5. Aktarım</h2>
+<p>Kişisel verileriniz; yukarıdaki amaçlarla sınırlı olarak barındırma, e-posta iletimi, analitik ve reklam hizmeti aldığımız tedarikçilerimize ve yasal zorunluluk halinde yetkili kamu kurum ve kuruluşlarına aktarılabilir. Veri sorumlusunun ve tedarikçilerinin bir kısmının yurt dışında (Avrupa Birliği ve ABD) bulunması nedeniyle verileriniz KVKK md. 9'da öngörülen uygun güvenceler çerçevesinde yurt dışına aktarılabilir.</p>
+
+<h2>6. KVKK md. 11 kapsamındaki haklarınız</h2>
+<p>Kişisel verileriniz ile ilgili olarak;</p>
+<ul>
+  <li>işlenip işlenmediğini öğrenme ve işlenmişse buna ilişkin bilgi talep etme,</li>
+  <li>işlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme,</li>
+  <li>yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme,</li>
+  <li>eksik veya yanlış işlenmişse düzeltilmesini isteme,</li>
+  <li>KVKK md. 7 çerçevesinde silinmesini veya yok edilmesini isteme,</li>
+  <li>düzeltme ve silme işlemlerinin aktarıldığı üçüncü kişilere bildirilmesini isteme,</li>
+  <li>münhasıran otomatik sistemlerle analiz edilmesi suretiyle aleyhinize bir sonucun ortaya çıkmasına itiraz etme,</li>
+  <li>kanuna aykırı işlenmesi sebebiyle zarara uğramanız halinde zararın giderilmesini talep etme</li>
+</ul>
+<p>haklarına sahipsiniz. Başvurularınızı <a href="mailto:{{ contact_email }}">{{ contact_email }}</a> adresine iletebilirsiniz. Talepleriniz en geç 30 gün içinde ücretsiz olarak sonuçlandırılır.</p>
+{% endblock %}

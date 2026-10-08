@@ -1,0 +1,20 @@
+{% load humanize %}
+<div class="pricing">
+  {% for p in packages %}
+  <article class="plan{% if p.is_featured %} plan--featured{% endif %} reveal">
+    {% if p.is_featured %}<span class="plan__badge">En çok tercih edilen</span>{% endif %}
+    <h3 class="plan__name">{{ p.name }}</h3>
+    <p class="plan__tag">{{ p.tagline }}</p>
+    <div class="plan__price">
+      {% if p.price_prefix %}<span class="plan__prefix">{{ p.price_prefix }}</span>{% endif %}
+      <span class="plan__amount">₺{{ p.price|intcomma }}</span><span class="plan__per">/ ay + KDV</span>
+    </div>
+    <p class="plan__ideal">{{ p.ideal_for }}</p>
+    <ul>
+      {% for f in p.feature_list %}<li>{% include "partials/icons/check.svg" %}<span>{{ f }}</span></li>{% endfor %}
+    </ul>
+    <a class="btn {% if p.is_featured %}btn--signal{% else %}btn--ghost{% endif %} btn--block" href="{% url 'leads:apply' %}?paket={{ p.slug }}{% if cta_city %}&il={{ cta_city }}{% endif %}">{{ p.name }} için başvur {% include "partials/icons/arrow.svg" %}</a>
+  </article>
+  {% endfor %}
+</div>
+<p class="pricing-note">İlk ay peşin başlanır, sonraki aylar raporla birlikte aylık faturalandırılır. Reklam bütçesi hizmet bedeline dahil değildir.</p>

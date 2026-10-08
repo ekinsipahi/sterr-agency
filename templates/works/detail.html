@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "calismalar", "page_type": "case_detail", "case": "{{ case.slug }}"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=case.title|add:" | Sterr Agency" description=case.summary|truncatechars:155 og_type="article" %}{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <nav class="crumbs"><a href="{% url 'core:home' %}">Ana sayfa</a><span aria-hidden="true">/</span><a href="{% url 'works:list' %}">Çalışmalar</a></nav>
+    <p class="eyebrow reveal">{{ case.sector }}{% if case.city %} · {{ case.city }}{% endif %} · {{ case.client }}</p>
+    <h1 class="h1 reveal" style="max-width:1000px">{{ case.title }}</h1>
+    <p class="lede reveal">{{ case.summary }}</p>
+  </div>
+</section>
+
+{% if case.metrics.all %}
+<section class="section--tight"><div class="container"><div class="stats reveal">
+  {% for m in case.metrics.all|slice:":3" %}<div class="stat"><div class="stat__value signal">{{ m.value }}</div><div class="stat__label">{{ m.label }}</div></div>{% endfor %}
+</div></div></section>
+{% endif %}
+
+{% if case.video or case.video_url %}
+<section class="section--tight"><div class="container reveal">
+  <div class="video-frame">
+    {% if case.video %}<video src="{{ case.video.url }}" controls playsinline preload="metadata" {% if case.cover %}poster="{{ case.cover.url }}"{% endif %}></video>
+    {% else %}<iframe src="{{ case.video_url }}" title="{{ case.title }}" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>{% endif %}
+  </div>
+</div></section>
+{% elif case.cover %}
+<section class="section--tight"><div class="container reveal"><img src="{{ case.cover.url }}" alt="{{ case.title }}" style="border-radius:var(--radius);border:1px solid var(--line)"></div></section>
+{% endif %}
+
+<section class="section">
+  <div class="container split">
+    <div class="reveal"><p class="eyebrow">Vaka</p><h2 class="h2">Sorun, çözüm, <span class="serif">sonuç.</span></h2></div>
+    <div class="prose reveal">
+      {% if case.challenge %}<h3>Sorun</h3>{{ case.challenge|linebreaks }}{% endif %}
+      {% if case.approach %}<h3>Ne yaptık</h3>{{ case.approach|linebreaks }}{% endif %}
+      {% if case.result %}<h3>Sonuç</h3>{{ case.result|linebreaks }}{% endif %}
+    </div>
+  </div>
+</section>
+
+{% if case.media.all %}
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">Kanıtlar</p><h2 class="h2">Panellerden <span class="serif">doğrudan.</span></h2></div>
+    <div class="proof-grid">
+      {% for m in case.media.all %}
+      <figure class="reveal"><a href="{{ m.image.url }}" target="_blank" rel="noopener"><img src="{{ m.image.url }}" alt="{{ m.get_kind_display }} — {{ case.client }}" loading="lazy"></a>
+        <figcaption><span class="kind">{{ m.get_kind_display }}</span>{{ m.caption }}</figcaption></figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if others %}
+<section class="section section--line"><div class="container">
+  <div class="section-head reveal"><p class="eyebrow">Diğer çalışmalar</p></div>
+  <div class="grid grid-2">{% for case in others %}{% include "partials/case_card.html" %}{% endfor %}</div>
+</div></section>
+{% endif %}
+{% include "partials/cta.html" %}
+{% endblock %}

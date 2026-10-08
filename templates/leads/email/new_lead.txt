@@ -1,0 +1,23 @@
+Yeni lead geldi — {{ lead.tier }} sınıfı (skor {{ lead.score }}/100)
+
+Ad Soyad : {{ lead.name }}
+İşletme  : {{ lead.company|default:"-" }}
+Telefon  : {{ lead.phone }}
+WhatsApp : {{ lead.whatsapp_url }}
+E-posta  : {{ lead.email }}
+Web/IG   : {{ lead.website|default:"-" }}
+İl       : {{ lead.get_city_display|default:"-" }}
+
+Sektör   : {{ lead.get_sector_display }}
+Hedef    : {{ lead.get_goal_display }}
+Bütçe    : {{ lead.get_budget_display }}
+İçerik   : {{ lead.get_has_content_display }}
+Başlangıç: {{ lead.get_timeline_display }}
+
+Mesaj:
+{{ lead.message|default:"-" }}
+
+Kaynak   : {{ lead.source_page|default:"-" }}
+UTM      : {{ lead.utm_source|default:"-" }} / {{ lead.utm_medium|default:"-" }} / {{ lead.utm_campaign|default:"-" }}
+
+Admin: {{ admin_url }}

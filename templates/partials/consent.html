@@ -1,0 +1,9 @@
+{% if GA4_ID or GTM_ID or META_PIXEL_ID %}
+<div class="consent-bar" data-consent hidden role="dialog" aria-label="Çerez tercihleri">
+  <p>Sitemizi geliştirmek ve reklamlarımızın performansını ölçmek için çerezler kullanıyoruz. Ayrıntılar: <a href="{% url 'core:cookies' %}">Çerez Politikası</a>.</p>
+  <div class="btn-row">
+    <button type="button" class="btn btn--ghost btn--sm" data-consent-deny>Sadece zorunlu</button>
+    <button type="button" class="btn btn--signal btn--sm" data-consent-accept>Kabul et</button>
+  </div>
+</div>
+{% endif %}

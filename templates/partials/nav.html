@@ -1,0 +1,20 @@
+{% url 'core:home' as u_home %}{% url 'core:services' as u_services %}{% url 'core:packages' as u_packages %}{% url 'works:list' as u_works %}{% url 'core:method' as u_method %}{% url 'seo:sectors' as u_sectors %}
+<header class="nav">
+  <div class="container nav__inner">
+    <a href="{{ u_home }}" class="brand" aria-label="Sterr Agency ana sayfa">
+      {% if site.logo %}<img src="{{ site.logo.url }}" alt="Sterr Agency" width="140" height="30">{% else %}<span class="brand__mark">{% include "partials/icons/mark.svg" %}</span>sterr<span class="brand__sub">agency</span>{% endif %}
+    </a>
+    <nav class="nav__links" aria-label="Ana menü">
+      <a href="{{ u_services }}" {% if request.path == u_services %}aria-current="page"{% endif %}>Hizmetler</a>
+      <a href="{{ u_method }}" {% if request.path == u_method %}aria-current="page"{% endif %}>Yöntem</a>
+      <a href="{{ u_sectors }}" {% if u_sectors in request.path %}aria-current="page"{% endif %}>Sektörler</a>
+      <a href="{{ u_works }}" {% if u_works in request.path %}aria-current="page"{% endif %}>Çalışmalar</a>
+      <a href="{{ u_packages }}" {% if request.path == u_packages %}aria-current="page"{% endif %}>Paketler</a>
+    </nav>
+    <div class="nav__cta">
+      <a class="btn btn--ghost btn--sm" href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a>
+      <a class="btn btn--signal btn--sm" href="{% url 'leads:apply' %}">Başvuru yap</a>
+      <button class="nav__toggle" type="button" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span></button>
+    </div>
+  </div>
+</header>

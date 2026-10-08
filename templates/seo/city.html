@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "pseo_il", "page_type": "pseo_city", "service": "{{ cluster.slug }}", "city": "{{ city.slug }}", "region": "{{ city.region }}", "market_tier": "{{ city.tier }}"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=page.title description=page.description %}{% endblock %}
+{% block schema %}
+{% with faqs=page.faqs %}{% include "partials/faq_schema.html" %}{% endwith %}
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"{{ page.h1|escapejs }}","serviceType":"{{ cluster.name|escapejs }}","provider":{"@id":"{{ SITE_URL }}/#org"},"areaServed":{"@type":"City","name":"{{ city.name|escapejs }}","containedInPlace":{"@type":"Country","name":"Türkiye"}},"offers":{"@type":"Offer","priceCurrency":"TRY","price":"50000","priceSpecification":{"@type":"UnitPriceSpecification","price":"50000","priceCurrency":"TRY","unitText":"MONTH"}},"url":"{{ canonical_url }}"}</script>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    {% include "partials/breadcrumbs.html" %}
+    <p class="eyebrow reveal">{{ city.region_obj.name }} · {{ city.plate|stringformat:"02d" }}</p>
+    <h1 class="h1 hero__title reveal" style="max-width:1000px">{{ page.h1 }}: <span class="serif">müşteri getiren</span> sistem.</h1>
+    <div class="hero__bottom">
+      <div class="reveal">
+        <p class="lede">{{ page.intro }}</p>
+        <div class="btn-row mt-m">
+          <a class="btn btn--signal btn--lg" href="{% url 'leads:apply' %}?il={{ city.slug }}">{{ city.name }} için başvur {% include "partials/icons/arrow.svg" %}</a>
+          <a class="btn btn--ghost btn--lg" href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+      </div>
+      <div class="reveal">
+        {% include "partials/rating.html" %}
+        <div class="hero__meta">
+          <span>{% include "partials/icons/pin.svg" %} {{ page.ctx.loc }} ve 81 ilde</span>
+          <span>{% include "partials/icons/trend.svg" %} Aylık 50.000 ₺'den</span>
+          <span>{% include "partials/icons/clock.svg" %} 24 saatte dönüş</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal sticky">
+      <p class="eyebrow">{{ city.name }} pazarı</p>
+      <h2 class="h2">{{ page.keywords.1|capfirst }} <span class="serif">neden farklı?</span></h2>
+    </div>
+    <div class="prose reveal">
+      <p>{{ page.tier_text }}</p>
+      <p>{{ city.name }}, {{ city.region_obj.market }} olan {{ city.region_obj.name }} içinde yer alıyor. Stratejimizi bu dinamiklere göre kuruyor; {{ city.gen }} kitlesinin hangi kelimelerle aradığını, hangi içerikle ikna olduğunu ve hangi noktada fiyat sorup kaybolduğunu veriyle tespit ediyoruz.</p>
+      <p>Çalışma modelimiz her ilde aynı: reklam, Türkçe SEO, AI destekli içerik yayılımı ve marka birlikte çalışır; kullanıcılar bir kalite filtresinden geçer ve size yalnızca satın almaya hazır müşteriler ulaşır.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Neler dahil</p>
+      <h2 class="h2">{{ page.ctx.loc }} <span class="serif">sizin için</span> yaptıklarımız</h2>
+    </div>
+    <div class="grid grid-3">
+      {% for title, body in page.deliverables %}
+      <div class="card reveal"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ title }}</h3><p>{{ body }}</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Süreç</p>
+      <h2 class="h2">{{ city.name }} için <span class="serif">yol haritası</span></h2>
+    </div>
+    {% include "partials/process.html" %}
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head section-head--center reveal">
+      <p class="eyebrow">Fiyatlar</p>
+      <h2 class="h2">{{ page.pricing_heading|capfirst }}</h2>
+      <p class="lede">{{ page.closing }}</p>
+    </div>
+    {% with cta_city=city.slug %}{% include "partials/packages.html" %}{% endwith %}
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal"><p class="eyebrow">Sık sorulanlar</p><h2 class="h2">{{ city.name }} <span class="serif">soruları</span></h2></div>
+    <div class="reveal">{% with faqs=page.faqs %}{% include "partials/faq.html" %}{% endwith %}</div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="grid grid-2">
+      <div class="reveal">
+        <p class="eyebrow">{{ city.name }} için diğer hizmetler</p>
+        <div class="chips">{% for c in other_clusters %}<a class="chip" href="{% url 'seo:city' c.slug city.slug %}">{{ city.name }} {{ c.name|lower }}</a>{% endfor %}</div>
+        {% if guides %}
+        <p class="eyebrow mt-l">Rehber</p>
+        <div class="chips">{% for g in guides %}<a class="chip" href="{% url 'seo:guide' g.slug %}">{{ g.h1 }}</a>{% endfor %}</div>
+        {% endif %}
+      </div>
+      <div class="reveal">
+        <p class="eyebrow">{{ city.region_obj.name }}</p>
+        <div class="chips">
+          {% for n in nearby %}<a class="chip" href="{% url 'seo:city' cluster.slug n.slug %}">{{ n.name }} {{ cluster.name|lower }}</a>{% endfor %}
+          <a class="chip chip--on" href="{% url 'seo:cluster' cluster.slug %}">Tüm iller →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% with cta_city=city.slug cta_title=page.h1|add:" arayışınız burada bitiyor." %}{% include "partials/cta.html" %}{% endwith %}
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "hata", "page_type": "404"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title="Sayfa bulunamadı | Sterr Agency" robots="noindex" %}{% endblock %}
+{% block content %}
+<section class="hero"><div class="container center">
+  <p class="eyebrow">404</p>
+  <h1 class="h1">Bu sayfa yok. <span class="serif">Müşterileriniz ise var.</span></h1>
+  <div class="btn-row mt-m" style="justify-content:center"><a class="btn btn--signal btn--lg" href="{% url 'core:home' %}">Ana sayfa</a><a class="btn btn--ghost btn--lg" href="{% url 'leads:apply' %}">Başvuru yap</a></div>
+</div></section>
+{% endblock %}

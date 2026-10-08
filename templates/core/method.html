@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "kurumsal", "page_type": "method"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title="Yöntemimiz | Reklam + SEO + AI Yayılım + Funnel — Sterr Agency" description="Müşteri getiren sistemimiz: teşhis, konumlandırma, kurulum, kombine yayılım ve aylık takip. Fiyatçıyı eleyen funnel ile %100 kalite odaklı." %}{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <p class="eyebrow reveal">Yöntem</p>
+    <h1 class="h1 reveal" style="max-width:1000px">Önce <span class="serif">müşterinizi</span> anlarız. Sonra onu size getiririz.</h1>
+    <p class="lede reveal">Çoğu işletme ne sattığını bilir; müşterisinin gerçekte ne satın aldığını bilmez. İşimizin asıl önemli kısmı burada başlar: size müşterilerinizin ne istediğini anlatıyor, bir fikir aşılıyoruz. Gerisi o fikrin yayılımıdır.</p>
+  </div>
+</section>
+
+<section class="section--tight"><div class="container">{% include "partials/process.html" %}</div></section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Yayılım politikası</p>
+      <h2 class="h2">İnternetin <span class="serif">her köşesinde</span> siz.</h2>
+      <p class="lede">Müşteriniz karar vermeden önce ortalama birkaç farklı kaynağa bakar. Biz o kaynakların hepsinde olmanızı sağlarız.</p>
+    </div>
+    <div class="grid grid-2">
+      <div class="card reveal"><span class="card__num">A</span><h3 class="h3">Arama anı — Google</h3><p>Müşteriniz Türkçe bir arama yaptığında karşısına reklamınız ve organik sayfanız birlikte çıkar. İki kez görünmek, güveni ikiye katlar.</p></div>
+      <div class="card reveal"><span class="card__num">B</span><h3 class="h3">Keşif anı — sosyal medya</h3><p>Henüz aramaya başlamamış kitleye içerik ve reklamla ulaşırız; ihtiyacı fark ettiği an ilk aklına gelen siz olursunuz.</p></div>
+      <div class="card reveal"><span class="card__num">C</span><h3 class="h3">Araştırma anı — forumlar & topluluklar</h3><p>Özel AI altyapımızla ürettiğimiz uzman içerikler, soru-cevap platformlarında ve forumlarda markanızı doğal biçimde konuşturur.</p></div>
+      <div class="card reveal"><span class="card__num">D</span><h3 class="h3">Karar anı — funnel</h3><p>Başvuru formu bütçe, hedef ve zamanlamayı sorar. Fiyatçı elenir; masaya yalnızca ciddi müşteri gelir.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <p class="statement reveal">Her ay aynı soruyu soruyoruz: <span class="serif">bu ay kaç müşteri getirdik?</span> <span class="dim">Cevabı raporlarız, faturayı ondan sonra keseriz.</span></p>
+  </div>
+</section>
+{% include "partials/cta.html" %}
+{% endblock %}

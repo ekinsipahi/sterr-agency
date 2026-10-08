@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "kurumsal", "page_type": "pricing"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title="Paketler ve Fiyatlar | Aylık 50.000 ₺'den — Sterr Agency" description="Kıvılcım, İvme ve Hakimiyet: aylık 50.000 ₺'den başlayan dijital pazarlama paketleri. Reklam, SEO, içerik ve funnel tek sistemde. Aylık abonelik." %}{% endblock %}
+{% block schema %}{% include "partials/faq_schema.html" %}{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container center">
+    <p class="eyebrow reveal">Paketler</p>
+    <h1 class="h1 reveal">Bir maliyet değil, <span class="serif">bir sistem.</span></h1>
+    <p class="lede reveal" style="margin-left:auto;margin-right:auto">Paketlerimiz aylık 50.000 ₺'den başlar. İlk ay peşin başlıyoruz; sonrasında müşterilerinizi takip ediyor, her ay raporlayıp faturalandırıyoruz.</p>
+  </div>
+</section>
+<section class="section--tight"><div class="container">{% include "partials/packages.html" %}</div></section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal">
+      <p class="eyebrow">Neden bu fiyat</p>
+      <h2 class="h2">Ucuz ajans, <span class="serif">pahalıya</span> patlar.</h2>
+    </div>
+    <div class="reveal">
+      <p class="lede">Tek bir dijital pazarlama uzmanının maaşı ve yan maliyetleriyle kıyaslayın: paketlerimizle reklam uzmanı, SEO uzmanı, içerik ekibi ve strateji direktöründen oluşan bir ekip kazanırsınız.</p>
+      <ul class="check mt-m">
+        <li>{% include "partials/icons/check.svg" %}<span>Reklam hesapları ve tüm veriler sizin mülkiyetinizde kalır.</span></li>
+        <li>{% include "partials/icons/check.svg" %}<span>Reklam bütçesi doğrudan platformlara ödenir; ajans bedeline gizli pay eklenmez.</span></li>
+        <li>{% include "partials/icons/check.svg" %}<span>Her ay; talep, müşteri başı maliyet ve organik büyümeyi gösteren şeffaf rapor.</span></li>
+        <li>{% include "partials/icons/check.svg" %}<span>Uygun olmadığımızı düşünürsek, başlamadan önce açıkça söyleriz.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal"><p class="eyebrow">Sık sorulanlar</p><h2 class="h2">Ödeme & <span class="serif">sözleşme</span></h2></div>
+    <div class="reveal">{% include "partials/faq.html" %}</div>
+  </div>
+</section>
+{% include "partials/cta.html" %}
+{% endblock %}

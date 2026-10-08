@@ -1,0 +1,27 @@
+{% extends "legal/_base.html" %}
+{% block meta %}{% include "partials/meta.html" with title="Çerez Politikası | Sterr Agency" description="Sterr Agency web sitesinde kullanılan çerezler, amaçları ve çerez tercihlerinizi nasıl yönetebileceğiniz." %}{% endblock %}
+{% block legal_title %}Çerez Politikası{% endblock %}
+{% block legal_body %}
+<p>Bu politika, {{ company.legal_name }} tarafından işletilen Sterr Agency web sitesinde kullanılan çerezleri ve benzeri teknolojileri açıklar.</p>
+
+<h2>Çerez nedir?</h2>
+<p>Çerezler, bir web sitesini ziyaret ettiğinizde tarayıcınıza kaydedilen küçük metin dosyalarıdır. Sitenin çalışmasını, güvenliğini ve performansının ölçülmesini sağlar.</p>
+
+<h2>Kullandığımız çerezler</h2>
+<div class="table-wrap"><table>
+  <tr><th>Tür</th><th>Amaç</th><th>Örnek</th></tr>
+  <tr><td>Zorunlu</td><td>Güvenlik ve form gönderimi (CSRF koruması), oturum</td><td>csrftoken, sessionid</td></tr>
+  <tr><td>Tercih</td><td>Çerez tercihiniz ve kampanya kaynağı (tarayıcı depolaması)</td><td>sterr_consent, sterr_utm</td></tr>
+  <tr><td>Analitik</td><td>Ziyaret istatistikleri ve başvuru süreci ölçümü (onay ile)</td><td>Google Analytics (_ga, _ga_*)</td></tr>
+  <tr><td>Pazarlama</td><td>Reklam performansını ölçmek (onay ile)</td><td>Meta Pixel (_fbp), Google Ads (gclid)</td></tr>
+</table></div>
+
+<h2>Onayınız</h2>
+<p>Zorunlu çerezler dışındaki analitik ve pazarlama çerezleri, yalnızca sitemizdeki çerez bildiriminde <strong>"Kabul et"</strong> seçeneğini işaretlemeniz halinde çalışır (Google Consent Mode v2). "Sadece zorunlu" seçeneğinde Google Analytics çerez yazmaz; yalnızca kimliksiz, toplu ölçüm sinyalleri gönderilebilir. Tercihiniz tarayıcınızda saklanır; tarayıcı verilerini temizleyerek tercihinizi sıfırlayabilirsiniz.</p>
+
+<h2>Çerezleri nasıl yönetebilirsiniz?</h2>
+<p>Tarayıcınızın ayarlarından çerezleri silebilir veya engelleyebilirsiniz. Zorunlu çerezleri engellemeniz halinde başvuru formu gibi bazı özellikler çalışmayabilir.</p>
+
+<h2>İletişim</h2>
+<p>Sorularınız için: <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>. Kişisel verilerin işlenmesi hakkında ayrıntılı bilgi için <a href="{% url 'core:privacy' %}">Gizlilik Politikası</a> ve <a href="{% url 'core:kvkk' %}">KVKK Aydınlatma Metni</a>'ni inceleyin.</p>
+{% endblock %}

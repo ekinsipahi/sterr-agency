@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "basvuru", "page_type": "lead_form"}{% endblock %}
+{% load humanize %}
+{% block meta %}{% include "partials/meta.html" with title="Başvuru | Sterr Agency ile Çalışın" description="2 dakikalık başvuru formunu doldurun; işletmenizi inceleyip 24 saat içinde size özel bir yol haritasıyla dönüş yapalım. Paketler aylık 50.000 ₺'den." %}{% endblock %}
+{% block content %}
+<section class="page-hero" style="padding-bottom:0">
+  <div class="container apply">
+    <div class="reveal sticky">
+      <p class="eyebrow">Başvuru</p>
+      <h1 class="h1">Birlikte <span class="serif">büyüyelim.</span></h1>
+      <p class="lede">Her işletmeyle çalışmıyoruz. Kapasitemizi, gerçekten büyümek isteyen ve sistemimizden fayda görecek markalara ayırıyoruz. 2 dakikanızı alır.</p>
+      <ul class="check mt-m">
+        <li>{% include "partials/icons/check.svg" %}<span>24 saat içinde dönüş</span></li>
+        <li>{% include "partials/icons/check.svg" %}<span>Ücretsiz ön analiz ve yol haritası</span></li>
+        <li>{% include "partials/icons/check.svg" %}<span>Uygun değilsek bunu açıkça söyleriz</span></li>
+      </ul>
+      <p class="hint mt-m">Formla uğraşmak istemiyor musunuz? <a class="link-arrow" href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp'tan yazın</a> ya da <a class="link-arrow" href="tel:{{ phone_tel }}">{{ whatsapp_display }}</a> numarasını arayın.</p>
+    </div>
+
+    <form class="form-card reveal" method="post" action="{% url 'leads:submit' %}" data-steps novalidate{% if form.errors %} data-form-errors="{{ form.errors.keys|join:',' }}"{% endif %}>
+      {% csrf_token %}
+      <div class="progress" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+      {% if form.non_field_errors %}<div class="form-alert">{{ form.non_field_errors|join:" " }}</div>{% elif form.errors %}<div class="form-alert">Lütfen işaretli alanları kontrol edin.</div>{% endif %}
+      <div class="hp" aria-hidden="true"><label>Fax<input type="text" name="fax" tabindex="-1" autocomplete="off"></label></div>
+      <input type="hidden" name="source_page" value="{{ request.POST.source_page }}">
+      <input type="hidden" name="utm_source" value="{{ request.POST.utm_source }}">
+      <input type="hidden" name="utm_medium" value="{{ request.POST.utm_medium }}">
+      <input type="hidden" name="utm_campaign" value="{{ request.POST.utm_campaign }}">
+      <input type="hidden" name="utm_term" value="{{ request.POST.utm_term }}">
+      <input type="hidden" name="gclid" value="{{ request.POST.gclid }}">
+      <input type="hidden" name="package" value="{{ selected_package }}">
+
+      <div class="fstep is-active">
+        <p class="fstep__label">Adım 1 / 5</p>
+        <h3>İşletmeniz hangi alanda?</h3>
+        {% include "leads/_radios.html" with field=form.sector %}
+        <div class="form-nav"><span></span><button class="btn btn--signal btn--sm" data-next>Devam {% include "partials/icons/arrow.svg" %}</button></div>
+      </div>
+
+      <div class="fstep">
+        <p class="fstep__label">Adım 2 / 5</p>
+        <h3>Önceliğiniz ne?</h3>
+        {% include "leads/_radios.html" with field=form.goal %}
+        <div class="form-nav"><button class="btn btn--ghost btn--sm" data-prev>Geri</button><button class="btn btn--signal btn--sm" data-next>Devam {% include "partials/icons/arrow.svg" %}</button></div>
+      </div>
+
+      <div class="fstep">
+        <p class="fstep__label">Adım 3 / 5</p>
+        <h3>Aylık pazarlama yatırımı için ayırabileceğiniz bütçe?</h3>
+        {% include "leads/_radios.html" with field=form.budget %}
+        <p class="hint hint--warn" data-budget-warn hidden>Paketlerimiz aylık 50.000 ₺'den başlıyor. Yine de başvurabilirsiniz; size en doğru yolu önermekten memnuniyet duyarız.</p>
+        <div class="form-nav"><button class="btn btn--ghost btn--sm" data-prev>Geri</button><button class="btn btn--signal btn--sm" data-next>Devam {% include "partials/icons/arrow.svg" %}</button></div>
+      </div>
+
+      <div class="fstep">
+        <p class="fstep__label">Adım 4 / 5</p>
+        <h3>Mevcut içeriğiniz var mı?</h3>
+        {% include "leads/_radios.html" with field=form.has_content %}
+        <h3 class="mt-m">Ne zaman başlamak istersiniz?</h3>
+        {% include "leads/_radios.html" with field=form.timeline %}
+        <div class="form-nav"><button class="btn btn--ghost btn--sm" data-prev>Geri</button><button class="btn btn--signal btn--sm" data-next>Devam {% include "partials/icons/arrow.svg" %}</button></div>
+      </div>
+
+      <div class="fstep">
+        <p class="fstep__label">Adım 5 / 5</p>
+        <h3>Size nasıl ulaşalım?</h3>
+        <div class="field-row">
+          <div class="field"><label for="{{ form.name.id_for_label }}">Ad Soyad *</label>{{ form.name }}{{ form.name.errors }}</div>
+          <div class="field"><label for="{{ form.company.id_for_label }}">İşletme</label>{{ form.company }}{{ form.company.errors }}</div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="{{ form.phone.id_for_label }}">Telefon (WhatsApp) *</label>{{ form.phone }}{{ form.phone.errors }}</div>
+          <div class="field"><label for="{{ form.email.id_for_label }}">E-posta *</label>{{ form.email }}{{ form.email.errors }}</div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="{{ form.website.id_for_label }}">Web sitesi / Instagram</label>{{ form.website }}{{ form.website.errors }}</div>
+          <div class="field"><label for="{{ form.city.id_for_label }}">İl</label>{{ form.city }}{{ form.city.errors }}</div>
+        </div>
+        <div class="field"><label for="{{ form.message.id_for_label }}">Kısaca işletmeniz ve hedefiniz</label>{{ form.message }}{{ form.message.errors }}</div>
+        <label class="consent"><input type="checkbox" name="kvkk" required {% if form.kvkk.value %}checked{% endif %}><span><a href="{% url 'core:kvkk' %}" target="_blank">KVKK Aydınlatma Metni</a>'ni okudum; başvurum kapsamında benimle iletişime geçilmesini kabul ediyorum.</span></label>
+        {{ form.kvkk.errors }}
+        <div class="form-nav"><button class="btn btn--ghost btn--sm" data-prev>Geri</button><button class="btn btn--signal" type="submit">Başvuruyu gönder {% include "partials/icons/arrow.svg" %}</button></div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">Paketler</p><h2 class="h2">Hangi seviye <span class="serif">size uygun?</span></h2></div>
+    {% include "partials/packages.html" %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "rehber", "page_type": "guide", "guide": "{{ guide.slug }}"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=guide.title description=guide.description og_type="article" %}{% endblock %}
+{% block schema %}
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"{{ guide.h1|escapejs }}","description":"{{ guide.description|escapejs }}","inLanguage":"tr-TR","author":{"@id":"{{ SITE_URL }}/#org"},"publisher":{"@id":"{{ SITE_URL }}/#org"},"mainEntityOfPage":"{{ canonical_url }}"}</script>
+{% if guide.faqs %}{% with faqs=guide.faqs %}{% include "partials/faq_schema.html" %}{% endwith %}{% endif %}
+{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    {% include "partials/breadcrumbs.html" %}
+    <p class="eyebrow reveal">Rehber · {{ guide.minutes }} dk okuma</p>
+    <h1 class="h1 reveal" style="max-width:1000px">{{ guide.h1 }}</h1>
+    <p class="lede reveal">{{ guide.lede }}</p>
+  </div>
+</section>
+<section class="section--tight">
+  <div class="container split split--aside">
+    <aside class="sticky reveal">
+      <div class="toc"><b>Kısaca</b>
+        <p class="muted" style="font-size:14.5px">Sterr Agency; reklam, SEO ve içerik yayılımını tek sistemde birleştirerek işletmelere müşteri getirir. Paketler aylık 50.000 ₺'den başlar.</p>
+        <a class="btn btn--signal btn--sm btn--block mt-s" href="{% url 'leads:apply' %}">Başvuru yap</a>
+      </div>
+    </aside>
+    <article class="prose reveal">
+      {% include body_template %}
+      {% if guide.faqs %}
+      <h2>Sık sorulan sorular</h2>
+      {% for q, a in guide.faqs %}<h3>{{ q }}</h3><p>{{ a }}</p>{% endfor %}
+      {% endif %}
+    </article>
+  </div>
+</section>
+{% if others %}
+<section class="section section--line">
+  <div class="container">
+    <p class="eyebrow">Diğer rehberler</p>
+    <div class="grid grid-3">{% for g in others %}<a class="card reveal" href="{% url 'seo:guide' g.slug %}"><h3 class="h3">{{ g.h1 }}</h3><p>{{ g.lede|truncatewords:18 }}</p></a>{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+{% include "partials/cta.html" %}
+{% endblock %}

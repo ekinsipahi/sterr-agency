@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "pseo_hub", "page_type": "regions"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title="Hizmet Bölgeleri | 81 İlde Dijital Pazarlama — Sterr Agency" description="Türkiye'nin 81 ilinde dijital pazarlama, sosyal medya ajansı ve sosyal medya yönetimi hizmeti. İlinizi seçin, size özel stratejiyi görün." %}{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    {% include "partials/breadcrumbs.html" %}
+    <p class="eyebrow reveal">Hizmet bölgeleri</p>
+    <h1 class="h1 reveal">{{ city_count }} il. <span class="serif">Tek standart.</span></h1>
+    <p class="lede reveal">İstanbul'dan Hakkari'ye, Edirne'den Iğdır'a. Strateji ve raporlama online yürür; içerik çekimi için ekibimiz size gelir.</p>
+  </div>
+</section>
+<section class="section--tight">
+  <div class="container">
+    {% for region, cities in regions %}
+    <div class="region reveal">
+      <h2 class="h3">{{ region.name }} <small class="dim" style="font-weight:400;font-size:14px">{{ cities|length }} il</small></h2>
+      <div class="city-grid">{% for c in cities %}<a href="{% url 'seo:city' 'dijital-pazarlama-ajansi' c.slug %}"><span>{{ c.name }}</span><span class="plate">{{ c.plate|stringformat:"02d" }}</span></a>{% endfor %}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">Hizmete göre</p><h2 class="h2">Hizmet <span class="serif">seçin</span></h2></div>
+    <div class="grid grid-2">{% for c in clusters %}<a class="card reveal" href="{% url 'seo:cluster' c.slug %}"><h3 class="h3">{{ c.name }}</h3><p>{{ c.national_intro }}</p></a>{% endfor %}</div>
+  </div>
+</section>
+{% include "partials/cta.html" %}
+{% endblock %}

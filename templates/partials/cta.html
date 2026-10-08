@@ -1,0 +1,14 @@
+<section class="section section--tight">
+  <div class="container">
+    <div class="cta reveal">
+      <p class="eyebrow" style="color:rgba(10,10,9,.6)">Sıradaki adım</p>
+      <h2 class="h2">{{ cta_title|default:"Müşteri getirmek bizim işimiz. Sizinki onları ağırlamak." }}</h2>
+      <p>{{ cta_text|default:"2 dakikalık başvuru formunu doldurun. İşletmenizi inceleyip 24 saat içinde size özel bir yol haritasıyla dönüş yapalım." }}</p>
+      <div class="btn-row mt-m">
+        <a class="btn btn--dark btn--lg" href="{% url 'leads:apply' %}{% if cta_city %}?il={{ cta_city }}{% endif %}">Başvuru yap {% include "partials/icons/arrow.svg" %}</a>
+        <a class="btn btn--outline-dark btn--lg" href="{{ whatsapp_url }}" target="_blank" rel="noopener">{% include "partials/icons/whatsapp.svg" %} WhatsApp'tan yazın</a>
+      </div>
+      <p class="mt-s" style="font-size:15px">ya da hemen arayın: <a href="tel:{{ phone_tel }}" style="font-weight:700;text-decoration:underline">{{ whatsapp_display }}</a></p>
+    </div>
+  </div>
+</section>

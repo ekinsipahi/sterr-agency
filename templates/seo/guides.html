@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block ga_page %}{"content_group": "rehber", "page_type": "guide_list"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title="Rehber | Dijital Pazarlama ve Sosyal Medya Ajansı Rehberleri" description="Dijital pazarlama ajansı ne iş yapar, sosyal medya ajansı fiyatları, ajans sözleşmesi ve daha fazlası. İşletme sahipleri için net ve dürüst rehberler." %}{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    {% include "partials/breadcrumbs.html" %}
+    <p class="eyebrow reveal">Rehber</p>
+    <h1 class="h1 reveal" style="max-width:960px">Ajans seçmeden önce <span class="serif">bilmeniz gerekenler.</span></h1>
+  </div>
+</section>
+<section class="section--tight">
+  <div class="container grid grid-3">
+    {% for g in guides %}<a class="card reveal" href="{% url 'seo:guide' g.slug %}"><span class="card__num">{{ g.minutes }} dk okuma</span><h2 class="h3">{{ g.h1 }}</h2><p>{{ g.lede|truncatewords:22 }}</p><span class="card__foot link-arrow">Oku {% include "partials/icons/arrow.svg" %}</span></a>{% endfor %}
+  </div>
+</section>
+{% include "partials/cta.html" %}
+{% endblock %}

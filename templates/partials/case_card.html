@@ -1,0 +1,15 @@
+<a class="case reveal" href="{{ case.get_absolute_url }}">
+  <div class="case__media">
+    {% if case.cover %}<img src="{{ case.cover.url }}" alt="{{ case.title }}" loading="lazy">{% elif case.video %}<video src="{{ case.video.url }}" muted playsinline preload="metadata"></video>{% endif %}
+  </div>
+  <div class="case__body">
+    <span class="case__meta">{{ case.sector }}{% if case.city %} · {{ case.city }}{% endif %}</span>
+    <h3 class="h3">{{ case.title }}</h3>
+    <p class="muted" style="margin:0;font-size:15px">{{ case.summary|truncatewords:26 }}</p>
+    {% if case.metrics.all %}
+    <div class="case__metrics">
+      {% for m in case.metrics.all|slice:":2" %}<div><b>{{ m.value }}</b><small>{{ m.label }}</small></div>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</a>
