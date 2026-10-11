@@ -10,7 +10,7 @@ DATA = {
         "privacy": "Datenschutz",
         "cookies": "Cookie-Richtlinie",
         "footer_tagline": "Sterr Agency ist eine Zahntourismus-Agentur und Wachstumspartner für Zahnkliniken. Wir sind keine Klinik: Die Behandlung erfolgt in lizenzierten Partnerkliniken in der Türkei.",
-        "footer_main": "Sterr Agency (türkische Seite)",
+        "footer_main": "Sterr Agency · Online-Marketing-Agentur",
         "consent_text": "Wir verwenden Cookies, um unsere Werbung zu messen und die Website zu verbessern.",
         "consent_accept": "Akzeptieren",
         "consent_deny": "Nur notwendige",

@@ -1,0 +1,80 @@
+{% extends "base.html" %}{% load static %}
+{% block html_lang %}{{ L.code }}{% endblock %}
+{% block html_dir %}{% if L.rtl %} dir="rtl"{% endif %}{% endblock %}
+{% block ga_page %}{"content_group": "intl_agency", "page_type": "intl_{{ key|cut:':'|slice:':40' }}", "language": "{{ L.code }}"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=p.title description=p.description robots=robots %}{% endblock %}
+{% block schema %}{% if faqs %}{% include "partials/faq_schema.html" %}{% endif %}{% endblock %}
+
+{% block nav %}
+<header class="nav">
+  <div class="container nav__inner">
+    <a href="{{ urls.home }}" class="brand" aria-label="Sterr Agency">
+      {% if site.logo %}<img src="{{ site.logo.url }}" alt="Sterr Agency" width="140" height="30">{% else %}<span class="brand__mark">{% include "partials/icons/mark.svg" %}</span>sterr<span class="brand__sub">agency</span>{% endif %}
+    </a>
+    <nav class="nav__links" aria-label="Menu">
+      <a href="{{ urls.home }}#services"{% if key|slice:':8' == 'cluster:' %} aria-current="page"{% endif %}>{{ ui.nav_services }}</a>
+      <a href="{{ urls.sectors }}"{% if key|slice:':6' == 'sector' %} aria-current="page"{% endif %}>{{ ui.nav_sectors }}</a>
+      <a href="{{ urls.guides }}"{% if key|slice:':5' == 'guide' %} aria-current="page"{% endif %}>{{ ui.nav_guides }}</a>
+      <a href="{{ urls.home }}#pricing">{{ ui.nav_pricing }}</a>
+      <a href="{{ urls.dental }}">{{ ui.nav_dental }}</a>
+    </nav>
+    <div class="nav__cta">
+      {% include "partials/lang_menu.html" with lang_label=ui.lang_label %}
+      <a class="btn btn--signal btn--sm" href="#contact">{{ ui.nav_cta }}</a>
+      <button class="nav__toggle" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+{% endblock %}
+
+{% block footer %}
+<footer class="footer">
+  <div class="container">
+    <p class="footer__big">{{ ui.footer_big }}</p>
+    <div class="footer__grid">
+      <div>
+        <a href="{{ urls.home }}" class="brand">{% if site.logo %}<img src="{{ site.logo.url }}" alt="Sterr Agency" width="140" height="30">{% else %}<span class="brand__mark">{% include "partials/icons/mark.svg" %}</span>sterr<span class="brand__sub">agency</span>{% endif %}</a>
+        <p class="muted mt-s" style="max-width:340px;font-size:15px">{{ ui.footer_tagline }}</p>
+      </div>
+      <div>
+        <h4>{{ ui.nav_services }}</h4>
+        <ul>{% for cl, url in urls.clusters %}<li><a href="{{ url }}">{{ cl.name }}</a></li>{% endfor %}
+          <li><a href="{{ urls.dental }}">{{ ui.nav_dental }}</a></li></ul>
+      </div>
+      <div>
+        <h4>{{ ui.nav_sectors }}</h4>
+        <ul>{% for s, url in urls.sector_list %}<li><a href="{{ url }}">{{ s.name }}</a></li>{% endfor %}</ul>
+      </div>
+      <div>
+        <h4>{{ ui.contact }}</h4>
+        <ul>
+          <li><a href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp: {{ whatsapp_display }}</a></li>
+          <li><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
+          <li><a href="{{ urls.guides }}">{{ ui.nav_guides }}</a></li>
+          {% if site.instagram_url %}<li><a href="{{ site.instagram_url }}" target="_blank" rel="noopener">Instagram</a></li>{% endif %}
+          {% if site.linkedin_url %}<li><a href="{{ site.linkedin_url }}" target="_blank" rel="noopener">LinkedIn</a></li>{% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="footer__legal">
+      <span>© {% now "Y" %} {{ company.legal_name }} · {{ company.address }}</span>
+      <span class="btn-row" style="gap:18px">
+        <a href="{% url 'core:privacy' %}" hreflang="tr">{{ ui.privacy }}</a>
+        <a href="{% url 'core:cookies' %}" hreflang="tr">{{ ui.cookies }}</a>
+      </span>
+    </div>
+  </div>
+</footer>
+{% endblock %}
+
+{% block wa_float %}<a class="wa-float" href="{{ whatsapp_url }}" target="_blank" rel="noopener" aria-label="WhatsApp">{% include "partials/icons/whatsapp.svg" %}<span>WhatsApp</span></a>{% endblock %}
+
+{% block consent %}{% if GA4_ID or GTM_ID or META_PIXEL_ID %}
+<div class="consent-bar" data-consent hidden role="dialog" aria-label="Cookies">
+  <p>{{ ui.consent_text }} <a href="{% url 'core:cookies' %}" hreflang="tr">{{ ui.cookies }}</a>.</p>
+  <div class="btn-row">
+    <button type="button" class="btn btn--ghost btn--sm" data-consent-deny>{{ ui.consent_deny }}</button>
+    <button type="button" class="btn btn--signal btn--sm" data-consent-accept>{{ ui.consent_accept }}</button>
+  </div>
+</div>
+{% endif %}{% endblock %}

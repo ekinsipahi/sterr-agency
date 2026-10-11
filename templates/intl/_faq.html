@@ -1,0 +1,10 @@
+{% if faqs %}<section class="section section--line" id="faq">
+  <div class="container split">
+    <div class="reveal">
+      <p class="eyebrow">{{ ui.eyebrow_faq }}</p>
+      <h2 class="h2">{{ ui.faq_title }}</h2>
+      <p class="lede">{{ ui.faq_lead }}</p>
+    </div>
+    <div class="reveal">{% include "partials/faq.html" %}</div>
+  </div>
+</section>{% endif %}

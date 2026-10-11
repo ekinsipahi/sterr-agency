@@ -1,3 +1,5 @@
+import re
+
 from django.test import TestCase
 from django.urls import reverse
 
@@ -48,4 +50,4 @@ class ProgrammaticSeoTests(TestCase):
 
     def test_sitemap_lists_all_city_pages(self):
         body = self.client.get("/sitemap.xml").content.decode()
-        self.assertEqual(body.count("/dijital-pazarlama-ajansi/"), 82)  # hub + 81
+        self.assertEqual(len(re.findall(r"<loc>[^<]*/dijital-pazarlama-ajansi/", body)), 82)  # hub + 81

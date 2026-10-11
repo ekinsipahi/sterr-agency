@@ -111,3 +111,9 @@ Satırlar `city`, sütunlar `service`, değerler `generate_lead` sayısı + `pho
 
 Dental sayfalarda `content_group=dental_tourism`, `page_type=dental_hub / dental_partners`, `language=<dil>`.
 GA4'te `generate_lead` olayını `form_id` ile filtreleyerek hasta ve B2B taleplerini ayrı ayrı görebilirsiniz.
+
+## Uluslararası ajans sayfaları (15 dil)
+
+- Sayfalarda `content_group=intl_agency`, `page_type=intl_<sayfa>`, `language=<dil>`.
+- Form: `form_start` / `lead_form_error` / `generate_lead` (`form_id=intl_agency`, `service`, `lead_country`, `value` = pazarın USD fiyatı, `currency=USD`).
+- Başvurular admin → **Yurt dışı başvurular**; bildirim maili aynı Resend ayarıyla gider.

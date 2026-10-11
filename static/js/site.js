@@ -142,10 +142,10 @@
     dform.addEventListener("focusin", function () {
       if (dStarted) return;
       dStarted = true;
-      track("form_start", { form_id: "dental_inquiry", language: doc.lang });
+      track("form_start", { form_id: dform.dataset.formId || "dental_inquiry", language: doc.lang });
     });
     if (dform.dataset.formErrors) {
-      track("lead_form_error", { form_id: "dental_inquiry", error_fields: dform.dataset.formErrors.slice(0, 100) });
+      track("lead_form_error", { form_id: dform.dataset.formId || "dental_inquiry", error_fields: dform.dataset.formErrors.slice(0, 100) });
     }
   }
 

@@ -1,0 +1,17 @@
+<div class="pricing">
+  {% for name, tagline, features, amount in tiers %}
+  <article class="plan{% if forloop.counter == 2 %} plan--featured{% endif %} reveal">
+    {% if forloop.counter == 2 %}<span class="plan__badge">{{ ui.pricing_popular }}</span>{% endif %}
+    <h3 class="plan__name">{{ name }}</h3>
+    <p class="plan__tag">{{ tagline }}</p>
+    <div class="plan__price">
+      {% if forloop.last %}<span class="plan__prefix">{{ ui.pricing_from }}</span>{% endif %}
+      <span class="plan__amount">{{ amount }}</span><span class="plan__per">/ {{ ui.pricing_month }}</span>
+    </div>
+    <p class="plan__ideal"></p>
+    <ul>{% for f in features %}<li>{% include "partials/icons/check.svg" %}<span>{{ f }}</span></li>{% endfor %}</ul>
+    <a class="btn {% if forloop.counter == 2 %}btn--signal{% else %}btn--ghost{% endif %} btn--block" href="#contact">{{ ui.nav_cta }} {% include "partials/icons/arrow.svg" %}</a>
+  </article>
+  {% endfor %}
+</div>
+<p class="pricing-note">{{ ui.pricing_note }}</p>

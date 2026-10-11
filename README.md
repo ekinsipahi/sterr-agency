@@ -98,3 +98,11 @@ keywords/    keyword haritası + CSV'ler
   "Yorum iste" linkini girin. Sitede yorum butonu çıkar ve müşterilere `sterragency.com/yorum/` kısayolunu gönderebilirsiniz.
 - **Çalışmalar:** linksterr.com, dentaltourism.tr, drdevrim.com, devrimbirikensipahi.com.tr ekran görüntüleriyle
   migration ile eklendi (admin → Çalışmalar). Search Console, ciro ve hasta sayısı görsellerini her çalışmanın altına ekleyin.
+
+## Uluslararası ajans (15 dil)
+
+- `/<dil>/` altında her dil için ana sayfa, 4 hizmet kümesi, sektörler ve rehberler (285 sayfa). İçerik `apps/intl/locales/<dil>.py`.
+- **Fiyatlar:** admin → *Pazar fiyatları* üzerinden her pazarın USD başlangıç fiyatı (varsayılan 1000, Polonya/Rusya/Ukrayna/Romanya/Azerbaycan 900).
+  Yerel para birimine güncel kurla çevrilir; kurlar günde bir kez otomatik yenilenir. Sunucuda cron ile de çalıştırılabilir:
+  `python manage.py update_fx_rates`
+- Türkçe ana sayfa, hizmet kümeleri, sektörler ve rehberler, yabancı dildeki karşılıklarına `hreflang` ile bağlı.

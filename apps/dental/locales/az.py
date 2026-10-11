@@ -10,7 +10,7 @@ DATA = {
         "privacy": "Məxfilik siyasəti",
         "cookies": "Kuki siyasəti",
         "footer_tagline": "Sterr Agency diş turizmi agentliyi və diş klinikaları üçün inkişaf tərəfdaşıdır. Biz klinika deyilik: müalicəni Türkiyədəki lisenziyalı tərəfdaş klinikalar həyata keçirir.",
-        "footer_main": "Sterr Agency (türkcə sayt)",
+        "footer_main": "Sterr Agency · Rəqəmsal marketinq agentliyi",
         "consent_text": "Reklamlarımızı ölçmək və saytı yaxşılaşdırmaq üçün kukilərdən istifadə edirik.",
         "consent_accept": "Qəbul edirəm",
         "consent_deny": "Yalnız zəruri",

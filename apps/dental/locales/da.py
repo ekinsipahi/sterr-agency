@@ -10,7 +10,7 @@ DATA = {
         "privacy": "Privatlivspolitik",
         "cookies": "Cookiepolitik",
         "footer_tagline": "Sterr Agency er et tandturisme-bureau og vækstpartner for tandklinikker. Vi er ikke en klinik: behandlingen udføres af autoriserede partnerklinikker i Tyrkiet.",
-        "footer_main": "Sterr Agency (tyrkisk side)",
+        "footer_main": "Sterr Agency · Digitalt marketingbureau",
         "consent_text": "Vi bruger cookies til at måle vores annoncering og forbedre siden.",
         "consent_accept": "Accepter",
         "consent_deny": "Kun nødvendige",

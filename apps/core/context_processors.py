@@ -2,7 +2,8 @@ from urllib.parse import quote
 
 from django.conf import settings
 
-from apps.dental.languages import LANG_BY_CODE, LANGS, page_path
+from apps.core.languages import LANG_BY_CODE
+from apps.intl.content import CLUSTER_KEYS, GUIDE_KEYS, SECTOR_KEYS, alternates, lang_links
 
 from .company import COMPANY
 from .models import SiteSettings
@@ -11,6 +12,7 @@ WHATSAPP_TEXT = "Merhaba Sterr Agency, işletmem için müşteri kazanımı hakk
 
 
 def site(request):
+    key = _page_key(request)
     return {
         "site": SiteSettings.load(),
         "company": COMPANY,
@@ -25,7 +27,30 @@ def site(request):
         "GTM_ID": settings.GTM_ID,
         "META_PIXEL_ID": settings.META_PIXEL_ID,
         "GOOGLE_SITE_VERIFICATION": settings.GOOGLE_SITE_VERIFICATION,
-        # Language menu on the Turkish site: TR = this site, others = /dental-tourism/<lang>/.
+        # Language menu + hreflang on the Turkish site. Pages with an equivalent in the
+        # other 15 languages link to it; everything else falls back to the home pages.
         "current_lang": LANG_BY_CODE["tr"],
-        "lang_links": [(lang, "/" if lang.code == "tr" else page_path(lang.code, "hub")) for lang in LANGS],
+        "lang_links": lang_links(key or "home"),
+        "alternates": alternates(key) if key else [],
     }
+
+
+def _page_key(request):
+    """Shared page key (see apps.intl.content) of a Turkish page, or None."""
+    match = getattr(request, "resolver_match", None)
+    if match is None:
+        return None
+    name, kw = match.view_name, match.kwargs
+    if name == "core:home":
+        return "home"
+    if name == "seo:cluster" and kw.get("cluster") in CLUSTER_KEYS:
+        return f"cluster:{kw['cluster']}"
+    if name == "seo:sectors":
+        return "sectors"
+    if name == "seo:sector" and kw.get("slug") in SECTOR_KEYS:
+        return f"sector:{kw['slug']}"
+    if name == "seo:guides":
+        return "guides"
+    if name == "seo:guide" and kw.get("slug") in GUIDE_KEYS:
+        return f"guide:{kw['slug']}"
+    return None

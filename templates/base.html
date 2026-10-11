@@ -19,7 +19,8 @@
   {"@context":"https://schema.org","@type":"ProfessionalService","@id":"{{ SITE_URL }}/#org","name":"Sterr Agency","legalName":"{{ company.legal_name }}","url":"{{ SITE_URL }}/","telephone":"+{{ whatsapp_number }}","email":"{{ contact_email }}","slogan":"{{ company.motto }}","priceRange":"₺₺₺","areaServed":{"@type":"Country","name":"Türkiye"},"address":{"@type":"PostalAddress","streetAddress":"{{ company.street }}","addressLocality":"{{ company.locality }}","postalCode":"{{ company.postal_code }}","addressCountry":"{{ company.country }}"}{% if site.google_rating and site.google_review_count %},"aggregateRating":{"@type":"AggregateRating","ratingValue":"{{ site.google_rating }}","reviewCount":"{{ site.google_review_count }}"}{% endif %}}
   </script>{% endlocalize %}
   {% block schema %}{% endblock %}
-  {% block alternates %}{% endblock %}
+  {% block alternates %}{% for code, path in alternates %}
+  <link rel="alternate" hreflang="{{ code }}" href="{{ SITE_URL }}{{ path }}">{% endfor %}{% endblock %}
   <script>window.sterrPage = {% block ga_page %}{"content_group": "sayfa", "page_type": "page"}{% endblock %};</script>
   {% include "partials/analytics.html" %}
 </head>

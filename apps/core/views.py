@@ -5,7 +5,11 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 
+from apps.core.languages import INTL_CODES
 from apps.dental.languages import LANGS, PAGES, alternates, page_path
+from apps.intl.content import PAGE_KEYS as INTL_PAGE_KEYS
+from apps.intl.content import alternates as intl_alternates
+from apps.intl.content import page_path as intl_path
 from apps.seo.cities import CITIES_ALPHA
 from apps.seo.guides import GUIDES
 from apps.seo.sectors import SECTORS
@@ -66,6 +70,7 @@ def robots_txt(request):
         "Disallow: /basvuru/tesekkurler/",
         "Disallow: /dental-tourism/send/",
         "Disallow: /dental-tourism/thank-you/",
+        "Disallow: /intl/",
         "",
         f"Sitemap: {settings.SITE_URL}/sitemap.xml",
     ]
@@ -97,16 +102,28 @@ def dental_sitemap_urls():
     ]
 
 
+def intl_sitemap_urls():
+    """(path, priority, alternates) for the 15-language agency pages."""
+    prio = {"home": "1.0", "cluster": "0.9", "sectors": "0.7", "sector": "0.7", "guides": "0.6", "guide": "0.6"}
+    return [
+        (intl_path(code, key), prio[key.partition(":")[0]], intl_alternates(key))
+        for key in INTL_PAGE_KEYS for code in INTL_CODES
+    ]
+
+
+def _url(site, path, prio, alts=None):
+    links = "".join(f'<xhtml:link rel="alternate" hreflang="{c}" href="{site}{a}"/>' for c, a in alts or [])
+    return f"<url><loc>{site}{path}</loc><priority>{prio}</priority>{links}</url>"
+
+
 @cache_page(60 * 60)
 def sitemap_xml(request):
     site = settings.SITE_URL
-    body = "".join(f"<url><loc>{site}{path}</loc><priority>{prio}</priority></url>" for path, prio in sitemap_urls())
-    body += "".join(
-        f"<url><loc>{site}{path}</loc><priority>{prio}</priority>"
-        + "".join(f'<xhtml:link rel="alternate" hreflang="{code}" href="{site}{alt}"/>' for code, alt in alts)
-        + "</url>"
-        for path, prio, alts in dental_sitemap_urls()
-    )
+    # Turkish pages that have equivalents in the other 15 languages carry the hreflang set too.
+    tr_alts = {intl_path("tr", key): intl_alternates(key) for key in INTL_PAGE_KEYS}
+    body = "".join(_url(site, path, prio, tr_alts.get(path)) for path, prio in sitemap_urls())
+    body += "".join(_url(site, *row) for row in intl_sitemap_urls())
+    body += "".join(_url(site, *row) for row in dental_sitemap_urls())
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
            f"{body}</urlset>")

@@ -1,0 +1,42 @@
+{% load static %}<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">{{ ui.eyebrow_work }}</p>
+      <h2 class="h2">{{ ui.work_title }}</h2>
+      <p class="lede">{{ ui.work_lead }}</p>
+    </div>
+    <div class="grid grid-3">
+      {% for w in work %}
+      <a class="case reveal" href="{{ w.url }}" target="_blank" rel="noopener" data-loc="intl_work">
+        <div class="case__media"><img src="{% static w.img %}" alt="{{ w.name }}" loading="lazy" width="1280" height="800"></div>
+        <div class="case__body">
+          <span class="case__meta">{{ w.name }}</span>
+          <h3 class="h3">{% if w.key == "work_linksterr" %}{{ ui.work_linksterr }}{% elif w.key == "work_dt" %}{{ ui.work_dt }}{% else %}{{ ui.work_clinic }}{% endif %}</h3>
+          <span class="link-arrow">{{ ui.work_visit }} {% include "partials/icons/arrow.svg" %}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% if testimonials or site.google_review_url %}
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">{{ ui.eyebrow_reviews }}</p>
+      <h2 class="h2">{{ ui.reviews_title }}</h2>
+      {% include "partials/rating.html" %}
+    </div>
+    {% if testimonials %}<div class="grid grid-3">
+      {% for t in testimonials %}
+      <figure class="card quote reveal" style="margin:0">
+        <span class="rating__stars">{% for i in "12345"|make_list %}{% if forloop.counter <= t.rating %}★{% endif %}{% endfor %}</span>
+        <blockquote>“{{ t.quote }}”</blockquote>
+        <figcaption class="quote__who">{% if t.avatar %}<img class="quote__avatar" src="{{ t.avatar.url }}" alt="" width="40" height="40">{% else %}<span class="quote__avatar">{{ t.author|slice:":1" }}</span>{% endif %}<span><b>{{ t.author }}</b><small>{{ t.role }}</small></span></figcaption>
+      </figure>
+      {% endfor %}
+    </div>{% endif %}
+    {% if site.google_review_url %}<div class="mt-m reveal"><a class="btn btn--ghost" href="{{ site.google_review_url }}" target="_blank" rel="noopener" data-track="review-cta">★ {{ ui.reviews_cta }}</a></div>{% endif %}
+  </div>
+</section>
+{% endif %}

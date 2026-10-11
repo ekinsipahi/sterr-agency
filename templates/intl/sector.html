@@ -1,0 +1,37 @@
+{% extends "intl/base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <p class="eyebrow reveal">{{ p.name }}</p>
+    <h1 class="h1 hero__title reveal" style="max-width:1000px">{{ p.headline }}</h1>
+    <p class="lede reveal">{{ p.lede }}</p>
+    <div class="btn-row mt-m reveal">
+      <a class="btn btn--signal btn--lg" href="#contact">{{ ui.nav_cta }} {% include "partials/icons/arrow.svg" %}</a>
+      <a class="btn btn--ghost btn--lg" href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal"><p class="eyebrow">{{ p.name }}</p><h2 class="h2">{{ ui.pains_title }}</h2></div>
+    <ul class="check pains reveal" style="font-size:18px">{% for x in p.pains %}<li>{% include "partials/icons/x.svg" %}<span>{{ x }}</span></li>{% endfor %}</ul>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">{{ p.name }}</p><h2 class="h2">{{ ui.system_title }}</h2></div>
+    <div class="grid grid-2">{% for t, b in p.system %}<div class="card reveal"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ t }}</h3><p>{{ b }}</p></div>{% endfor %}</div>
+    <p class="eyebrow mt-l reveal">{{ ui.searches_title }}</p>
+    <div class="chips reveal">{% for q in p.searches %}<span class="chip">“{{ q }}”</span>{% endfor %}</div>
+  </div>
+</section>
+
+{% include "intl/_pricing.html" %}
+{% include "intl/_faq.html" %}
+<section class="section section--line">
+  <div class="container"><p class="eyebrow">{{ ui.other_sectors }}</p><div class="chips">{% for s, url in others %}<a class="chip" href="{{ url }}">{{ s.name }}</a>{% endfor %}</div></div>
+</section>
+{% include "intl/_form.html" %}
+{% endblock %}

@@ -46,7 +46,7 @@ def _context(request, code, page, form=None):
         "lang_links": lang_links(page),
         "current_lang": LANG_BY_CODE[code],
         "alternates": alternates(page),
-        "urls": {pg: page_path(code, pg) for pg in PAGES},
+        "urls": {**{pg: page_path(code, pg) for pg in PAGES}, "agency": "/" if code == "tr" else f"/{code}/"},
         "canonical_url": settings.SITE_URL + path,
         "og_locale": LANG_BY_CODE[code].og_locale,
         "whatsapp_url": f"https://wa.me/{settings.WHATSAPP_NUMBER}?text={quote(ui['wa_text'])}",

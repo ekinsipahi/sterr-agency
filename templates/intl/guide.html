@@ -1,0 +1,45 @@
+{% extends "intl/base.html" %}
+{% block schema %}
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"{{ p.h1|escapejs }}","description":"{{ p.description|escapejs }}","inLanguage":"{{ L.code }}","author":{"@id":"{{ SITE_URL }}/#org"},"publisher":{"@id":"{{ SITE_URL }}/#org"},"mainEntityOfPage":"{{ canonical_url }}"}</script>
+{% if faqs %}{% include "partials/faq_schema.html" %}{% endif %}
+{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <p class="eyebrow reveal">{{ ui.eyebrow_guides }} · {{ p.minutes }} {{ ui.minutes }}</p>
+    <h1 class="h1 reveal" style="max-width:1000px">{{ p.h1 }}</h1>
+    <p class="lede reveal">{{ p.lede }}</p>
+  </div>
+</section>
+<section class="section--tight">
+  <div class="container split split--aside">
+    <aside class="sticky reveal">
+      <div class="toc"><b>{{ ui.in_short }}</b>
+        <p class="muted" style="font-size:14.5px">{{ ui.in_short_text }}</p>
+        <a class="btn btn--signal btn--sm btn--block mt-s" href="#contact">{{ ui.nav_cta }}</a>
+      </div>
+    </aside>
+    <article class="prose reveal">
+      {% for block in p.body %}{% with kind=block.0 %}
+      {% if kind == "h2" %}<h2>{{ block.1 }}</h2>
+      {% elif kind == "p" %}<p>{{ block.1 }}</p>
+      {% elif kind == "ul" %}<ul>{% for i in block.1 %}<li>{{ i }}</li>{% endfor %}</ul>
+      {% elif kind == "ol" %}<ol>{% for i in block.1 %}<li>{{ i }}</li>{% endfor %}</ol>
+      {% elif kind == "callout" %}<div class="callout">{{ block.1 }}</div>
+      {% elif kind == "table" %}<div class="table-wrap"><table>{% for row in block.1 %}<tr>{% for cell in row %}{% if forloop.parentloop.first %}<th>{{ cell }}</th>{% else %}<td>{{ cell }}</td>{% endif %}{% endfor %}</tr>{% endfor %}</table></div>
+      {% elif kind == "pricing" %}<div class="table-wrap"><table>{% for name, tagline, features, amount in tiers %}<tr><td><strong>{{ name }}</strong></td><td>{% if forloop.last %}{{ ui.pricing_from }} {% endif %}{{ amount }} / {{ ui.pricing_month }}</td><td>{{ tagline }}</td></tr>{% endfor %}</table></div>
+      {% endif %}{% endwith %}{% endfor %}
+      {% if faqs %}<h2>{{ ui.faq_title }}</h2>{% for q, a in faqs %}<h3>{{ q }}</h3><p>{{ a }}</p>{% endfor %}{% endif %}
+    </article>
+  </div>
+</section>
+{% if others %}
+<section class="section section--line">
+  <div class="container">
+    <p class="eyebrow">{{ ui.other_guides }}</p>
+    <div class="grid grid-3">{% for g, url in others %}<a class="card reveal" href="{{ url }}"><h3 class="h3">{{ g.h1 }}</h3><p>{{ g.lede|truncatewords:18 }}</p></a>{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+{% include "intl/_form.html" %}
+{% endblock %}

@@ -10,7 +10,7 @@ DATA = {
         "privacy": "Política de privacidad",
         "cookies": "Política de cookies",
         "footer_tagline": "Sterr Agency es una agencia de turismo dental y socio de crecimiento para clínicas dentales. No somos una clínica: el tratamiento lo realizan clínicas asociadas autorizadas en Turquía.",
-        "footer_main": "Sterr Agency (web en turco)",
+        "footer_main": "Sterr Agency · Agencia de marketing digital",
         "consent_text": "Usamos cookies para medir nuestra publicidad y mejorar el sitio.",
         "consent_accept": "Aceptar",
         "consent_deny": "Solo necesarias",

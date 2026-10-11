@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "apps.works",
     "apps.seo",
     "apps.dental",
+    "apps.intl",
 ]
 
 MIDDLEWARE = [

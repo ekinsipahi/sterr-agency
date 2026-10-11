@@ -1,0 +1,42 @@
+{% extends "intl/base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <p class="eyebrow reveal">{{ p.eyebrow }}</p>
+    <h1 class="h1 hero__title reveal" style="max-width:1000px">{{ p.h1 }}</h1>
+    <p class="lede reveal">{{ p.lede }}</p>
+    <div class="btn-row mt-m reveal">
+      <a class="btn btn--signal btn--lg" href="#contact">{{ ui.nav_cta }} {% include "partials/icons/arrow.svg" %}</a>
+      <a class="btn btn--ghost btn--lg" href="#pricing">{{ ui.nav_pricing }}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">{{ ui.eyebrow_services }}</p><h2 class="h2">{{ p.name }}</h2></div>
+    <div class="grid grid-3">
+      {% for title, text in p.deliverables %}<div class="card reveal"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ title }}</h3><p>{{ text }}</p></div>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container container--narrow">
+    <h2 class="h2 reveal">{{ p.why_title }}</h2>
+    <p class="lede reveal mt-s">{{ p.why_text }}</p>
+  </div>
+</section>
+
+{% include "intl/_work.html" %}
+{% include "intl/_pricing.html" %}
+{% include "intl/_faq.html" %}
+
+<section class="section section--line">
+  <div class="container grid grid-2">
+    <div class="reveal"><p class="eyebrow">{{ ui.other_services }}</p><div class="chips">{% for cl, url in others %}<a class="chip" href="{{ url }}">{{ cl.name }}</a>{% endfor %}<a class="chip" href="{{ urls.dental }}">{{ ui.nav_dental }}</a></div></div>
+    <div class="reveal"><p class="eyebrow">{{ ui.eyebrow_guides }}</p><div class="chips">{% for g, url in urls.guide_list %}<a class="chip" href="{{ url }}">{{ g.h1 }}</a>{% endfor %}</div></div>
+  </div>
+</section>
+{% include "intl/_form.html" %}
+{% endblock %}

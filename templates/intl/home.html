@@ -1,0 +1,108 @@
+{% extends "intl/base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <p class="eyebrow reveal">{{ p.eyebrow }}</p>
+    <h1 class="display hero__title reveal">{{ p.h1 }}</h1>
+    <div class="hero__bottom">
+      <div class="reveal">
+        <p class="lede">{{ p.lede }}</p>
+        <div class="btn-row mt-m">
+          <a class="btn btn--signal btn--lg" href="#contact">{{ ui.nav_cta }} {% include "partials/icons/arrow.svg" %}</a>
+          <a class="btn btn--ghost btn--lg" href="{{ whatsapp_url }}" target="_blank" rel="noopener">{% include "partials/icons/whatsapp.svg" %} WhatsApp</a>
+        </div>
+      </div>
+      <div class="reveal">
+        {% include "partials/rating.html" %}
+        <div class="hero__meta">
+          <span>{% include "partials/icons/pin.svg" %} {{ p.meta.0 }}</span>
+          <span>{% include "partials/icons/trend.svg" %} {{ p.meta.1 }}</span>
+          <span>{% include "partials/icons/clock.svg" %} {{ p.meta.2 }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="statement reveal">{{ p.statement }}</p>
+  </div>
+</section>
+
+<section class="section section--line" id="services">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">{{ ui.eyebrow_services }}</p>
+      <h2 class="h2">{{ p.combo_title }}</h2>
+      <p class="lede">{{ p.combo_lede }}</p>
+    </div>
+    <div class="combo reveal">
+      {% for label, title, text in p.combo %}<div class="combo__item"><span class="combo__label">{{ label }}</span><h3>{{ title }}</h3><p>{{ text }}</p>{% if not forloop.last %}<span class="combo__plus">+</span>{% endif %}</div>{% endfor %}
+    </div>
+    <div class="grid grid-4 mt-m">
+      {% for cl, url in urls.clusters %}
+      <a class="card reveal" href="{{ url }}"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ cl.name }}</h3><p>{{ cl.lede|truncatewords:16 }}</p><span class="card__foot link-arrow">{{ ui.read_more }} {% include "partials/icons/arrow.svg" %}</span></a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="sticky reveal">
+      <p class="eyebrow">{{ ui.eyebrow_filter }}</p>
+      <h2 class="h2">{{ p.filter_title }}</h2>
+      <p class="lede">{{ p.filter_text }}</p>
+    </div>
+    <div class="funnel reveal" role="list">
+      {% for title, small, tag in p.funnel %}<div class="funnel__row" role="listitem"><div><b>{{ title }}</b><small>{{ small }}</small></div><span class="funnel__tag">{{ tag }}</span></div>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">{{ ui.eyebrow_sectors }}</p>
+      <h2 class="h2">{{ c.sectors_index.h1 }}</h2>
+    </div>
+    <div class="grid grid-3">
+      {% for s, url in urls.sector_list %}
+      <a class="card reveal" href="{{ url }}"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ s.name }}</h3><p>{{ s.headline }}</p><span class="card__foot link-arrow">{{ ui.read_more }} {% include "partials/icons/arrow.svg" %}</span></a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal">
+      <p class="eyebrow">{{ ui.eyebrow_content }}</p>
+      <h2 class="h2">{{ p.content_title }}</h2>
+      <p class="lede">{{ p.content_text }}</p>
+    </div>
+    <ul class="check reveal" style="font-size:17px">{% for item in p.content_items %}<li>{% include "partials/icons/check.svg" %}<span>{{ item }}</span></li>{% endfor %}</ul>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">{{ ui.eyebrow_process }}</p>
+      <h2 class="h2">{{ p.process_title }}</h2>
+      <p class="lede">{{ p.process_lede }}</p>
+    </div>
+    <div class="steps">
+      {% for title, when, text in p.steps %}
+      <div class="step reveal"><span class="step__num">{{ forloop.counter|stringformat:"02d" }}</span><div><h3 class="h3">{{ title }}</h3><span class="step__when">{{ when }}</span></div><p>{{ text }}</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% include "intl/_work.html" %}
+{% include "intl/_pricing.html" %}
+{% include "intl/_faq.html" %}
+{% include "intl/_form.html" %}
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "intl/base.html" %}
+{% block meta %}{% include "partials/meta.html" with title=ui.thanks_title description=ui.thanks_text robots="noindex, nofollow" %}{% endblock %}
+{% block schema %}{% endblock %}
+{% block alternates %}{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container container--narrow center">
+    <h1 class="h1 reveal">{{ ui.thanks_title }}</h1>
+    <p class="lede reveal" style="margin:18px auto 0">{{ ui.thanks_text }}</p>
+    <div class="btn-row mt-m reveal" style="justify-content:center">
+      <a class="btn btn--signal btn--lg" href="{{ whatsapp_url }}" target="_blank" rel="noopener">{% include "partials/icons/whatsapp.svg" %} WhatsApp</a>
+      <a class="btn btn--ghost btn--lg" href="{{ urls.guides }}">{{ ui.nav_guides }}</a>
+    </div>
+  </div>
+</section>
+{% if lead_event %}{{ lead_event|json_script:"lead-event" }}{% endif %}
+{% endblock %}

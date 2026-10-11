@@ -4,9 +4,6 @@
 {% block ga_page %}{"content_group": "dental_tourism", "page_type": "dental_{{ page }}", "language": "{{ L.code }}"}{% endblock %}
 {% block meta %}{% include "partials/meta.html" with title=p.title description=p.description robots=robots %}{% endblock %}
 {% block schema %}{% if faqs %}{% include "partials/faq_schema.html" %}{% endif %}{% endblock %}
-{% block alternates %}{% for code, path in alternates %}
-  <link rel="alternate" hreflang="{{ code }}" href="{{ SITE_URL }}{{ path }}">{% endfor %}
-{% endblock %}
 
 {% block nav %}
 <header class="nav">
@@ -41,7 +38,7 @@
         <ul>
           <li><a href="{{ urls.hub }}">{{ ui.nav_home }}</a></li>
           <li><a href="{{ urls.partners }}">{{ ui.nav_partners }}</a></li>
-          <li><a href="/" hreflang="tr">{{ ui.footer_main }}</a></li>
+          <li><a href="{{ urls.agency }}">{{ ui.footer_main }}</a></li>
         </ul>
       </div>
       <div>
