@@ -470,3 +470,9 @@ fieldset.field legend { font-size: 14px; color: var(--muted); margin-bottom: 8px
 [dir="rtl"] .i-arrow { transform: scaleX(-1); }
 [dir="rtl"] .faq .faq__a { padding: 0 0 28px 60px; }
 [dir="rtl"] .eyebrow, [dir="rtl"] .h1, [dir="rtl"] .h2, [dir="rtl"] .h3 { letter-spacing: 0; }
+
+/* ---------- Results screenshot (Search Console) ---------- */
+.results-figure { margin: 40px 0 0; }
+.results-figure img { width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--line); display: block; }
+.results-figure figcaption { margin-top: 12px; font-size: 14px; color: var(--muted); }
+.results-figure .signal { color: var(--signal); font-weight: 600; }

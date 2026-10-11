@@ -135,6 +135,7 @@
       <p class="lede">Search Console grafikleri, reklam panelleri ve ciro ekranları. Gerçek işletmeler, gerçek sonuçlar.</p>
     </div>
     <div class="grid grid-3">{% for case in cases %}{% include "partials/case_card.html" %}{% endfor %}</div>
+    {% include "partials/results_figure.html" %}
     <div class="center mt-m"><a class="btn btn--ghost" href="{% url 'works:list' %}">Tüm çalışmalar {% include "partials/icons/arrow.svg" %}</a></div>
   </div>
 </section>
