@@ -1,0 +1,46 @@
+{% extends "dental/base.html" %}
+{% block content %}
+{% include "dental/_hero.html" %}
+
+<section class="section section--line" id="process">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">{{ ui.steps_eyebrow }}</p>
+      <h2 class="h2">{{ p.steps_title }}</h2>
+    </div>
+    <div class="steps">
+      {% for title, text in p.steps %}
+      <div class="step reveal"><span class="step__num">{{ forloop.counter|stringformat:"02d" }}</span><div><h3 class="h3">{{ title }}</h3></div><p>{{ text }}</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">{{ ui.why_eyebrow }}</p>
+      <h2 class="h2">{{ p.why_title }}</h2>
+    </div>
+    <div class="grid grid-2">
+      {% for title, text in p.why %}<div class="card reveal"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ title }}</h3><p>{{ text }}</p></div>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal">
+      <p class="eyebrow">{{ ui.treat_eyebrow }}</p>
+      <h2 class="h2">{{ p.treat_title }}</h2>
+      <p class="lede">{{ p.treat_text }}</p>
+    </div>
+    <div class="chips reveal" style="align-content:flex-start">{% for key, label in ui.treatments.items %}{% if key != "other" %}<a class="chip" href="#inquiry">{{ label }}</a>{% endif %}{% endfor %}</div>
+  </div>
+</section>
+
+{% include "dental/_work.html" %}
+{% include "dental/_reviews.html" %}
+{% include "dental/_faq.html" %}
+{% include "dental/_form.html" %}
+{% endblock %}

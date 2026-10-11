@@ -87,3 +87,14 @@ apps/seo     81 il verisi, Türkçe ek çekimi, pSEO kümeleri, sektörler, rehb
 templates/   tüm HTML (tasarım sistemi: static/css/site.css)
 keywords/    keyword haritası + CSV'ler
 ```
+
+
+## Diş turizmi (16 dil) ve yorumlar
+
+- `/dental-tourism/` altında 3 sayfa × 16 dil (acente, iş birliği, sigorta & SSS). İçerik `apps/dental/locales/<dil>.py`.
+  Gelen talepler admin → **Diş turizmi talepleri**; bildirim aynı Resend ayarıyla gider.
+- Navbar'daki bayraklı dil menüsü bayrakları `static/img/flags/` (PNG, @2x).
+- **Google yorumları:** admin → Site ayarları → "Google'da yorum yazma linki" alanına Google İşletme Profili'ndeki
+  "Yorum iste" linkini girin. Sitede yorum butonu çıkar ve müşterilere `sterragency.com/yorum/` kısayolunu gönderebilirsiniz.
+- **Çalışmalar:** linksterr.com, dentaltourism.tr, drdevrim.com, devrimbirikensipahi.com.tr ekran görüntüleriyle
+  migration ile eklendi (admin → Çalışmalar). Search Console, ciro ve hasta sayısı görsellerini her çalışmanın altına ekleyin.

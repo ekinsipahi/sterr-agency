@@ -116,6 +116,39 @@
     try { localStorage.setItem("sterr_utm", JSON.stringify(stored)); } catch (e) { /* storage blocked */ }
   }
 
+  /* ---------- Language menu + review button ---------- */
+  document.addEventListener("click", function (e) {
+    document.querySelectorAll(".lang-menu[open]").forEach(function (m) { if (!m.contains(e.target)) m.removeAttribute("open"); });
+    var t = e.target.closest("[data-track]");
+    if (!t) return;
+    var what = t.getAttribute("data-track");
+    if (what === "lang-switch") {
+      track("language_switch", { language_from: doc.lang, language_to: t.getAttribute("hreflang"), link_location: locationOf(t) });
+    } else if (what === "review-cta") {
+      track("review_click", { link_location: locationOf(t) });
+    }
+  });
+
+  /* ---------- Dental tourism inquiry form (16 languages) ---------- */
+  var dform = document.querySelector("[data-dental-form]");
+  if (dform) {
+    ["utm_source", "utm_medium", "utm_campaign", "gclid"].forEach(function (k) {
+      var input = dform.querySelector('[name="' + k + '"]');
+      if (input && !input.value) input.value = params.get(k) || stored[k] || "";
+    });
+    var dsrc = dform.querySelector('[name="source_page"]');
+    if (dsrc && !dsrc.value) dsrc.value = location.pathname + (stored.landing && stored.landing !== location.pathname ? " ← " + stored.landing : "");
+    var dStarted = false;
+    dform.addEventListener("focusin", function () {
+      if (dStarted) return;
+      dStarted = true;
+      track("form_start", { form_id: "dental_inquiry", language: doc.lang });
+    });
+    if (dform.dataset.formErrors) {
+      track("lead_form_error", { form_id: "dental_inquiry", error_fields: dform.dataset.formErrors.slice(0, 100) });
+    }
+  }
+
   /* ---------- Multi-step application form (funnel) ---------- */
   var form = document.querySelector("[data-steps]");
   if (!form) return;

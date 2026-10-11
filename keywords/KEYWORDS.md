@@ -199,3 +199,39 @@ Bunlar trafik getirir ama **müşteri getirmez**. Funnel'ımız kalite odaklı o
 - [ ] Hacmi "—" olan keyword'ler Keyword Planner'da doğrulanmalı. Hacimsiz çıkan il sayfaları noindex yapılmamalı; uzun kuyrukta dönüşüm getirirler.
 - [ ] 3. ayda Search Console'dan gösterim alan fakat tıklanmayan il sayfalarının title'ları test edilmeli.
 - [ ] Önerilen ek kümeler (araştırmada yok, hacmi doğrulanmalı): *seo ajansı {il}*, *google reklam ajansı {il}*, *reklam ajansı {il}*, *e-ticaret ajansı {il}*. Kod yapısı hazır; `apps/seo/services.py` içindeki `CLUSTERS` listesine bir küme eklemek 81 sayfayı otomatik üretir.
+
+
+---
+
+## 7. Küme F — Diş turizmi acentesi (16 dil) · `/dental-tourism/`
+
+Kaynak: dental_tourism projesindeki keyword araştırması, grup **5. Ajans, sigorta ve süreç aramaları (B2B ortaklık ve SSS)**.
+Acente mantığı: hastayı ruhsatlı partner kliniğe yönlendiriyoruz (hub), kliniklere ve yabancı acentelere B2B iş birliği sunuyoruz (iş birliği sayfası), sigorta/garanti/süreç sorularını SSS formatında cevaplıyoruz (sigorta sayfası).
+
+- **3 sayfa × 16 dil = 48 sayfa.** İngilizce `x-default` ve `/dental-tourism/` altında; diğer diller `/dental-tourism/<dil>/`.
+- Her sayfada 16 dil + x-default `hreflang`, sitemap'te `xhtml:link` alternatifleri, FAQPage şeması.
+- Fiyat rakamı yok (dental_tourism kuralıyla aynı): "yazılı sabit teklif" vurgusu.
+- İçerik: `apps/dental/locales/<dil>.py`. Testler her dilin İngilizceyle aynı yapıda olduğunu ve title/description uzunluklarını kontrol ediyor.
+- Navbar'daki bayraklı dil menüsü: Türkçe = ana site, diğer diller = bu kümenin o dildeki sayfası.
+
+| Dil | Acente (hub) · İş birliği | Hedef keyword'ler | Sigorta & süreç | Hedef keyword'ler |
+|---|---|---|---|---|
+| en | `/dental-tourism/` · `/dental-tourism/partners/` | dental tourism agency (110, PD 16), dental tourism agency turkey, dental tourism facilitator turkey | `/dental-tourism/insurance/` | best dental tourism insurance, dental travel insurance turkey |
+| de | `/dental-tourism/de/` · `/dental-tourism/de/partner/` | zahntourismus agentur, zahnreise türkei agentur | `/dental-tourism/de/versicherung/` | zahnbehandlung türkei versicherung, zahnbehandlung türkei ablauf |
+| nl | `/dental-tourism/nl/` · `/dental-tourism/nl/partners/` | tandartsreis bureau turkije, tandheelkundig toerisme | `/dental-tourism/nl/verzekering/` | tandarts turkije verzekering |
+| fr | `/dental-tourism/fr/` · `/dental-tourism/fr/partenaires/` | agence tourisme dentaire turquie | `/dental-tourism/fr/assurance/` | soins dentaires turquie assurance |
+| it | `/dental-tourism/it/` · `/dental-tourism/it/partner/` | agenzia turismo dentale turchia | `/dental-tourism/it/assicurazione/` | assicurazione cure dentali turchia |
+| es | `/dental-tourism/es/` · `/dental-tourism/es/socios/` | agencia turismo dental turquía | `/dental-tourism/es/seguro/` | seguro tratamiento dental turquía |
+| pl | `/dental-tourism/pl/` · `/dental-tourism/pl/partnerzy/` | agencja turystyki dentystycznej | `/dental-tourism/pl/ubezpieczenie/` | ubezpieczenie leczenie zębów turcja |
+| ru | `/dental-tourism/ru/` · `/dental-tourism/ru/partnery/` | агентство стоматологического туризма | `/dental-tourism/ru/strakhovka/` | страховка лечение зубов турция |
+| uk | `/dental-tourism/uk/` · `/dental-tourism/uk/partnery/` | агентство стоматологічного туризму | `/dental-tourism/uk/strakhuvannya/` | страхування лікування зубів туреччина |
+| ar | `/dental-tourism/ar/` · `/dental-tourism/ar/shuraka/` | وكالة السياحة العلاجية للأسنان في تركيا | `/dental-tourism/ar/taamin/` | تأمين السياحة العلاجية للأسنان |
+| sv | `/dental-tourism/sv/` · `/dental-tourism/sv/partner/` | tandturism byrå | `/dental-tourism/sv/forsakring/` | försäkring tandvård turkiet |
+| da | `/dental-tourism/da/` · `/dental-tourism/da/partnere/` | tandturisme bureau | `/dental-tourism/da/forsikring/` | forsikring tandbehandling tyrkiet |
+| no | `/dental-tourism/no/` · `/dental-tourism/no/partnere/` | tannturisme byrå | `/dental-tourism/no/forsikring/` | forsikring tannbehandling tyrkia |
+| ro | `/dental-tourism/ro/` · `/dental-tourism/ro/parteneri/` | agenție turism dentar | `/dental-tourism/ro/asigurare/` | asigurare tratament dentar turcia |
+| az | `/dental-tourism/az/` · `/dental-tourism/az/terefdaslar/` | diş turizmi agentliyi | `/dental-tourism/az/sigorta/` | diş müalicəsi sığorta türkiyə |
+| tr | `/dental-tourism/tr/` · `/dental-tourism/tr/is-birligi/` | diş turizmi acentesi, sağlık turizmi acentesi iş birliği | `/dental-tourism/tr/sigorta/` | diş turizmi sigortası |
+
+> Not: Aynı keyword'leri dentaltourism.tr de hedefliyor. İki site birbirinin rakibi olmasın diye
+> dentaltourism.tr "kliniğin kendisi", sterragency.com "acente + B2B ortaklık" açısından yazıldı; iki site birbirine link verebilir.

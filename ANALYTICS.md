@@ -98,3 +98,16 @@ Satırlar `city`, sütunlar `service`, değerler `generate_lead` sayısı + `pho
 2. [Google Tag Assistant](https://tagassistant.google.com) ile siteye bağlanın. Olaylar GA4 → Yönetici → **DebugView**'da canlı görünür.
 3. Formu doldurun: `lead_form_start` → `lead_form_step` ×4 → `lead_form_submit` → `generate_lead` görünmeli.
 4. Admin'de lead'in durumunu "Görüşme planlandı" yapın. Birkaç dakika içinde `qualify_lead` gelmeli. (Measurement Protocol olayları DebugView'da görünmez; Gerçek zamanlı raporda görünür.)
+
+## Diş turizmi (16 dil) ve dil menüsü olayları
+
+| Olay | Ne zaman | Önemli parametreler |
+|---|---|---|
+| `language_switch` | Bayraklı dil menüsünden dil seçilince | `language_from`, `language_to`, `link_location` |
+| `form_start` | /dental-tourism/ formuna ilk dokunuşta | `form_id=dental_inquiry`, `language` |
+| `lead_form_error` | Form hatayla dönünce | `form_id=dental_inquiry`, `error_fields` |
+| `generate_lead` | Teşekkür sayfasında (form gönderildi) | `form_id=dental_patient / dental_clinic / dental_agency`, `lead_type`, `language`, `lead_country`, `treatment` |
+| `review_click` | "Google'da yorum yazın" butonuna tıklanınca | `link_location` |
+
+Dental sayfalarda `content_group=dental_tourism`, `page_type=dental_hub / dental_partners / dental_insurance`, `language=<dil>`.
+GA4'te `generate_lead` olayını `form_id` ile filtreleyerek hasta ve B2B taleplerini ayrı ayrı görebilirsiniz.

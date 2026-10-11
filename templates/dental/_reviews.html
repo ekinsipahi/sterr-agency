@@ -1,0 +1,27 @@
+{% if testimonials or site.google_review_url %}
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">{{ ui.reviews_eyebrow }}</p>
+      <h2 class="h2">{{ ui.reviews_title }}</h2>
+      {% include "partials/rating.html" %}
+    </div>
+    {% if testimonials %}
+    <div class="grid grid-3">
+      {% for t in testimonials %}
+      <figure class="card quote reveal" style="margin:0">
+        <span class="rating__stars">{% for i in "12345"|make_list %}{% if forloop.counter <= t.rating %}★{% endif %}{% endfor %}</span>
+        <blockquote>“{{ t.quote }}”</blockquote>
+        <figcaption class="quote__who">
+          {% if t.avatar %}<img class="quote__avatar" src="{{ t.avatar.url }}" alt="" width="40" height="40">{% else %}<span class="quote__avatar">{{ t.author|slice:":1" }}</span>{% endif %}
+          <span><b>{{ t.author }}</b><small>{{ t.role }}</small></span>
+        </figcaption>
+        {% if t.source_url %}<a class="quote__src" href="{{ t.source_url }}" target="_blank" rel="noopener">Google →</a>{% endif %}
+      </figure>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if site.google_review_url %}<div class="mt-m reveal"><a class="btn btn--ghost" href="{{ site.google_review_url }}" target="_blank" rel="noopener" data-track="review-cta">★ {{ ui.reviews_cta }}</a></div>{% endif %}
+  </div>
+</section>
+{% endif %}

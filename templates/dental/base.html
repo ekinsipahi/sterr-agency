@@ -1,0 +1,79 @@
+{% extends "base.html" %}{% load static %}
+{% block html_lang %}{{ L.code }}{% endblock %}
+{% block html_dir %}{% if L.rtl %} dir="rtl"{% endif %}{% endblock %}
+{% block ga_page %}{"content_group": "dental_tourism", "page_type": "dental_{{ page }}", "language": "{{ L.code }}"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=p.title description=p.description robots=robots %}{% endblock %}
+{% block schema %}{% if faqs %}{% include "partials/faq_schema.html" %}{% endif %}{% endblock %}
+{% block alternates %}{% for code, path in alternates %}
+  <link rel="alternate" hreflang="{{ code }}" href="{{ SITE_URL }}{{ path }}">{% endfor %}
+{% endblock %}
+
+{% block nav %}
+<header class="nav">
+  <div class="container nav__inner">
+    <a href="{{ urls.hub }}" class="brand" aria-label="Sterr Agency — {{ ui.nav_home }}">
+      {% if site.logo %}<img src="{{ site.logo.url }}" alt="Sterr Agency" width="140" height="30">{% else %}<span class="brand__mark">{% include "partials/icons/mark.svg" %}</span>sterr<span class="brand__sub">agency</span>{% endif %}
+    </a>
+    <nav class="nav__links" aria-label="{{ ui.nav_home }}">
+      <a href="{{ urls.hub }}#process"{% if page == "hub" %} aria-current="page"{% endif %}>{{ ui.nav_process }}</a>
+      <a href="{{ urls.partners }}"{% if page == "partners" %} aria-current="page"{% endif %}>{{ ui.nav_partners }}</a>
+      <a href="{{ urls.insurance }}"{% if page == "insurance" %} aria-current="page"{% endif %}>{{ ui.nav_insurance }}</a>
+    </nav>
+    <div class="nav__cta">
+      {% include "partials/lang_menu.html" with lang_label=ui.lang_label %}
+      <a class="btn btn--signal btn--sm" href="#inquiry">{{ ui.nav_cta }}</a>
+      <button class="nav__toggle" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+{% endblock %}
+
+{% block footer %}
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid footer__grid--dt">
+      <div>
+        <a href="{{ urls.hub }}" class="brand">{% if site.logo %}<img src="{{ site.logo.url }}" alt="Sterr Agency" width="140" height="30">{% else %}<span class="brand__mark">{% include "partials/icons/mark.svg" %}</span>sterr<span class="brand__sub">agency</span>{% endif %}</a>
+        <p class="muted mt-s" style="max-width:420px;font-size:15px">{{ ui.footer_tagline }}</p>
+      </div>
+      <div>
+        <h4>{{ ui.nav_home }}</h4>
+        <ul>
+          <li><a href="{{ urls.hub }}">{{ ui.nav_home }}</a></li>
+          <li><a href="{{ urls.partners }}">{{ ui.nav_partners }}</a></li>
+          <li><a href="{{ urls.insurance }}">{{ ui.nav_insurance }}</a></li>
+          <li><a href="/" hreflang="tr">{{ ui.footer_main }}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>{{ ui.contact }}</h4>
+        <ul>
+          <li><a href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp: {{ whatsapp_display }}</a></li>
+          <li><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
+          {% if site.google_business_url %}<li><a href="{{ site.google_business_url }}" target="_blank" rel="noopener">Google</a></li>{% endif %}
+          {% if site.instagram_url %}<li><a href="{{ site.instagram_url }}" target="_blank" rel="noopener">Instagram</a></li>{% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="footer__legal">
+      <span>© {% now "Y" %} {{ company.legal_name }} · {{ company.address }}</span>
+      <span class="btn-row" style="gap:18px">
+        <a href="{% url 'core:privacy' %}" hreflang="tr">{{ ui.privacy }}</a>
+        <a href="{% url 'core:cookies' %}" hreflang="tr">{{ ui.cookies }}</a>
+      </span>
+    </div>
+  </div>
+</footer>
+{% endblock %}
+
+{% block wa_float %}<a class="wa-float" href="{{ whatsapp_url }}" target="_blank" rel="noopener" aria-label="WhatsApp">{% include "partials/icons/whatsapp.svg" %}<span>WhatsApp</span></a>{% endblock %}
+
+{% block consent %}{% if GA4_ID or GTM_ID or META_PIXEL_ID %}
+<div class="consent-bar" data-consent hidden role="dialog" aria-label="Cookies">
+  <p>{{ ui.consent_text }} <a href="{% url 'core:cookies' %}" hreflang="tr">{{ ui.cookies }}</a>.</p>
+  <div class="btn-row">
+    <button type="button" class="btn btn--ghost btn--sm" data-consent-deny>{{ ui.consent_deny }}</button>
+    <button type="button" class="btn btn--signal btn--sm" data-consent-accept>{{ ui.consent_accept }}</button>
+  </div>
+</div>
+{% endif %}{% endblock %}

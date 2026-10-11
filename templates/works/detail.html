@@ -8,6 +8,7 @@
     <p class="eyebrow reveal">{{ case.sector }}{% if case.city %} · {{ case.city }}{% endif %} · {{ case.client }}</p>
     <h1 class="h1 reveal" style="max-width:1000px">{{ case.title }}</h1>
     <p class="lede reveal">{{ case.summary }}</p>
+    {% if case.website_url %}<a class="btn btn--ghost mt-m reveal" href="{{ case.website_url }}" target="_blank" rel="noopener">Canlı siteyi gör: {{ case.website_url|cut:"https://"|cut:"/" }} {% include "partials/icons/arrow.svg" %}</a>{% endif %}
   </div>
 </section>
 

@@ -11,7 +11,7 @@ admin.site.index_title = "Yönetim paneli"
 class SiteSettingsAdmin(admin.ModelAdmin):
     fieldsets = (
         ("Marka", {"fields": ("logo", "favicon", "og_image")}),
-        ("Google yorumları", {"fields": ("google_rating", "google_review_count", "google_business_url")}),
+        ("Google yorumları", {"fields": ("google_rating", "google_review_count", "google_business_url", "google_review_url")}),
         ("Ana sayfa istatistikleri", {
             "description": "Yalnızca gerçek ve kanıtlanabilir rakamlar girin. Boş bırakılan satır gösterilmez.",
             "fields": (("stat_1_value", "stat_1_label"), ("stat_2_value", "stat_2_label"),

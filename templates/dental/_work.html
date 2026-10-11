@@ -1,0 +1,21 @@
+{% load static %}<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">{{ ui.work_eyebrow }}</p>
+      <h2 class="h2">{{ ui.work_title }}</h2>
+      <p class="lede">{{ ui.work_lead }}</p>
+    </div>
+    <div class="grid grid-2">
+      {% for w in work %}
+      <a class="case reveal" href="{{ w.url }}" target="_blank" rel="noopener" data-loc="dental_work">
+        <div class="case__media"><img src="{% static w.img %}" alt="{{ w.name }}" loading="lazy" width="1280" height="800"></div>
+        <div class="case__body">
+          <span class="case__meta">{{ w.name }}</span>
+          <h3 class="h3">{% if w.key == "dt" %}{{ ui.work_dt }}{% else %}{{ ui.work_clinic }}{% endif %}</h3>
+          <span class="link-arrow">{{ ui.work_visit }} {% include "partials/icons/arrow.svg" %}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>

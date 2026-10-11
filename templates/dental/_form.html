@@ -1,0 +1,39 @@
+<section class="section section--line" id="inquiry">
+  <div class="container split">
+    <div class="reveal">
+      <p class="eyebrow">{{ ui.form_eyebrow }}</p>
+      <h2 class="h2">{% if page == "partners" %}{{ ui.form_title_partner }}{% else %}{{ ui.form_title }}{% endif %}</h2>
+      <p class="lede">{% if page == "partners" %}{{ ui.form_lead_partner }}{% else %}{{ ui.form_lead }}{% endif %}</p>
+      <a class="btn btn--ghost mt-m" href="{{ whatsapp_url }}" target="_blank" rel="noopener" data-loc="dental_form_side">{% include "partials/icons/whatsapp.svg" %} WhatsApp · {{ whatsapp_display }}</a>
+    </div>
+    <form class="form-card reveal" method="post" action="{% url 'dental:send' %}" novalidate data-dental-form{% if form.errors %} data-form-errors="{{ form.errors.keys|join:',' }}"{% endif %}>
+      {% csrf_token %}
+      <input type="hidden" name="lang" value="{{ L.code }}">
+      <input type="hidden" name="page" value="{{ page }}">
+      <input type="hidden" name="source_page" value="">
+      <input type="hidden" name="utm_source"><input type="hidden" name="utm_medium"><input type="hidden" name="utm_campaign"><input type="hidden" name="gclid">
+      {{ form.fax }}
+      {% if form.non_field_errors %}<div class="form-alert">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+      <fieldset class="field">
+        <legend>{{ form.kind.label }}</legend>
+        <div class="options options--3">{% for radio in form.kind %}<label>{{ radio.tag }}{{ radio.choice_label }}</label>{% endfor %}</div>
+      </fieldset>
+      <div class="field-row">
+        <div class="field">{{ form.name.label_tag }}{{ form.name }}{{ form.name.errors }}</div>
+        <div class="field">{{ form.email.label_tag }}{{ form.email }}{{ form.email.errors }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field">{{ form.phone.label_tag }}{{ form.phone }}{{ form.phone.errors }}</div>
+        <div class="field">{{ form.country.label_tag }}{{ form.country }}{{ form.country.errors }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field">{{ form.treatment.label_tag }}{{ form.treatment }}{{ form.treatment.errors }}</div>
+        <div class="field">{{ form.company.label_tag }}{{ form.company }}{{ form.company.errors }}</div>
+      </div>
+      <div class="field">{{ form.message.label_tag }}{{ form.message }}{{ form.message.errors }}</div>
+      <label class="consent">{{ form.consent }}<span>{{ form.consent.label }} <a href="{% url 'core:privacy' %}" hreflang="tr" target="_blank">{{ ui.privacy }}</a></span></label>
+      {{ form.consent.errors }}
+      <button class="btn btn--signal btn--lg mt-s" type="submit" style="width:100%">{{ ui.f_submit }} {% include "partials/icons/arrow.svg" %}</button>
+    </form>
+  </div>
+</section>

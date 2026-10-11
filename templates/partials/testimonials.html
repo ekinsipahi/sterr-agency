@@ -1,4 +1,4 @@
-{% if testimonials %}
+{% if testimonials or site.google_review_url %}
 <section class="section section--line">
   <div class="container">
     <div class="section-head reveal">
@@ -6,7 +6,7 @@
       <h2 class="h2">Sözümüze değil, <span class="serif">onlarınkine</span> güvenin.</h2>
       {% include "partials/rating.html" %}
     </div>
-    <div class="grid grid-3">
+    {% if testimonials %}<div class="grid grid-3">
       {% for t in testimonials %}
       <figure class="card quote reveal" style="margin:0">
         <span class="rating__stars">{% for i in "12345"|make_list %}{% if forloop.counter <= t.rating %}★{% endif %}{% endfor %}</span>
@@ -18,7 +18,8 @@
         {% if t.source_url %}<a class="quote__src" href="{{ t.source_url }}" target="_blank" rel="noopener">{{ t.get_source_display }} →</a>{% else %}<span class="quote__src">{{ t.get_source_display }}</span>{% endif %}
       </figure>
       {% endfor %}
-    </div>
+    </div>{% endif %}
+    {% if site.google_review_url %}<div class="mt-m reveal"><a class="btn btn--ghost" href="{{ site.google_review_url }}" target="_blank" rel="noopener" data-track="review-cta">★ Bizimle çalıştınız mı? Google'da yorum yazın</a></div>{% endif %}
   </div>
 </section>
 {% endif %}

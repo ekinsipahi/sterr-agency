@@ -1,17 +1,18 @@
 from django.conf import settings
-from django.http import HttpResponse, HttpResponsePermanentRedirect
+from django.http import Http404, HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.templatetags.static import static
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 
+from apps.dental.languages import LANGS, PAGES, alternates, page_path
 from apps.seo.cities import CITIES_ALPHA
 from apps.seo.guides import GUIDES
 from apps.seo.sectors import SECTORS
 from apps.seo.services import CLUSTERS
 from apps.works.models import CaseStudy
 
-from .models import Package, Testimonial
+from .models import Package, SiteSettings, Testimonial
 
 HOME_FAQS = [
     ("Paketleriniz ne kadar?", "Paketlerimiz aylık 50.000 ₺'den başlar. Üç seviye sunuyoruz; kapsam, kanal sayısı ve içerik hacmine göre değişir. Reklam bütçesi hizmet bedelinden ayrıdır ve doğrudan platformlara ödenir."),
@@ -63,6 +64,8 @@ def robots_txt(request):
         "Disallow: /admin/",
         "Disallow: /basvuru/gonder/",
         "Disallow: /basvuru/tesekkurler/",
+        "Disallow: /dental-tourism/send/",
+        "Disallow: /dental-tourism/thank-you/",
         "",
         f"Sitemap: {settings.SITE_URL}/sitemap.xml",
     ]
@@ -86,14 +89,27 @@ def sitemap_urls():
     return urls
 
 
+def dental_sitemap_urls():
+    """(path, priority, alternates) for every language version of the dental tourism pages."""
+    return [
+        (page_path(lang.code, page), "0.9" if page == "hub" else "0.8", alternates(page))
+        for page in PAGES for lang in LANGS
+    ]
+
+
 @cache_page(60 * 60)
 def sitemap_xml(request):
-    body = "".join(
-        f"<url><loc>{settings.SITE_URL}{path}</loc><priority>{prio}</priority></url>"
-        for path, prio in sitemap_urls()
+    site = settings.SITE_URL
+    body = "".join(f"<url><loc>{site}{path}</loc><priority>{prio}</priority></url>" for path, prio in sitemap_urls())
+    body += "".join(
+        f"<url><loc>{site}{path}</loc><priority>{prio}</priority>"
+        + "".join(f'<xhtml:link rel="alternate" hreflang="{code}" href="{site}{alt}"/>' for code, alt in alts)
+        + "</url>"
+        for path, prio, alts in dental_sitemap_urls()
     )
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
-           f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{body}</urlset>')
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
+           f"{body}</urlset>")
     return HttpResponse(xml, content_type="application/xml")
 
 
@@ -104,3 +120,11 @@ def page_not_found(request, exception):
 def favicon_ico(request):
     # Browsers and crawlers request /favicon.ico at the root regardless of <link> tags.
     return HttpResponsePermanentRedirect(static("img/favicon.ico"))
+
+
+def review_redirect(request):
+    """sterragency.com/yorum/ → Google 'write a review' link, easy to send to clients."""
+    url = SiteSettings.load().google_review_url or SiteSettings.load().google_business_url
+    if not url:
+        raise Http404
+    return HttpResponseRedirect(url)

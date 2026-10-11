@@ -1,0 +1,16 @@
+<section class="hero hero--dt">
+  <div class="container">
+    <p class="eyebrow reveal">{{ p.eyebrow }}</p>
+    <h1 class="h1 hero__title reveal">{{ p.h1 }}</h1>
+    <div class="hero__bottom">
+      <div class="reveal">
+        <p class="lede">{{ p.lede }}</p>
+        <div class="btn-row mt-m">
+          <a class="btn btn--signal btn--lg" href="#inquiry">{% if page == "partners" %}{{ ui.form_title_partner }}{% else %}{{ ui.nav_cta }}{% endif %} {% include "partials/icons/arrow.svg" %}</a>
+          <a class="btn btn--ghost btn--lg" href="{{ whatsapp_url }}" target="_blank" rel="noopener">{% include "partials/icons/whatsapp.svg" %} WhatsApp</a>
+        </div>
+      </div>
+      {% if p.badges %}<ul class="check reveal">{% for b in p.badges %}<li>{% include "partials/icons/check.svg" %}<span>{{ b }}</span></li>{% endfor %}</ul>{% endif %}
+    </div>
+  </div>
+</section>

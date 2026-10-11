@@ -16,6 +16,7 @@ class CaseStudy(models.Model):
     video = models.FileField("Video (mp4)", upload_to="works/videos/", blank=True,
                              help_text="Ciro / panel ekran kaydı gibi.")
     video_url = models.URLField("Video linki (YouTube/Vimeo embed)", blank=True)
+    website_url = models.URLField("Canlı site linki", blank=True, help_text="Örn. https://linksterr.com")
     is_featured = models.BooleanField("Ana sayfada göster", default=False)
     is_published = models.BooleanField("Yayında", default=True)
     order = models.PositiveSmallIntegerField("Sıra", default=0)

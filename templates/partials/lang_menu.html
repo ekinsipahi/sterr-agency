@@ -1,0 +1,8 @@
+{% load static %}<details class="lang-menu">
+  <summary aria-label="{{ lang_label|default:'Dil / Language' }}: {{ current_lang.name }}"><img class="flag" src="{% static current_lang.flag %}" srcset="{% static current_lang.flag_2x %} 2x" alt="" width="20" height="12"><span>{{ current_lang.code|upper }}</span></summary>
+  <div class="lang-menu__list">
+    {% for lang, url in lang_links %}
+    <a href="{{ url }}" hreflang="{{ lang.code }}" lang="{{ lang.code }}" data-track="lang-switch"{% if lang.code == current_lang.code %} aria-current="true"{% endif %}><img class="flag" src="{% static lang.flag %}" srcset="{% static lang.flag_2x %} 2x" alt="" width="20" height="12"> {{ lang.name }}</a>
+    {% endfor %}
+  </div>
+</details>

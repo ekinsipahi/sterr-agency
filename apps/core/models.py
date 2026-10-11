@@ -14,6 +14,10 @@ class SiteSettings(models.Model):
                                         help_text="Örn. 4.9 — boşsa rozet gösterilmez.")
     google_review_count = models.PositiveIntegerField("Google yorum sayısı", null=True, blank=True)
     google_business_url = models.URLField("Google İşletme profili linki", blank=True)
+    google_review_url = models.URLField(
+        "Google'da yorum yazma linki", blank=True,
+        help_text="Google İşletme Profili → 'Yorum iste' / 'Ask for reviews' linki (g.page/r/…/review). "
+                  "Sitede 'Google'da yorum yazın' butonu ve sterragency.com/yorum/ kısayolu bunu kullanır.")
 
     stat_1_value = models.CharField("İstatistik 1 — değer", max_length=30, blank=True, help_text="Örn. ₺48M+")
     stat_1_label = models.CharField("İstatistik 1 — etiket", max_length=80, blank=True,

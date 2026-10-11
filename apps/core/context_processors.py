@@ -2,6 +2,8 @@ from urllib.parse import quote
 
 from django.conf import settings
 
+from apps.dental.languages import LANG_BY_CODE, LANGS, page_path
+
 from .company import COMPANY
 from .models import SiteSettings
 
@@ -23,4 +25,7 @@ def site(request):
         "GTM_ID": settings.GTM_ID,
         "META_PIXEL_ID": settings.META_PIXEL_ID,
         "GOOGLE_SITE_VERIFICATION": settings.GOOGLE_SITE_VERIFICATION,
+        # Language menu on the Turkish site: TR = this site, others = /dental-tourism/<lang>/.
+        "current_lang": LANG_BY_CODE["tr"],
+        "lang_links": [(lang, "/" if lang.code == "tr" else page_path(lang.code, "hub")) for lang in LANGS],
     }

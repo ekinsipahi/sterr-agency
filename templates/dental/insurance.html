@@ -1,0 +1,21 @@
+{% extends "dental/base.html" %}
+{% block content %}
+{% include "dental/_hero.html" %}
+
+<section class="section section--line">
+  <div class="container container--narrow prose">
+    {% for heading, text in p.sections %}
+    <h2 class="h3 reveal">{{ heading }}</h2>
+    <p class="reveal">{{ text }}</p>
+    {% endfor %}
+    <div class="card reveal mt-m">
+      <h2 class="h3">{{ p.checklist_title }}</h2>
+      <ul class="check mt-s">{% for item in p.checklist %}<li>{% include "partials/icons/check.svg" %}<span>{{ item }}</span></li>{% endfor %}</ul>
+    </div>
+    <p class="hint reveal mt-m">{{ p.disclaimer }}</p>
+  </div>
+</section>
+
+{% include "dental/_faq.html" %}
+{% include "dental/_form.html" %}
+{% endblock %}
