@@ -44,7 +44,7 @@ LANGS = [
 ]
 DEFAULT = "en"
 LANG_BY_CODE = {lang.code: lang for lang in LANGS}
-PAGES = ("hub", "partners", "insurance")
+PAGES = ("hub", "partners")
 
 # Content lives in apps/dental/locales/<code>.py as DATA = {...}
 CONTENT = {lang.code: import_module(f"apps.dental.locales.{lang.code}").DATA for lang in LANGS}

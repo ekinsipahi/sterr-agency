@@ -42,7 +42,7 @@ class ContentTests(TestCase):
 
 
 class PageTests(TestCase):
-    def test_all_48_pages_render_with_hreflang(self):
+    def test_all_32_pages_render_with_hreflang(self):
         for lang in LANGS:
             for page in PAGES:
                 url = page_path(lang.code, page)
@@ -66,7 +66,7 @@ class PageTests(TestCase):
     def test_sitemap_lists_dental_pages_with_alternates(self):
         body = self.client.get("/sitemap.xml").content.decode()
         for lang in LANGS:
-            self.assertIn(f"{page_path(lang.code, 'insurance')}</loc>", body)
+            self.assertIn(f"{page_path(lang.code, 'partners')}</loc>", body)
         self.assertIn('hreflang="x-default"', body)
 
     def test_language_menu_on_turkish_site(self):

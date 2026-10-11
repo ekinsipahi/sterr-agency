@@ -16,8 +16,8 @@ from .languages import CONTENT, DEFAULT, LANG_BY_CODE, LANGS, PAGES, alternates,
 from .notifications import notify_inquiry
 
 RATE_LIMIT, RATE_WINDOW = 5, 60 * 60
-TEMPLATES = {"hub": "dental/hub.html", "partners": "dental/partners.html", "insurance": "dental/insurance.html"}
-DEFAULT_KIND = {"hub": "patient", "partners": "clinic", "insurance": "patient"}
+TEMPLATES = {"hub": "dental/hub.html", "partners": "dental/partners.html"}
+DEFAULT_KIND = {"hub": "patient", "partners": "clinic"}
 
 # Our own dental projects shown as proof on every language version.
 WORK = [

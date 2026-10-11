@@ -467,7 +467,6 @@ fieldset.field legend { font-size: 14px; color: var(--muted); margin-bottom: 8px
 .footer__grid--dt { grid-template-columns: 2fr 1fr 1fr; }
 @media (max-width: 860px) { .footer__grid--dt { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 520px) { .footer__grid--dt { grid-template-columns: 1fr; } }
-.prose .check { padding: 0; }
 [dir="rtl"] .i-arrow { transform: scaleX(-1); }
 [dir="rtl"] .faq .faq__a { padding: 0 0 28px 60px; }
 [dir="rtl"] .eyebrow, [dir="rtl"] .h1, [dir="rtl"] .h2, [dir="rtl"] .h3 { letter-spacing: 0; }

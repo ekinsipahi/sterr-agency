@@ -109,5 +109,5 @@ Satırlar `city`, sütunlar `service`, değerler `generate_lead` sayısı + `pho
 | `generate_lead` | Teşekkür sayfasında (form gönderildi) | `form_id=dental_patient / dental_clinic / dental_agency`, `lead_type`, `language`, `lead_country`, `treatment` |
 | `review_click` | "Google'da yorum yazın" butonuna tıklanınca | `link_location` |
 
-Dental sayfalarda `content_group=dental_tourism`, `page_type=dental_hub / dental_partners / dental_insurance`, `language=<dil>`.
+Dental sayfalarda `content_group=dental_tourism`, `page_type=dental_hub / dental_partners`, `language=<dil>`.
 GA4'te `generate_lead` olayını `form_id` ile filtreleyerek hasta ve B2B taleplerini ayrı ayrı görebilirsiniz.

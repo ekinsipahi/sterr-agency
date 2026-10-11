@@ -17,7 +17,7 @@
     <nav class="nav__links" aria-label="{{ ui.nav_home }}">
       <a href="{{ urls.hub }}#process"{% if page == "hub" %} aria-current="page"{% endif %}>{{ ui.nav_process }}</a>
       <a href="{{ urls.partners }}"{% if page == "partners" %} aria-current="page"{% endif %}>{{ ui.nav_partners }}</a>
-      <a href="{{ urls.insurance }}"{% if page == "insurance" %} aria-current="page"{% endif %}>{{ ui.nav_insurance }}</a>
+      <a href="#faq">{{ ui.faq_eyebrow }}</a>
     </nav>
     <div class="nav__cta">
       {% include "partials/lang_menu.html" with lang_label=ui.lang_label %}
@@ -41,7 +41,6 @@
         <ul>
           <li><a href="{{ urls.hub }}">{{ ui.nav_home }}</a></li>
           <li><a href="{{ urls.partners }}">{{ ui.nav_partners }}</a></li>
-          <li><a href="{{ urls.insurance }}">{{ ui.nav_insurance }}</a></li>
           <li><a href="/" hreflang="tr">{{ ui.footer_main }}</a></li>
         </ul>
       </div>

@@ -91,7 +91,7 @@ keywords/    keyword haritası + CSV'ler
 
 ## Diş turizmi (16 dil) ve yorumlar
 
-- `/dental-tourism/` altında 3 sayfa × 16 dil (acente, iş birliği, sigorta & SSS). İçerik `apps/dental/locales/<dil>.py`.
+- `/dental-tourism/` altında 2 sayfa × 16 dil (acente + iş birliği); yalnızca "dental tourism agency" tipi aramaları hedefler. İçerik `apps/dental/locales/<dil>.py`.
   Gelen talepler admin → **Diş turizmi talepleri**; bildirim aynı Resend ayarıyla gider.
 - Navbar'daki bayraklı dil menüsü bayrakları `static/img/flags/` (PNG, @2x).
 - **Google yorumları:** admin → Site ayarları → "Google'da yorum yazma linki" alanına Google İşletme Profili'ndeki
