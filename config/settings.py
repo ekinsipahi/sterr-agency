@@ -16,6 +16,12 @@ ALLOWED_HOSTS = env.list(
 CSRF_TRUSTED_ORIGINS = env.list(
     "CSRF_TRUSTED_ORIGINS", default=["https://sterragency.com", "https://www.sterragency.com"]
 )
+# Render sets this to the service's *.onrender.com host; allow it so the deploy
+# works before the custom domain is attached.
+RENDER_EXTERNAL_HOSTNAME = env("RENDER_EXTERNAL_HOSTNAME", default="")
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
 
 # Canonical origin used for canonical URLs, sitemap and OG tags (no trailing slash).
 SITE_URL = env("SITE_URL", default="https://sterragency.com").rstrip("/")
@@ -37,6 +43,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "apps.core.health.HealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "apps.core.middleware.CanonicalHostMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -68,7 +75,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+# Local: SQLite. Production (Render): DATABASE_URL to Postgres, e.g. Supabase's
+# "Session pooler" connection string (Render has no IPv6, so not the direct one).
 DATABASES = {"default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")}
+DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)
+DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -87,7 +98,7 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = env.path("MEDIA_ROOT", default=BASE_DIR / "media")
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {
@@ -96,6 +107,29 @@ STORAGES = {
         else "django.contrib.staticfiles.storage.StaticFilesStorage"
     },
 }
+
+# Uploaded media on S3-compatible storage (Supabase Storage, R2, S3). Render's own
+# disk is wiped on every deploy, so production uploads must live here or on a
+# Render persistent disk (MEDIA_ROOT=/var/data/media).
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default="")
+if AWS_STORAGE_BUCKET_NAME:
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": AWS_STORAGE_BUCKET_NAME,
+            "access_key": env("AWS_ACCESS_KEY_ID"),
+            "secret_key": env("AWS_SECRET_ACCESS_KEY"),
+            "endpoint_url": env("AWS_S3_ENDPOINT_URL", default=None),
+            "region_name": env("AWS_S3_REGION_NAME", default=None),
+            # Public URL host+path, e.g. <ref>.supabase.co/storage/v1/object/public/media
+            "custom_domain": env("AWS_S3_CUSTOM_DOMAIN", default=None),
+            "addressing_style": "path",
+            "signature_version": "s3v4",
+            "querystring_auth": False,
+            "file_overwrite": False,
+            "default_acl": None,
+        },
+    }
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

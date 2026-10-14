@@ -60,22 +60,29 @@ GA4, GTM, Meta Pixel, Consent Mode v2 ve lead yaşam döngüsü olayları: [`ANA
 .venv/bin/python manage.py test apps
 ```
 
-## Yayına alma
+## Yayına alma (Render)
 
-```bash
-DEBUG=False
-ALLOWED_HOSTS=alanadiniz.com,www.alanadiniz.com
-CSRF_TRUSTED_ORIGINS=https://alanadiniz.com
-SITE_URL=https://alanadiniz.com
-```
+Render'ın diski her deploy'da sıfırlanır. Bu yüzden veritabanı ve yüklenen görseller dışarıda durmalı: **Supabase** (ücretsiz plan yeterli) Postgres ve Storage için kullanılır.
 
-```bash
-.venv/bin/python manage.py collectstatic --noinput
-.venv/bin/python manage.py migrate
-gunicorn config.wsgi --bind 0.0.0.0:8000
-```
+**1. Supabase**
+- Yeni proje açın (bölge: Frankfurt / eu-central-1).
+- *Project Settings → Database → Connection string → **Session pooler*** adresini kopyalayın, şifreyi yerleştirin → `DATABASE_URL`. Direct connection IPv6'dır, Render'dan bağlanamaz.
+- *Storage → New bucket* → adı `media`, **Public** işaretli.
+- *Storage → S3 Configuration*: Endpoint → `AWS_S3_ENDPOINT_URL`, Region → `AWS_S3_REGION_NAME`. *New access key* → `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`.
+- `AWS_STORAGE_BUCKET_NAME=media`, `AWS_S3_CUSTOM_DOMAIN=<ref>.supabase.co/storage/v1/object/public/media`
 
-Statik dosyaları WhiteNoise sunar. Yüklenen medya (`media/`) varsayılan olarak Django üzerinden sunulur (`SERVE_MEDIA=True`). Trafik arttığında nginx ya da S3'e taşıyın. Medya klasörünün kalıcı diskte olduğundan emin olun.
+**2. Render**
+- *New → Blueprint* → bu repo. `render.yaml` servisi kurar; `sync: false` değişkenleri bir kez sorulur (yukarıdaki Supabase değerleri, `RESEND_API_KEY`, `LEAD_NOTIFY_EMAILS`, `DJANGO_SUPERUSER_*`, `GA4_ID`…).
+- Build: `pip install` + `collectstatic`. Start: `migrate` → `ensure_seed_media` → `ensure_superuser` → gunicorn. Paketler, pazar fiyatları ve portföy migration'larla gelir.
+- Health check: `/healthz`. `*.onrender.com` adresi `noindex` döner; sadece `sterragency.com` indekslenir.
+
+**3. Alan adı**
+- Render → *Settings → Custom Domains* altında `sterragency.com` ve `www.sterragency.com` görünür. Verilen DNS kayıtlarını alan adı panelinde girin. `www` otomatik olarak çıplak alan adına 301 yönlenir.
+- Resend → Domains → `sterragency.com` doğrulaması (SPF/DKIM kayıtları).
+
+Supabase istemiyorsanız: Render Postgres + Render persistent disk (`MEDIA_ROOT=/var/data/media`) de çalışır, ikisi de ücretli.
+
+Statik dosyaları WhiteNoise sunar. Döviz kurları günde bir kez kendiliğinden yenilenir (`update_fx_rates` komutu elle de çalışır).
 
 ## Yapı
 

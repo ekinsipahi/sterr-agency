@@ -6,7 +6,8 @@ from django.http import HttpResponsePermanentRedirect
 
 class CanonicalHostMiddleware:
     """301 www.sterragency.com → sterragency.com (the host in SITE_URL), so Google
-    sees one origin. Other hosts (localhost, health checks) pass through."""
+    sees one origin. Other hosts (localhost, health checks) pass through; the
+    *.onrender.com host is served with noindex."""
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -16,4 +17,8 @@ class CanonicalHostMiddleware:
         host = request.get_host().split(":")[0].lower()
         if self.canonical and host == f"www.{self.canonical}":
             return HttpResponsePermanentRedirect(f"{settings.SITE_URL}{request.get_full_path()}")
-        return self.get_response(request)
+        response = self.get_response(request)
+        if host.endswith(".onrender.com"):
+            # Keep the Render preview host out of Google; only SITE_URL gets indexed.
+            response["X-Robots-Tag"] = "noindex, nofollow"
+        return response

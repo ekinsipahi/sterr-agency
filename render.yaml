@@ -1,0 +1,62 @@
+# Render Blueprint: Dashboard → New → Blueprint → this repo.
+# Secrets marked `sync: false` are asked for once when the Blueprint is created.
+services:
+  - type: web
+    name: sterr-agency
+    runtime: python
+    plan: starter            # free plan sleeps after 15 min idle (slow first load, bad for SEO)
+    region: frankfurt
+    branch: main
+    healthCheckPath: /healthz
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: >-
+      python manage.py migrate --noinput &&
+      python manage.py ensure_seed_media &&
+      python manage.py ensure_superuser &&
+      gunicorn config.wsgi --bind 0.0.0.0:$PORT --workers ${WEB_CONCURRENCY:-2} --timeout 60 --access-logfile -
+    domains:
+      - sterragency.com
+      - www.sterragency.com
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: SITE_URL
+        value: https://sterragency.com
+      # Supabase → Project Settings → Database → Connection string → "Session pooler"
+      - key: DATABASE_URL
+        sync: false
+      # Supabase → Storage: public bucket "media" + S3 access keys (see README)
+      - key: AWS_STORAGE_BUCKET_NAME
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_S3_ENDPOINT_URL
+        sync: false
+      - key: AWS_S3_REGION_NAME
+        sync: false
+      - key: AWS_S3_CUSTOM_DOMAIN
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        value: Sterr Agency <noreply@sterragency.com>
+      - key: LEAD_NOTIFY_EMAILS
+        sync: false
+      - key: DJANGO_SUPERUSER_USERNAME
+        sync: false
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
+      - key: GA4_ID
+        sync: false
+      - key: GA4_API_SECRET
+        sync: false
+      - key: GOOGLE_SITE_VERIFICATION
+        sync: false
