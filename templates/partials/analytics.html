@@ -6,20 +6,38 @@ window.sterrConfig = {ga4: {% if GA4_ID and not GTM_ID %}true{% else %}false{% e
 (function () {
   var consent = null;
   try { consent = localStorage.getItem("sterr_consent"); } catch (e) {}
-  // Consent Mode v2: everything denied until the visitor accepts (KVKK / GDPR).
-  gtag("consent", "default", {ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied", analytics_storage: "denied", wait_for_update: 500});
+  // Consent Mode v2. EEA, UK and Switzerland (GDPR): denied until the visitor
+  // accepts. Elsewhere: granted by default, the banner offers an opt-out.
+  var DENY = {ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied", analytics_storage: "denied"};
+  var GRANT = {ad_storage: "granted", ad_user_data: "granted", ad_personalization: "granted", analytics_storage: "granted"};
+  gtag("consent", "default", Object.assign({}, DENY, {wait_for_update: 500, region: [
+    "AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL",
+    "PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH"]}));
+  gtag("consent", "default", Object.assign({}, GRANT, {wait_for_update: 500}));
   gtag("set", "ads_data_redaction", true);
   gtag("set", "url_passthrough", true);
-  if (consent === "granted") {
-    gtag("consent", "update", {ad_storage: "granted", ad_user_data: "granted", ad_personalization: "granted", analytics_storage: "granted"});
-  }
+  if (consent === "granted") gtag("consent", "update", GRANT);
+  if (consent === "denied") gtag("consent", "update", DENY);
   window.sterrConsent = consent;
 })();
 </script>
 {% if GTM_ID %}<script>dataLayer.push(Object.assign({event: "sterr_page"}, window.sterrPage || {}));
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ GTM_ID }}');</script>
 {% elif GA4_ID %}<script async src="https://www.googletagmanager.com/gtag/js?id={{ GA4_ID }}"></script>
-<script>gtag("js", new Date()); gtag("config", "{{ GA4_ID }}", window.sterrPage || {});</script>{% endif %}
+<script>
+gtag("js", new Date());
+(function () {
+  var page = window.sterrPage || {};
+  var cfg = Object.assign({}, page);
+  {% if user.is_staff %}cfg.traffic_type = "internal";  // admin users: excluded by GA4's internal-traffic filter
+  {% endif %}try {
+    if (/[?&]ga_debug=1/.test(location.search)) sessionStorage.setItem("sterr_ga_debug", "1");
+    if (sessionStorage.getItem("sterr_ga_debug")) cfg.debug_mode = true;  // shows in GA4 DebugView
+  } catch (e) {}
+  gtag("set", "user_properties", {site_language: document.documentElement.lang || "tr", site_section: page.content_group || "sayfa"});
+  gtag("config", "{{ GA4_ID }}", cfg);
+})();
+</script>{% endif %}
 {% if META_PIXEL_ID %}<script>
 window.sterrLoadPixel = function () {
   if (window.fbq) return;

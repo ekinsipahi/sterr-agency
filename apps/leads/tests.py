@@ -1,7 +1,10 @@
+import hashlib
+
 from django.core import mail
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
+from .ga4 import hashed_user_data
 from .models import Lead
 
 VALID = {
@@ -89,3 +92,15 @@ class Ga4Tests(TestCase):
         self.assertContains(first, '"value": 90000')
         second = self.client.get(reverse("leads:thanks"))
         self.assertNotContains(second, 'id="lead-event"')
+
+
+class HashedUserDataTests(SimpleTestCase):
+    def test_turkish_numbers_become_e164_before_hashing(self):
+        expected = hashlib.sha256(b"+905321234567").hexdigest()
+        for raw in ("0532 123 45 67", "5321234567", "+90 532 123 45 67", "905321234567"):
+            self.assertEqual(hashed_user_data("", raw, "90")["sha256_phone_number"], expected, raw)
+
+    def test_email_normalised_and_unknown_country_phone_skipped(self):
+        data = hashed_user_data(" Ali@Example.COM ", "0151 2345678")
+        self.assertEqual(data, {"sha256_email_address": hashlib.sha256(b"ali@example.com").hexdigest()})
+        self.assertIn("sha256_phone_number", hashed_user_data("", "+49 151 2345678"))

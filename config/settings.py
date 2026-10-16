@@ -151,7 +151,9 @@ WHATSAPP_DISPLAY = env("WHATSAPP_DISPLAY", default="+90 541 448 75 61")
 CONTACT_EMAIL = env("CONTACT_EMAIL", default="hello@sterragency.com")
 
 # --- Analytics (optional) ---------------------------------------------------
-GA4_ID = env("GA4_ID", default="")  # Measurement ID, e.g. G-XXXXXXX
+# sterragency.com GA4 property. Off in local dev (DEBUG) unless set in .env, so
+# test traffic never reaches the live reports.
+GA4_ID = env("GA4_ID", default="" if DEBUG else "G-XZTV0GHKJ2")
 # GA4 → Admin → Data streams → Measurement Protocol API secrets. Enables server-side
 # lead lifecycle events (qualify_lead, close_convert_lead…) from the admin.
 GA4_API_SECRET = env("GA4_API_SECRET", default="")

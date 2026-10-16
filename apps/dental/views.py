@@ -9,6 +9,7 @@ from django.utils import translation
 from django.views.decorators.http import require_POST
 
 from apps.core.models import Testimonial
+from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
 from .forms import InquiryForm
@@ -103,6 +104,7 @@ def send(request):
                 "language": code,
                 "lead_country": inquiry.country[:40],
                 "treatment": inquiry.treatment or "none",
+                "user_data": hashed_user_data(inquiry.email, inquiry.phone),
             }
             return redirect(thanks)
         response = render(request, TEMPLATES[page], _context(request, code, page, form=form), status=400)

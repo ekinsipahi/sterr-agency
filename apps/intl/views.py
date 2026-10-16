@@ -11,6 +11,7 @@ from django.views.decorators.http import require_POST
 from apps.core.languages import LANG_BY_CODE
 from apps.core.models import Testimonial
 from apps.dental.languages import page_path as dental_path
+from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
 from .content import (CLUSTER_KEYS, CONTENT, GUIDE_KEYS, PAGE_KEYS, SECTOR_KEYS, alternates, fill, lang_links,
@@ -134,6 +135,7 @@ def send(request):
                 "service": lead.interest,
                 "value": price["usd"],
                 "currency": "USD",
+                "user_data": hashed_user_data(lead.email, lead.phone),
             }
             return redirect(thanks)
         response = _render(request, code, key, form=form, status=400)

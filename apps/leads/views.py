@@ -7,7 +7,7 @@ from apps.core.models import Package
 from apps.seo.cities import CITY_BY_SLUG
 
 from .forms import LeadForm
-from .ga4 import cookies_for
+from .ga4 import cookies_for, hashed_user_data
 from .notifications import notify_new_lead
 
 RATE_LIMIT = 5          # submissions
@@ -74,6 +74,7 @@ def submit(request):
             "lead_city": lead.city or "none",
             "package": package or "none",
             "form_id": "basvuru",
+            "user_data": hashed_user_data(lead.email, lead.phone, default_country_code="90"),
         }
         return redirect(reverse("leads:thanks"))
 

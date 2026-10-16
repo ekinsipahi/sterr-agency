@@ -4,6 +4,7 @@ Admin status changes become GA4's recommended lead events, so the whole funnel
 (generate_lead → qualify_lead → close_convert_lead) lives in one GA4 property:
 https://developers.google.com/analytics/devguides/collection/ga4/reference/events
 """
+import hashlib
 import logging
 import re
 import time
@@ -24,6 +25,37 @@ STATUS_EVENTS = {
     "lost": "close_unconvert_lead",
     "unqualified": "disqualify_lead",
 }
+
+
+def _sha256(value: str) -> str:
+    return hashlib.sha256(value.encode()).hexdigest()
+
+
+def hashed_user_data(email: str, phone: str, default_country_code: str = "") -> dict:
+    """SHA-256 user data for gtag('set', 'user_data') — enhanced conversions for
+    Google Ads and GA4 user-provided data. Only hashes leave the server.
+
+    Phone must become E.164 (+905xx…); numbers without a country code are only
+    used when `default_country_code` is given (Turkish form → "90")."""
+    data = {}
+    email = (email or "").strip().lower()
+    if "@" in email:
+        data["sha256_email_address"] = _sha256(email)
+    raw = (phone or "").strip()
+    digits = re.sub(r"\D", "", raw)
+    if raw.startswith("+"):
+        e164 = f"+{digits}"
+    elif digits.startswith("00"):
+        e164 = f"+{digits[2:]}"
+    elif default_country_code and digits:
+        national = digits.lstrip("0")
+        e164 = f"+{national}" if national.startswith(default_country_code) and len(national) > 10 \
+            else f"+{default_country_code}{national}"
+    else:
+        e164 = ""
+    if 8 <= len(e164) <= 16:
+        data["sha256_phone_number"] = _sha256(e164)
+    return data
 
 
 def parse_client_id(ga_cookie: str) -> str:

@@ -4,8 +4,10 @@ Sitenin her kritik anı GA4'e event olarak düşer: sayfa bağlamı, arama/Whats
 
 ## 1. `.env` ayarları
 
+Ölçüm kimliği **G-XZTV0GHKJ2** koda gömülü: production'da (`DEBUG=False`) env olmadan da çalışır, lokal geliştirmede kapalıdır (test trafiği raporlara düşmez).
+
 ```env
-GA4_ID=G-XXXXXXXXXX          # GA4 → Yönetici → Veri akışları → Ölçüm kimliği
+GA4_ID=G-XZTV0GHKJ2          # Varsayılanı değiştirmek için. Lokalde test etmek isterseniz .env'e yazın
 GA4_API_SECRET=xxxxxxxx      # Aynı veri akışı → Measurement Protocol API gizli anahtarları → Oluştur
 GTM_ID=                      # İsteğe bağlı. Doluysa GA4 GTM içinden yönetilir, gtag.js yüklenmez
 META_PIXEL_ID=               # İsteğe bağlı
@@ -32,6 +34,14 @@ GOOGLE_SITE_VERIFICATION=    # Search Console HTML etiketi doğrulaması
 | `lead_form_error` | Sunucu formu reddetti | `error_fields` | — |
 | **`generate_lead`** | Teşekkür sayfası (tek sefer) | `value`, `currency=TRY`, `lead_id`, `lead_tier`, `lead_sector`, `lead_budget`, `lead_city`, `package` | ✅ |
 
+| `scroll_depth` | Sayfanın %25 / 50 / 75 / 100'ü görüldü | `percent_scrolled` | — |
+| `view_pricing` | Fiyat kartı ekrana geldi (sayfa başına 1) | `price_shown` | — |
+| `faq_open` | SSS sorusu açıldı | `faq_question` | — |
+| `select_content` | Vaka çalışmasına tıklandı | `content_type=case_study`, `content_id` | — |
+| `outbound_click` | Dış siteye link (portföy canlı siteleri vb.) | `link_domain`, `link_url` | — |
+| `contact_copy` | Telefon numarası ya da e-posta kopyalandı (elle arayacak) | `contact_type` | — |
+| `form_abandon` | Forma başladı, göndermeden sayfadan çıktı | `form_id`, `last_field`, `step_number` | — |
+
 `link_location` değerleri: `nav`, `hero`, `pricing`, `cta_band`, `footer`, `floating_button`, `form`, `body`.
 
 `generate_lead` değeri bütçe bandına göre tahmini aylık gelirdir: 50–100K → 50.000, 100–250K → 90.000, 250K+ → 150.000, 50K altı → 0.
@@ -49,16 +59,27 @@ Admin'de bir lead'in **Durum** alanı değiştiğinde (listeden ya da detaydan) 
 | Kaybedildi | `close_unconvert_lead` | tahmini |
 | Uygun değil | `disqualify_lead` (+ `disqualified_lead_reason`) | tahmini |
 
+### Kullanıcı ve oturum verisi
+
+- **Kullanıcı özellikleri:** `site_language` (tr, de, ar…), `site_section` (ana_sayfa, intl_agency, dental_tourism…).
+- **Gelişmiş dönüşümler:** Teşekkür sayfasında e-posta ve telefon SHA-256 ile hash'lenmiş olarak `user_data` içinde gider (`sha256_email_address`, `sha256_phone_number`). Telefon E.164 formatına çevrilir; Türkçe formda başında ülke kodu yoksa +90 eklenir. Açık veri tarayıcıya hiç gelmez.
+- **Dahili trafik:** Admin'e giriş yapmış kullanıcılar `traffic_type=internal` ile işaretlenir.
+- **Debug:** Herhangi bir sayfayı `?ga_debug=1` ile açın. O sekmede tüm olaylar GA4 → DebugView'a düşer.
+
 ## 3. GA4 panelinde yapılacaklar (bir kerelik)
 
-1. **Anahtar etkinlikler** (Yönetici → Etkinlikler → yıldızla): `generate_lead`, `phone_click`, `whatsapp_click`, `qualify_lead`, `close_convert_lead`.
+1. **Anahtar etkinlikler** (Yönetici → Etkinlikler → yıldızla): `generate_lead`, `phone_click`, `whatsapp_click`, `qualify_lead`, `close_convert_lead`. İsteğe bağlı: `contact_copy`.
 2. **Özel boyutlar** (Yönetici → Özel tanımlar → Etkinlik kapsamlı):
-   `service`, `city`, `region`, `market_tier`, `page_type`, `link_location`, `lead_tier`, `lead_sector`, `lead_budget`, `lead_city`, `package`, `step_name`, `lead_status`.
+   `service`, `city`, `region`, `market_tier`, `page_type`, `link_location`, `lead_tier`, `lead_sector`, `lead_budget`, `lead_city`, `package`, `step_name`, `lead_status`, `form_id`, `language`, `lead_type`, `lead_country`, `price_shown`, `faq_question`, `contact_type`, `last_field`, `link_domain`, `percent_scrolled`.
+   **Kullanıcı kapsamlı:** `site_language`, `site_section`.
    Özel metrik: `step_number`.
 3. **Veri saklama**: Yönetici → Veri saklama → 14 ay.
-4. **Dahili trafik**: kendi IP'nizi filtreleyin.
-5. **Google Ads bağlantısı**: Yönetici → Ürün bağlantıları → Google Ads. Ardından Ads'te `generate_lead` ve `close_convert_lead` olaylarını dönüşüm olarak içe aktarın. Kazanılan müşteriler, onları getiren reklam kampanyasına değeriyle birlikte yazılır.
-6. **Search Console bağlantısı**: Yönetici → Ürün bağlantıları → Search Console (il sayfalarının organik performansı GA4'te görünür).
+4. **Dahili trafik**: Yönetici → Veri filtreleri → "Internal Traffic" filtresini **Etkin** yapın (`traffic_type=internal` siteden zaten geliyor). Ek olarak ofis IP'nizi Veri akışı → Etiket ayarları → Dahili trafiği tanımla'dan ekleyin.
+5. **Kullanıcı tarafından sağlanan veri toplama**: Yönetici → Veri toplama → "User-provided data collection" → Aç. Gelişmiş dönüşümler (hash'lenmiş e-posta/telefon) ancak böyle kullanılır.
+6. **Google sinyalleri**: Yönetici → Veri toplama → Google sinyalleri → Aç (cihazlar arası raporlar, demografi).
+7. **Gelişmiş ölçüm** (Veri akışı → Gelişmiş ölçüm): açık kalsın (sayfa görüntüleme, site içi arama, video, dosya indirme).
+8. **Google Ads bağlantısı**: Yönetici → Ürün bağlantıları → Google Ads. Ardından Ads'te `generate_lead` ve `close_convert_lead` olaylarını dönüşüm olarak içe aktarın. Kazanılan müşteriler, onları getiren reklam kampanyasına değeriyle birlikte yazılır.
+9. **Search Console bağlantısı**: Yönetici → Ürün bağlantıları → Search Console (il sayfalarının organik performansı GA4'te görünür).
 
 ## 4. Hazır raporlar (Keşfet)
 
@@ -87,7 +108,8 @@ Satırlar `city`, sütunlar `service`, değerler `generate_lead` sayısı + `pho
 
 ## 6. Onay (Consent Mode v2)
 
-- Varsayılan: tüm depolama **reddedildi**. GA4 çerezsiz, modellenmiş sinyal gönderir.
+- **AB/AEA, İngiltere, İsviçre (GDPR):** varsayılan olarak tüm depolama **reddedildi**. GA4 çerezsiz, modellenmiş sinyal gönderir.
+- **Diğer tüm ülkeler (Türkiye dahil):** varsayılan **izinli**. Banner yine çıkar, "Sadece zorunlu" seçilirse reddedilir.
 - "Kabul et" tıklanınca `analytics_storage`, `ad_storage`, `ad_user_data`, `ad_personalization` **granted** olur ve Meta Pixel yüklenir.
 - Tercih `localStorage.sterr_consent` içinde saklanır.
 - Onay verilmemişse `_ga` çerezi olmaz. Sunucu olayları yine gider ama kullanıcıya değil, lead'e özel bir kimliğe bağlanır (kaynak eşleşmesi zayıflar).
