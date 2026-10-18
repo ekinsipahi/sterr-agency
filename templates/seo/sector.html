@@ -27,8 +27,6 @@
   <div class="container">
     <div class="section-head reveal"><p class="eyebrow">Sistem</p><h2 class="h2">{{ sector.name }} için <span class="serif">müşteri makinesi</span></h2></div>
     <div class="grid grid-2">{% for t, b in sector.system %}<div class="card reveal"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ t }}</h3><p>{{ b }}</p></div>{% endfor %}</div>
-    <p class="eyebrow mt-l reveal">Müşterilerinizin aradıkları</p>
-    <div class="chips reveal">{% for q in sector.searches %}<span class="chip">“{{ q }}”</span>{% endfor %}</div>
   </div>
 </section>
 

@@ -116,7 +116,7 @@ DATA = {
         ],
         "offer_title": "Was eine Partnerschaft umfasst",
         "offers": [
-            ("Mehrsprachiges SEO", "Seiten, die für das ranken, was Patienten in ihrer Sprache wirklich suchen, wie unsere Plattform in 16 Sprachen"),
+            ("Mehrsprachiges SEO", "Google-Sichtbarkeit in 16 Sprachen"),
             ("Anzeigen und Inhalte", "Google- und Meta-Kampagnen pro Land, dazu Content-Produktion, falls Sie keine haben"),
             ("Vorqualifizierung", "Fotos, Röntgenbild, Budget und Termine werden gesammelt, bevor der Fall beim Zahnarzt landet"),
             ("Reporting", "monatlicher Bericht zu Anfragen, Kosten pro Patient und Abschlüssen nach Land"),

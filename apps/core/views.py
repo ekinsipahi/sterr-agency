@@ -20,11 +20,11 @@ from .models import Package, SiteSettings, Testimonial
 
 HOME_FAQS = [
     ("Paketleriniz ne kadar?", "Paketlerimiz aylık 50.000 ₺'den başlar. Üç seviye sunuyoruz; kapsam, kanal sayısı ve içerik hacmine göre değişir. Reklam bütçesi hizmet bedelinden ayrıdır ve doğrudan platformlara ödenir."),
-    ("Nasıl faturalandırıyorsunuz?", "Aylık abonelik modeliyle çalışıyoruz. İlk ay peşin başlıyoruz; sonrasında her ay sonuçları raporluyor ve aylık faturalandırıyoruz."),
+    ("Nasıl faturalandırıyorsunuz?", "Aylık abonelik modeliyle çalışıyoruz. Ödeme her ayın başında, o ayın hizmeti başlamadan peşin alınır. Sonuçları her ay raporluyoruz."),
     ("Hangi şehirlerde hizmet veriyorsunuz?", "Türkiye'nin 81 ilinin tamamında. Strateji ve raporlama online yürür; içerik çekimi gerektiğinde ekibimiz bulunduğunuz yere gelir."),
     ("İçeriğimiz yok, yine de çalışabilir miyiz?", "Kesinlikle. Özel içerik ekibimiz çekim, kurgu ve metin üretimini üstlenir. Sizden yalnızca işinizi anlatmanızı isteriz."),
     ("Neden bir başvuru formu var?", "Çünkü her işletmeyle çalışmıyoruz. Kapasitemizi, gerçekten büyümek isteyen ve sistemimizden fayda görecek işletmelere ayırıyoruz. Formu dolduran herkese 24 saat içinde dönüş yapıyoruz."),
-    ("Sonuçları nasıl takip edeceğim?", "Her ay; gelen talepleri, reklam harcamasını, müşteri başı maliyeti ve organik büyümeyi gösteren bir rapor alırsınız. Search Console, Analytics ve reklam panellerine erişiminiz her zaman sizde kalır."),
+    ("Sonuçları nasıl takip edeceğim?", "Her ay; gelen talepleri, reklam harcamasını, müşteri başı maliyeti ve organik büyümeyi gösteren bir rapor alırsınız. Analytics ve reklam panellerine erişiminiz her zaman sizde kalır."),
 ]
 
 

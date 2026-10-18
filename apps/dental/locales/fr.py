@@ -116,7 +116,7 @@ DATA = {
         ],
         "offer_title": "Ce que comprend un partenariat",
         "offers": [
-            ("SEO multilingue", "des pages qui se positionnent sur ce que les patients cherchent vraiment dans leur langue, comme notre plateforme en 16 langues"),
+            ("SEO multilingue", "Visibilité sur Google en 16 langues"),
             ("Publicité et contenus", "campagnes Google et Meta par pays, et production de contenu si vous n'en avez pas"),
             ("Préqualification des patients", "photos, radio, budget et dates collectés avant que le dossier n'arrive au dentiste"),
             ("Reporting", "rapport mensuel sur les demandes, le coût par patient et les conversions par pays"),

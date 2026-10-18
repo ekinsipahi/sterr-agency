@@ -10,6 +10,7 @@
       <a href="{{ u_sectors }}" {% if u_sectors in request.path %}aria-current="page"{% endif %}>Sektörler</a>
       <a href="{{ u_works }}" {% if u_works in request.path %}aria-current="page"{% endif %}>Çalışmalar</a>
       <a href="{{ u_packages }}" {% if request.path == u_packages %}aria-current="page"{% endif %}>Paketler</a>
+      <a href="{{ dental_url }}">Diş Turizmi</a>
     </nav>
     <div class="nav__cta">
       {% include "partials/lang_menu.html" %}

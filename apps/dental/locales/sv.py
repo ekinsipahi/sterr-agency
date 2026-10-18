@@ -116,7 +116,7 @@ DATA = {
         ],
         "offer_title": "Det här ingår i ett partnerskap",
         "offers": [
-            ("Flerspråkig SEO", "sidor som rankar på det patienter faktiskt söker på sitt eget språk, som vår plattform på 16 språk"),
+            ("Flerspråkig SEO", "Synlighet på Google på 16 språk"),
             ("Annonser och innehåll", "Google- och Meta-kampanjer per land, plus innehållsproduktion om ni saknar det"),
             ("Förkvalificering av patienter", "foton, röntgen, budget och datum samlas in innan fallet når tandläkaren"),
             ("Rapportering", "månadsrapport om förfrågningar, kostnad per patient och konvertering per land"),

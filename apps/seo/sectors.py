@@ -32,7 +32,7 @@ SECTORS = [
         ),
         system=(
             ("Kişisel marka", "Branşınızı, başarı hikâyelerinizi ve yönteminizi anlatan güçlü bir profil ve web sayfası."),
-            ("Arama niyeti yakalama", "\"Ankara matematik özel ders\" ya da \"online fizik dersi\" gibi aramalarda reklam ve SEO ile görünürlük."),
+            ("Google'da görünürlük", "Reklam ve SEO ile sizi kolay bulunur kılıyoruz."),
             ("Kalite filtresi", "Seviye, hedef sınav ve bütçe soran başvuru formu — ciddi veliler size ulaşır."),
             ("Sezon planlaması", "LGS, YKS ve dönem başı talep dalgalarına göre önceden kurulan kampanyalar."),
         ),
@@ -82,8 +82,8 @@ SECTORS = [
         ),
         system=(
             ("Uzman konumlandırma", "Fizikte fark yaratan yönteminizi öne çıkaran marka dili."),
-            ("SEO & reklam", "\"YKS fizik özel ders\" ve benzeri aramalarda üst sıralarda görünürlük."),
-            ("İçerik yayılımı", "Soru çözümleri, konu anlatımları ve forumlarda uzman içerikler."),
+            ("SEO & reklam", "Google'da görünürlük."),
+            ("İçerik yayılımı", "Soru çözümleri ve konu anlatımlarıyla uzman içerikler."),
             ("Filtrelenmiş talep", "Hedef, seviye ve bütçe netleşmiş başvurular."),
         ),
         searches=("fizik özel ders", "YKS fizik özel ders", "AYT fizik özel ders", "online fizik dersi", "fizik öğretmeni özel ders"),
@@ -108,7 +108,7 @@ SECTORS = [
         system=(
             ("E-ticaret kurulumu", "Hızlı, mobil uyumlu ve dönüşüm odaklı mağaza altyapısı; ödeme ve kargo entegrasyonları."),
             ("Performans reklamları", "Google Shopping, Performance Max ve Meta katalog reklamlarıyla kârlı büyüme."),
-            ("Kategori SEO'su", "Ürün ve kategori sayfalarınızın organik aramada sıralama alması."),
+            ("SEO", "Mağazanızın Google'da kalıcı görünürlüğü."),
             ("İçerik prodüksiyonu", "Ürün çekimleri, UGC videolar ve reklam kreatifleri."),
         ),
         searches=("online satış", "e-ticaret sitesi kurmak", "e-ticaret reklam ajansı", "google shopping reklam", "e-ticaret SEO"),
@@ -131,7 +131,7 @@ SECTORS = [
             "Yerel aramalarda rakiplerin gerisinde kalmak",
         ),
         system=(
-            ("Yerel SEO", "Google Haritalar ve \"yakınımdaki\" aramalarında görünürlük."),
+            ("SEO", "Google'da ve Google Haritalar'da görünürlük."),
             ("Bilgilendirici içerik", "Hekim odaklı, güven veren ve mevzuata uygun içerikler."),
             ("Randevu funnel'ı", "Talebi önceden nitelendiren, no-show oranını düşüren başvuru akışı."),
             ("İtibar yönetimi", "Gerçek hasta memnuniyetini görünür kılan yorum stratejisi."),

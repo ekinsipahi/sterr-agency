@@ -126,7 +126,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; letter-spac
 .brand__sub { font-weight: 400; color: var(--muted); font-size: 13px; letter-spacing: 0.02em; margin-left: 2px; }
 .brand img { height: 30px; width: auto; }
 .nav__links { display: flex; align-items: center; gap: 4px; }
-.nav__links a { padding: 8px 14px; border-radius: 999px; font-size: 14.5px; color: var(--muted); transition: color .2s, background .2s; }
+.nav__links a { padding: 8px 14px; border-radius: 999px; font-size: 14.5px; color: var(--muted); white-space: nowrap; transition: color .2s, background .2s; }
+@media (max-width: 1180px) { .nav__links a { padding: 8px 10px; } .nav__cta .btn--ghost { display: none; } }
 .nav__links a:hover, .nav__links a[aria-current="page"] { color: var(--text); background: rgba(255,255,255,.04); }
 .nav__cta { display: flex; gap: 8px; align-items: center; }
 .nav__toggle { display: none; background: none; border: 1px solid var(--line-strong); color: var(--text); width: 44px; height: 44px; border-radius: 50%; cursor: pointer; }
@@ -472,7 +473,3 @@ fieldset.field legend { font-size: 14px; color: var(--muted); margin-bottom: 8px
 [dir="rtl"] .eyebrow, [dir="rtl"] .h1, [dir="rtl"] .h2, [dir="rtl"] .h3 { letter-spacing: 0; }
 
 /* ---------- Results screenshot (Search Console) ---------- */
-.results-figure { margin: 40px 0 0; }
-.results-figure img { width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--line); display: block; }
-.results-figure figcaption { margin-top: 12px; font-size: 14px; color: var(--muted); }
-.results-figure .signal { color: var(--signal); font-weight: 600; }

@@ -67,7 +67,7 @@ GUIDES = [
         minutes=5,
         faqs=(
             ("Sosyal medya ajansı ücretleri neden bu kadar farklı?", "Kapsam farklı. Yalnızca paylaşım yapan hizmet ile çekim, reklam, strateji ve raporlama içeren hizmet aynı iş değildir."),
-            ("Sözleşme süresi fiyatı etkiler mi?", "Bizde aylık abonelik modeli var; ilk ay peşin başlar, sonraki aylar raporla birlikte faturalandırılır."),
+            ("Sözleşme süresi fiyatı etkiler mi?", "Bizde aylık abonelik modeli var; ödeme her ayın başında peşin alınır."),
         ),
     ),
     Guide(
@@ -88,7 +88,7 @@ GUIDES = [
         keywords=("dijital pazarlama uzmanı nedir", "dijital pazarlama uzmanı ne iş yapar", "dijital pazarlama uzmanlığı nedir", "dijital pazarlama uzmanı", "dijital pazarlama uzmanları"),
         minutes=5,
         faqs=(
-            ("Dijital pazarlama uzmanı hangi araçları kullanır?", "Google Ads, Meta Business, GA4, Search Console, SEO araçları, tasarım ve otomasyon yazılımları."),
+            ("Dijital pazarlama uzmanı hangi araçları kullanır?", "Google Ads, Meta Business, GA4, tasarım ve otomasyon yazılımları."),
             ("Tek bir uzman her kanalı yönetebilir mi?", "Temel düzeyde evet, ama reklam, SEO ve içerik prodüksiyonunun her birinde derin uzmanlık gerekir. Bu yüzden ekip modeli daha hızlı sonuç verir."),
         ),
     ),

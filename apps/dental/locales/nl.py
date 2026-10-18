@@ -116,7 +116,7 @@ DATA = {
         ],
         "offer_title": "Wat een samenwerking omvat",
         "offers": [
-            ("Meertalige SEO", "pagina's die scoren op wat patiënten echt zoeken in hun eigen taal, zoals ons platform in 16 talen"),
+            ("Meertalige SEO", "Google-zichtbaarheid in 16 talen"),
             ("Advertenties en content", "Google- en Meta-campagnes per land, plus contentproductie als u die niet heeft"),
             ("Voorselectie van patiënten", "foto's, röntgenfoto, budget en data verzameld voordat de casus bij de tandarts komt"),
             ("Rapportage", "maandelijks rapport over aanvragen, kosten per patiënt en conversie per land"),

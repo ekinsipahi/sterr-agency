@@ -116,7 +116,7 @@ DATA = {
         ],
         "offer_title": "Ce include un parteneriat",
         "offers": [
-            ("SEO multilingv", "pagini care se poziționează pe ce caută cu adevărat pacienții în limba lor, ca platforma noastră în 16 limbi"),
+            ("SEO multilingv", "Vizibilitate pe Google în 16 limbi"),
             ("Reclame și conținut", "campanii Google și Meta pe fiecare țară, plus producție de conținut dacă nu aveți"),
             ("Precalificarea pacienților", "poze, radiografie, buget și date colectate înainte ca un caz să ajungă la medic"),
             ("Raportare", "raport lunar despre cereri, cost pe pacient și conversii pe țări"),

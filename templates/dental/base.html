@@ -8,11 +8,12 @@
 {% block nav %}
 <header class="nav">
   <div class="container nav__inner">
-    <a href="{{ urls.hub }}" class="brand" aria-label="Sterr Agency — {{ ui.nav_home }}">
+    <a href="{{ urls.agency }}" class="brand" aria-label="Sterr Agency">
       {% if site.logo %}<img src="{{ site.logo.url }}" alt="Sterr Agency" width="140" height="30">{% else %}<span class="brand__mark">{% include "partials/icons/mark.svg" %}</span>sterr<span class="brand__sub">agency</span>{% endif %}
     </a>
     <nav class="nav__links" aria-label="{{ ui.nav_home }}">
-      <a href="{{ urls.hub }}#process"{% if page == "hub" %} aria-current="page"{% endif %}>{{ ui.nav_process }}</a>
+      <a href="{{ urls.hub }}"{% if page == "hub" %} aria-current="page"{% endif %}>{{ ui.nav_home }}</a>
+      <a href="{{ urls.hub }}#process">{{ ui.nav_process }}</a>
       <a href="{{ urls.partners }}"{% if page == "partners" %} aria-current="page"{% endif %}>{{ ui.nav_partners }}</a>
       <a href="#faq">{{ ui.faq_eyebrow }}</a>
     </nav>
@@ -30,7 +31,7 @@
   <div class="container">
     <div class="footer__grid footer__grid--dt">
       <div>
-        <a href="{{ urls.hub }}" class="brand">{% if site.logo %}<img src="{{ site.logo.url }}" alt="Sterr Agency" width="140" height="30">{% else %}<span class="brand__mark">{% include "partials/icons/mark.svg" %}</span>sterr<span class="brand__sub">agency</span>{% endif %}</a>
+        <a href="{{ urls.agency }}" class="brand">{% if site.logo %}<img src="{{ site.logo.url }}" alt="Sterr Agency" width="140" height="30">{% else %}<span class="brand__mark">{% include "partials/icons/mark.svg" %}</span>sterr<span class="brand__sub">agency</span>{% endif %}</a>
         <p class="muted mt-s" style="max-width:420px;font-size:15px">{{ ui.footer_tagline }}</p>
       </div>
       <div>

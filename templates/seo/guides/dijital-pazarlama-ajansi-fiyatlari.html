@@ -17,7 +17,7 @@
   <tr><th>Paket</th><th>Aylık</th><th>Kimler için</th></tr>
   {% for p in packages %}<tr><td>{{ p.name }}</td><td>{{ p.price|intcomma }} ₺{% if p.price_prefix %}'den{% endif %}</td><td>{{ p.ideal_for }}</td></tr>{% endfor %}
 </table></div>
-<p>Tüm paketlerde ilk ay peşin başlanır; sonraki aylar raporla birlikte aylık faturalandırılır. Detaylar için <a href="{% url 'core:packages' %}">paketler sayfası</a>.</p>
+<p>Tüm paketlerde ödeme her ayın başında peşin alınır. Detaylar için <a href="{% url 'core:packages' %}">paketler sayfası</a>.</p>
 
 <div class="callout">Ucuz teklif cazip görünür; ama müşteri getirmeyen her ay, ödediğiniz en pahalı aydır. Fiyatı değil, <strong>müşteri başı maliyeti</strong> karşılaştırın.</div>
 

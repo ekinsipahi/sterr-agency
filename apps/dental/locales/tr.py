@@ -116,7 +116,7 @@ DATA = {
         ],
         "offer_title": "İş birliğine neler dahil",
         "offers": [
-            ("Çok dilli SEO", "hastaların kendi dilinde gerçekten aradığı sorgularda sıralanan sayfalar; 16 dildeki platformumuz gibi"),
+            ("Çok dilli SEO", "16 dilde Google görünürlüğü"),
             ("Reklam ve içerik", "ülke bazlı Google ve Meta kampanyaları, içeriğiniz yoksa prodüksiyon"),
             ("Hasta ön elemesi", "fotoğraf, röntgen, bütçe ve tarihler vaka hekime ulaşmadan toplanır"),
             ("Raporlama", "talepler, hasta başı maliyet ve ülke bazında dönüşüm üzerine aylık rapor"),

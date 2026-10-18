@@ -116,7 +116,7 @@ DATA = {
         ],
         "offer_title": "What a partnership includes",
         "offers": [
-            ("Multilingual SEO", "pages that rank for what patients really search in their own language, like the platform we built in 16 languages"),
+            ("Multilingual SEO", "Google visibility in 16 languages"),
             ("Ads and content", "Google and Meta campaigns per country, plus content production if you have none"),
             ("Patient pre-qualification", "photos, X-ray, budget and dates collected before the case reaches the dentist"),
             ("Reporting", "monthly report on enquiries, cost per patient and conversion by country"),

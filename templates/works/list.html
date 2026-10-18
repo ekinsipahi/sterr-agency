@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block ga_page %}{"content_group": "calismalar", "page_type": "case_list"}{% endblock %}
-{% block meta %}{% include "partials/meta.html" with title="Çalışmalarımız | Gerçek Sonuçlar, Gerçek Ciro — Sterr Agency" description="Search Console grafikleri, reklam panelleri ve ciro kayıtları. Özel ders öğretmenlerinden e-ticarete, müşterilerimize getirdiğimiz sonuçlar." %}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title="Çalışmalarımız | Gerçek Sonuçlar, Gerçek Ciro — Sterr Agency" description="Büyüme grafikleri, reklam panelleri ve ciro kayıtları. Özel ders öğretmenlerinden e-ticarete, müşterilerimize getirdiğimiz sonuçlar." %}{% endblock %}
 {% block content %}
 <section class="page-hero">
   <div class="container">
     <p class="eyebrow reveal">Çalışmalarımız</p>
     <h1 class="h1 reveal" style="max-width:900px">Söz değil, <span class="serif">ekran görüntüsü.</span></h1>
-    <p class="lede reveal">Search Console grafikleri, reklam panelleri ve ciro ekranları. Her çalışmada ne yaptığımızı ve ne getirdiğimizi gösteriyoruz.</p>
+    <p class="lede reveal">Büyüme grafikleri, reklam panelleri ve ciro ekranları. Her çalışmada ne yaptığımızı ve ne getirdiğimizi gösteriyoruz.</p>
   </div>
 </section>
 <section class="section--tight">
@@ -16,7 +16,7 @@
     {% else %}
     <div class="card center reveal" style="padding:64px 24px">
       <h2 class="h3">Vaka çalışmalarımızı müşteri onayıyla paylaşıyoruz.</h2>
-      <p style="max-width:560px;margin:10px auto 0">Ön görüşmede sektörünüze en yakın çalışmaların Search Console, reklam ve ciro ekranlarını canlı olarak gösteriyoruz.</p>
+      <p style="max-width:560px;margin:10px auto 0">Ön görüşmede sektörünüze en yakın çalışmaların büyüme, reklam ve ciro ekranlarını canlı olarak gösteriyoruz.</p>
       <div class="btn-row mt-m" style="justify-content:center"><a class="btn btn--signal" href="{% url 'leads:apply' %}">Görüşme talep et {% include "partials/icons/arrow.svg" %}</a></div>
     </div>
     {% endif %}

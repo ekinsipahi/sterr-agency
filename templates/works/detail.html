@@ -46,7 +46,7 @@
     <div class="section-head reveal"><p class="eyebrow">Kanıtlar</p><h2 class="h2">Panellerden <span class="serif">doğrudan.</span></h2></div>
     <div class="proof-grid">
       {% for m in case.media.all %}
-      <figure class="reveal"><a href="{{ m.image.url }}" target="_blank" rel="noopener"><img src="{{ m.image.url }}" alt="{{ m.get_kind_display }} — {{ case.client }}" loading="lazy"></a>
+      <figure class="reveal"><a href="{{ m.image.url }}" target="_blank" rel="noopener"><img src="{{ m.image.url }}" alt="{{ m.caption|default:case.client }}" loading="lazy"></a>
         <figcaption><span class="kind">{{ m.get_kind_display }}</span>{{ m.caption }}</figcaption></figure>
       {% endfor %}
     </div>

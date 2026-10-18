@@ -23,8 +23,6 @@
   <div class="container">
     <div class="section-head reveal"><p class="eyebrow">{{ p.name }}</p><h2 class="h2">{{ ui.system_title }}</h2></div>
     <div class="grid grid-2">{% for t, b in p.system %}<div class="card reveal"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ t }}</h3><p>{{ b }}</p></div>{% endfor %}</div>
-    <p class="eyebrow mt-l reveal">{{ ui.searches_title }}</p>
-    <div class="chips reveal">{% for q in p.searches %}<span class="chip">“{{ q }}”</span>{% endfor %}</div>
   </div>
 </section>
 

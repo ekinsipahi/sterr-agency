@@ -116,7 +116,7 @@ DATA = {
         ],
         "offer_title": "Tərəfdaşlığa nələr daxildir",
         "offers": [
-            ("Çoxdilli SEO", "pasiyentlərin öz dilində həqiqətən axtardıqlarında önə çıxan səhifələr, 16 dildəki platformamız kimi"),
+            ("Çoxdilli SEO", "16 dildə Google-da görünürlük"),
             ("Reklam və məzmun", "ölkələr üzrə Google və Meta kampaniyaları, məzmununuz yoxdursa istehsal"),
             ("Pasiyentlərin ilkin seçimi", "şəkil, rentgen, büdcə və tarixlər həkimə çatmazdan əvvəl toplanır"),
             ("Hesabat", "müraciətlər, pasiyent başına xərc və ölkələr üzrə dönüşüm haqqında aylıq hesabat"),

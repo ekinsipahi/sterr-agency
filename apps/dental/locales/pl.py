@@ -116,7 +116,7 @@ DATA = {
         ],
         "offer_title": "Co obejmuje współpraca",
         "offers": [
-            ("Wielojęzyczne SEO", "strony, które pozycjonują się na to, czego pacjenci naprawdę szukają w swoim języku, jak nasza platforma w 16 językach"),
+            ("Wielojęzyczne SEO", "Widoczność w Google w 16 językach"),
             ("Reklamy i treści", "kampanie Google i Meta dla każdego kraju oraz produkcja treści, jeśli ich nie macie"),
             ("Wstępna kwalifikacja pacjentów", "zdjęcia, RTG, budżet i terminy zebrane, zanim przypadek trafi do dentysty"),
             ("Raporty", "comiesięczny raport o zapytaniach, koszcie pacjenta i konwersji według krajów"),
