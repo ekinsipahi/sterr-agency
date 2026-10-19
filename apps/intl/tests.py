@@ -23,6 +23,7 @@ def meta_pages(data):
     yield data["home"]
     yield data["sectors_index"]
     yield data["guides_index"]
+    yield data["about"]
     for group in ("clusters", "sectors", "guides"):
         yield from data[group].values()
 
@@ -43,7 +44,7 @@ class ContentTests(TestCase):
                     self.assertLessEqual(len(p["title"]), 68)
                     self.assertLessEqual(len(p["description"].replace("{price}", "1.000 €")), 165)
                 titles.add(p["title"])
-        self.assertEqual(len(titles), 15 * 19)
+        self.assertEqual(len(titles), 15 * 20)
 
     def test_urls_resolve_back_to_their_key(self):
         for code in INTL_CODES:
@@ -81,7 +82,7 @@ class PricingTests(TestCase):
 
 
 class PageTests(TestCase):
-    def test_all_285_pages_render(self):
+    def test_all_300_pages_render(self):
         for code in INTL_CODES:
             for key in PAGE_KEYS:
                 url = page_path(code, key)

@@ -1,0 +1,9 @@
+{% if cases %}
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">Çalışmalarımız</p><h2 class="h2">Kurduğumuz <span class="serif">işler.</span></h2></div>
+    <div class="grid grid-3">{% for case in cases %}{% include "partials/case_card.html" %}{% endfor %}</div>
+    <div class="center mt-m"><a class="btn btn--ghost" href="{% url 'works:list' %}">Tüm çalışmalar {% include "partials/icons/arrow.svg" %}</a></div>
+  </div>
+</section>
+{% endif %}

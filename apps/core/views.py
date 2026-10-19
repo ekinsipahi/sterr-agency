@@ -7,6 +7,7 @@ from django.views.decorators.cache import cache_page
 
 from apps.core.languages import INTL_CODES
 from apps.dental.languages import LANGS, PAGES, alternates, page_path
+from apps.intl.about import ABOUT, FOUNDER_INSTAGRAM
 from apps.intl.content import PAGE_KEYS as INTL_PAGE_KEYS
 from apps.intl.content import alternates as intl_alternates
 from apps.intl.content import page_path as intl_path
@@ -55,7 +56,10 @@ def method(request):
 
 
 def about(request):
-    return render(request, "core/about.html")
+    return render(request, "core/about.html", {
+        "a": ABOUT["tr"], "instagram": FOUNDER_INSTAGRAM, "contact_label": "İletişim", "proof": "core/_about_proof.html",
+        "cases": CaseStudy.objects.filter(is_published=True, is_featured=True)[:3],
+    })
 
 
 def legal(request, template):
@@ -104,7 +108,7 @@ def dental_sitemap_urls():
 
 def intl_sitemap_urls():
     """(path, priority, alternates) for the 15-language agency pages."""
-    prio = {"home": "1.0", "cluster": "0.9", "sectors": "0.7", "sector": "0.7", "guides": "0.6", "guide": "0.6"}
+    prio = {"home": "1.0", "cluster": "0.9", "sectors": "0.7", "sector": "0.7", "guides": "0.6", "guide": "0.6", "about": "0.5"}
     return [
         (intl_path(code, key), prio[key.partition(":")[0]], intl_alternates(key))
         for key in INTL_PAGE_KEYS for code in INTL_CODES

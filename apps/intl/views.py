@@ -14,6 +14,7 @@ from apps.dental.languages import page_path as dental_path
 from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
+from .about import FOUNDER_INSTAGRAM
 from .content import (CLUSTER_KEYS, CONTENT, GUIDE_KEYS, PAGE_KEYS, SECTOR_KEYS, alternates, fill, lang_links,
                       page_path, resolve)
 from .forms import IntlLeadForm
@@ -55,6 +56,7 @@ def _base_context(code, key, form=None):
             "home": page_path(code, "home"),
             "sectors": page_path(code, "sectors"),
             "guides": page_path(code, "guides"),
+            "about": page_path(code, "about"),
             "dental": dental_path(code, "hub"),
             "clusters": [(data["clusters"][k], page_path(code, f"cluster:{k}")) for k in CLUSTER_KEYS],
             "sector_list": [(data["sectors"][k], page_path(code, f"sector:{k}")) for k in SECTOR_KEYS],
@@ -82,6 +84,9 @@ def _render(request, code, key, form=None, status=200):
                    others=[(s, url) for s, url in ctx["urls"]["sector_list"] if s is not data["sectors"][slug]])
     elif kind == "guides":
         ctx.update(p=data["guides_index"], faqs=None, template="intl/guides.html")
+    elif kind == "about":
+        ctx.update(p=data["about"], a=data["about"], faqs=None, template="intl/about.html",
+                   instagram=FOUNDER_INSTAGRAM, contact_label=ctx["ui"]["contact"], proof="intl/_work.html")
     else:
         ctx.update(p=data["guides"][slug], faqs=data["guides"][slug]["faqs"], template="intl/guide.html",
                    others=[(g, url) for g, url in ctx["urls"]["guide_list"] if g is not data["guides"][slug]][:3])

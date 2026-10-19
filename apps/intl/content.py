@@ -2,7 +2,7 @@
 
 Page keys are shared with the Turkish site so every page links to its equivalent
 in all 16 languages:
-    home · cluster:<tr-slug> · sectors · sector:<tr-slug> · guides · guide:<tr-slug>
+    home · cluster:<tr-slug> · sectors · sector:<tr-slug> · guides · guide:<tr-slug> · about
 Turkish versions are the existing Turkish pages; the other 15 languages live under
 /<code>/ with localized slugs from apps/intl/locales/<code>.py.
 """
@@ -10,7 +10,13 @@ from importlib import import_module
 
 from apps.core.languages import DEFAULT, INTL_CODES, LANGS
 
+from .about import ABOUT
+
 CONTENT = {code: import_module(f"apps.intl.locales.{code}").DATA for code in INTL_CODES}
+for _code, _data in CONTENT.items():
+    _data["about"] = ABOUT[_code]
+    _data["slugs"]["about"] = ABOUT[_code]["slug"]
+    _data["ui"]["nav_about"] = ABOUT[_code]["nav"]
 
 CLUSTER_KEYS = ("dijital-pazarlama-ajansi", "sosyal-medya-ajansi", "sosyal-medya-yonetimi-ajansi", "dijital-pazarlama-uzmani")
 SECTOR_KEYS = ("ozel-ders-ogretmenleri", "matematik-ogretmenleri", "fizik-ogretmenleri", "e-ticaret",
@@ -18,7 +24,7 @@ SECTOR_KEYS = ("ozel-ders-ogretmenleri", "matematik-ogretmenleri", "fizik-ogretm
 GUIDE_KEYS = ("dijital-pazarlama-ajansi-ne-is-yapar", "dijital-pazarlama-ajansi-fiyatlari", "sosyal-medya-ajansi-nedir",
               "sosyal-medya-ajansi-fiyatlari", "sosyal-medya-ajans-sozlesmesi", "dijital-pazarlama-uzmani-nedir")
 PAGE_KEYS = (["home"] + [f"cluster:{k}" for k in CLUSTER_KEYS] + ["sectors"] + [f"sector:{k}" for k in SECTOR_KEYS]
-             + ["guides"] + [f"guide:{k}" for k in GUIDE_KEYS])
+             + ["guides"] + [f"guide:{k}" for k in GUIDE_KEYS] + ["about"])
 
 
 def _tr_path(key):
@@ -30,6 +36,7 @@ def _tr_path(key):
         "sector": f"/sektorler/{slug}/",
         "guides": "/rehber/",
         "guide": f"/rehber/{slug}/",
+        "about": "/hakkimizda/",
     }[kind]
 
 
@@ -42,7 +49,7 @@ def page_path(code, key):
         return f"/{code}/"
     if kind == "cluster":
         return f"/{code}/{c['clusters'][slug]['slug']}/"
-    if kind in ("sectors", "guides"):
+    if kind in ("sectors", "guides", "about"):
         return f"/{code}/{c['slugs'][kind]}/"
     group = "sectors" if kind == "sector" else "guides"
     return f"/{code}/{c['slugs'][group]}/{c[group][slug]['slug']}/"
@@ -69,7 +76,7 @@ def resolve(code, first=None, second=None):
         for key, cl in c["clusters"].items():
             if cl["slug"] == first:
                 return f"cluster:{key}"
-        for kind in ("sectors", "guides"):
+        for kind in ("sectors", "guides", "about"):
             if c["slugs"][kind] == first:
                 return kind
         return None

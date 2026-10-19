@@ -1,0 +1,68 @@
+{% comment %}About page body, shared by the Turkish page and the 15 international ones.
+`a` = apps.intl.about.ABOUT[code]; `contact_label`, `instagram` from the view; the
+wrapper template adds its proof/work section through the `proof` include.{% endcomment %}
+<section class="page-hero">
+  <div class="container">
+    <p class="eyebrow reveal">{{ a.nav }}</p>
+    <h1 class="h1 reveal" style="max-width:1100px">{{ a.h1.0 }}<span class="serif">{{ a.h1.1 }}</span>{{ a.h1.2 }}</h1>
+    <p class="lede reveal">{{ a.lede }}</p>
+  </div>
+</section>
+
+<section class="section--tight">
+  <div class="container">
+    <div class="stats stats--4 reveal">{% for value, label in a.facts %}<div class="stat"><div class="stat__value">{{ value }}</div><div class="stat__label">{{ label }}</div></div>{% endfor %}</div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">{{ a.story_eyebrow }}</p><h2 class="h2">{{ a.story_title.0 }}<span class="serif">{{ a.story_title.1 }}</span></h2></div>
+    <div class="grid grid-3">{% for t, x in a.story %}<div class="card reveal"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ t }}</h3><p>{{ x }}</p></div>{% endfor %}</div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal"><p class="eyebrow">{{ a.founder_eyebrow }}</p><h2 class="h2">{{ a.founder_title.0 }}<span class="serif">{{ a.founder_title.1 }}</span></h2></div>
+    <div class="reveal">
+      <p class="lede">{{ a.founder_text }}</p>
+      <a class="btn btn--signal btn--lg mt-m" href="https://www.instagram.com/{{ instagram }}/" target="_blank" rel="noopener" data-loc="about_founder">{% include "partials/icons/instagram.svg" %} @{{ instagram }}</a>
+      <p class="muted mt-s" style="font-size:14.5px">{{ a.founder_cta }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal"><p class="eyebrow">{{ a.reach_eyebrow }}</p><h2 class="h2">{{ a.reach_title.0 }}<span class="serif">{{ a.reach_title.1 }}</span></h2></div>
+    <p class="lede reveal">{{ a.reach_text }}</p>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">{{ a.values_eyebrow }}</p></div>
+    <div class="grid grid-3">{% for t, x in a.values %}<div class="card reveal"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ t }}</h3><p>{{ x }}</p></div>{% endfor %}</div>
+  </div>
+</section>
+
+{% include proof %}
+
+<section class="section section--line">
+  <div class="container">
+    <p class="statement reveal">{{ a.mission.0 }}<span class="serif">{{ a.mission.1 }}</span><span class="dim">{{ a.mission.2 }}</span></p>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal"><h2 class="h2">{{ a.company_title }}</h2></div>
+    <div class="prose reveal">
+      <table>
+        {% for label, value in a.rows %}<tr><th>{{ label }}</th><td>{{ value }}</td></tr>{% endfor %}
+        <tr><th>{{ contact_label }}</th><td><a href="{{ whatsapp_url }}" target="_blank" rel="noopener">{{ whatsapp_display }}</a> · <a href="mailto:{{ contact_email }}">{{ contact_email }}</a> · <a href="https://www.instagram.com/{{ instagram }}/" target="_blank" rel="noopener">@{{ instagram }}</a></td></tr>
+      </table>
+    </div>
+  </div>
+</section>

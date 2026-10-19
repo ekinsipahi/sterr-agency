@@ -45,6 +45,8 @@ def _page_key(request):
     name, kw = match.view_name, match.kwargs
     if name == "core:home":
         return "home"
+    if name == "core:about":
+        return "about"
     if name == "seo:cluster" and kw.get("cluster") in CLUSTER_KEYS:
         return f"cluster:{kw['cluster']}"
     if name == "seo:sectors":

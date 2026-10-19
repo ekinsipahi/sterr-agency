@@ -1,35 +1,7 @@
 {% extends "base.html" %}
 {% block ga_page %}{"content_group": "kurumsal", "page_type": "about"}{% endblock %}
-{% block meta %}{% include "partials/meta.html" with title="Hakkımızda | Sterr Agency — Sterr Technologies OÜ" description="Sterr Agency, Sterr Technologies OÜ çatısı altında Türkiye'deki işletmelere müşteri getiren bir büyüme ajansıdır. Teknoloji şirketi disipliniyle pazarlama." %}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=a.title description=a.description %}{% endblock %}
 {% block content %}
-<section class="page-hero">
-  <div class="container">
-    <p class="eyebrow reveal">Hakkımızda</p>
-    <h1 class="h1 reveal" style="max-width:1000px">Bir teknoloji şirketinin <span class="serif">disipliniyle</span> pazarlama.</h1>
-    <p class="lede reveal">Sterr Agency, yazılım ve veri altyapısı geliştiren Sterr Technologies OÜ'nün Türkiye'ye odaklanan büyüme ajansıdır. Pazarlamaya bir yazılım ürünü gibi bakıyoruz: ölçüyor, test ediyor, çalışanı büyütüyoruz.</p>
-  </div>
-</section>
-<section class="section section--line">
-  <div class="container grid grid-3">
-    <div class="card reveal"><span class="card__num">01</span><h2 class="h3">Kalite, hacimden önce</h2><p>Sınırlı sayıda işletmeyle çalışırız. Her müşteriye kıdemli bir ekip ayırabilmek için başvuruları seçerek kabul ederiz.</p></div>
-    <div class="card reveal"><span class="card__num">02</span><h2 class="h3">Veri, fikirden sonra</h2><p>Önce müşterinizi anlayan güçlü bir fikir, ardından o fikri doğrulayan veri. İkisi olmadan büyüme olmaz.</p></div>
-    <div class="card reveal"><span class="card__num">03</span><h2 class="h3">Şeffaflık, her ay</h2><p>Hesaplar sizin, veriler sizin. Her ay ne yaptığımızı ve ne getirdiğimizi açıkça raporlarız.</p></div>
-  </div>
-</section>
-<section class="section section--line">
-  <div class="container split">
-    <div class="reveal"><p class="eyebrow">Şirket bilgileri</p><h2 class="h2">Resmi <span class="serif">kimlik</span></h2></div>
-    <div class="prose reveal">
-      <table>
-        <tr><th>Ticari unvan</th><td>{{ company.legal_name }}</td></tr>
-        <tr><th>Marka</th><td>{{ company.brand }}</td></tr>
-        <tr><th>Sicil</th><td>{{ company.registry }} — {{ company.registry_code }}</td></tr>
-        <tr><th>Adres</th><td>{{ company.address }}</td></tr>
-        <tr><th>Hizmet bölgesi</th><td>Türkiye — 81 il</td></tr>
-        <tr><th>İletişim</th><td><a href="{{ whatsapp_url }}">{{ whatsapp_display }}</a> · <a href="mailto:{{ contact_email }}">{{ contact_email }}</a></td></tr>
-      </table>
-    </div>
-  </div>
-</section>
+{% include "partials/about_body.html" %}
 {% include "partials/cta.html" %}
 {% endblock %}

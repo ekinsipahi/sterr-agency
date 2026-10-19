@@ -4,7 +4,7 @@
     <div class="footer__grid">
       <div>
         <a href="{% url 'core:home' %}" class="brand">{% if site.logo %}<img src="{{ site.logo.url }}" alt="Sterr Agency" width="140" height="30">{% else %}<span class="brand__mark">{% include "partials/icons/mark.svg" %}</span>sterr<span class="brand__sub">agency</span>{% endif %}</a>
-        <p class="muted mt-s" style="max-width:340px;font-size:15px">Reklam, SEO ve AI destekli içerik yayılımını tek bir büyüme sisteminde birleştiren dijital pazarlama ajansı. Türkiye'nin 81 ilinde.</p>
+        <p class="muted mt-s" style="max-width:340px;font-size:15px">Reklam, SEO ve AI destekli içerik yayılımını tek bir büyüme sisteminde birleştiren dijital pazarlama ajansı. Türkiye merkezli; 81 ilde ve dünyanın her yerinde.</p>
         <div class="btn-row mt-s">
           <a class="btn btn--signal btn--sm" href="{% url 'leads:apply' %}">Başvuru yap {% include "partials/icons/arrow.svg" %}</a>
           <a class="btn btn--ghost btn--sm" href="{{ whatsapp_url }}" target="_blank" rel="noopener">{{ whatsapp_display }}</a>
