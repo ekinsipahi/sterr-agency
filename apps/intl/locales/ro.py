@@ -51,7 +51,7 @@ DATA = {
         "pricing_popular": "Cel mai ales",
         "tiers": [
             ("Spark", "Pentru afaceri care vor un flux constant de cereri din unul sau două canale.", ["Strategie și poziționare", "Reclame pe Google sau Meta", "Producție lunară de conținut", "Raport lunar de rezultate"]),
-            ("Momentum", "Pentru afaceri pregătite să crească pe mai multe canale simultan.", ["Tot ce include Spark", "Reclame pe Google și Meta", "SEO", "Distribuire de conținut cu AI"]),
+            ("Momentum", "Pentru afaceri pregătite să crească pe mai multe canale simultan.", ["Tot ce include Spark", "Reclame pe Google și Meta", "SEO", "Distribuire de conținut cu AI", "Creștere organică pe Instagram, axată pe locație"]),
             ("Dominance", "Pentru branduri care vor să conducă piața în mai multe țări și limbi.", ["Tot ce include Momentum", "SEO multilingv", "Echipă de conținut dedicată", "Rapoarte și apeluri săptămânale"]),
         ],
         "form_title": "Spune-ne despre afacerea ta",

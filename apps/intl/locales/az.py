@@ -51,7 +51,7 @@ DATA = {
         "pricing_popular": "Ən çox seçilən",
         "tiers": [
             ("Spark", "Bir və ya iki kanaldan sabit müraciət axını istəyən bizneslər üçün.", ["Strategiya və mövqeləndirmə", "Google və ya Meta-da reklam", "Aylıq məzmun istehsalı", "Aylıq nəticə hesabatı"]),
-            ("Momentum", "Eyni vaxtda bir neçə kanalda böyüməyə hazır bizneslər üçün.", ["Spark-dakı hər şey", "Google və Meta-da reklam", "SEO", "Süni intellektlə məzmun yayımı"]),
+            ("Momentum", "Eyni vaxtda bir neçə kanalda böyüməyə hazır bizneslər üçün.", ["Spark-dakı hər şey", "Google və Meta-da reklam", "SEO", "Süni intellektlə məzmun yayımı", "Məkan fokuslu orqanik Instagram böyüməsi"]),
             ("Dominance", "Bir neçə ölkədə və dildə bazarına liderlik etmək istəyən brendlər üçün.", ["Momentum-dakı hər şey", "Çoxdilli SEO", "Xüsusi məzmun komandası", "Həftəlik hesabat və zənglər"]),
         ],
         "form_title": "Biznesiniz haqqında danışın",

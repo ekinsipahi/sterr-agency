@@ -51,7 +51,7 @@ DATA = {
         "pricing_popular": "Mest valgt",
         "tiers": [
             ("Spark", "For bedrifter som vil ha en jevn strøm av henvendelser fra én eller to kanaler.", ["Strategi og posisjonering", "Annonser på Google eller Meta", "Månedlig innholdsproduksjon", "Månedlig resultatrapport"]),
-            ("Momentum", "For bedrifter som er klare til å vokse i flere kanaler samtidig.", ["Alt i Spark", "Annonser på Google og Meta", "SEO", "AI-støttet innholdsspredning"]),
+            ("Momentum", "For bedrifter som er klare til å vokse i flere kanaler samtidig.", ["Alt i Spark", "Annonser på Google og Meta", "SEO", "AI-støttet innholdsspredning", "Stedsfokusert organisk vekst på Instagram"]),
             ("Dominance", "For merkevarer som vil lede markedet sitt på tvers av land og språk.", ["Alt i Momentum", "Flerspråklig SEO", "Dedikert innholdsteam", "Ukentlige rapporter og samtaler"]),
         ],
         "form_title": "Fortell oss om bedriften din",

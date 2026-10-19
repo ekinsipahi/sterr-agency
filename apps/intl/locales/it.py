@@ -51,7 +51,7 @@ DATA = {
         "pricing_popular": "Il più scelto",
         "tiers": [
             ("Spark", "Per attività che vogliono un flusso costante di richieste da uno o due canali.", ["Strategia e posizionamento", "Pubblicità su Google o Meta", "Produzione di contenuti mensile", "Report mensile dei risultati"]),
-            ("Momentum", "Per attività pronte a crescere su più canali insieme.", ["Tutto di Spark", "Pubblicità su Google e Meta", "SEO", "Distribuzione di contenuti con IA"]),
+            ("Momentum", "Per attività pronte a crescere su più canali insieme.", ["Tutto di Spark", "Pubblicità su Google e Meta", "SEO", "Distribuzione di contenuti con IA", "Crescita organica su Instagram mirata per zona"]),
             ("Dominance", "Per i brand che vogliono guidare il mercato in più paesi e lingue.", ["Tutto di Momentum", "SEO multilingue", "Team contenuti dedicato", "Report e call settimanali"]),
         ],
         "form_title": "Raccontaci della tua attività",

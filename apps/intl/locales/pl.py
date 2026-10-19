@@ -51,7 +51,7 @@ DATA = {
         "pricing_popular": "Najczęściej wybierany",
         "tiers": [
             ("Spark", "Dla firm, które chcą stałego napływu zapytań z jednego lub dwóch kanałów.", ["Strategia i pozycjonowanie marki", "Reklamy w Google lub Meta", "Comiesięczna produkcja treści", "Comiesięczny raport wyników"]),
-            ("Momentum", "Dla firm gotowych rosnąć w kilku kanałach jednocześnie.", ["Wszystko z pakietu Spark", "Reklamy w Google i Meta", "SEO", "Dystrybucja treści wspierana przez AI"]),
+            ("Momentum", "Dla firm gotowych rosnąć w kilku kanałach jednocześnie.", ["Wszystko z pakietu Spark", "Reklamy w Google i Meta", "SEO", "Dystrybucja treści wspierana przez AI", "Organiczny wzrost na Instagramie nastawiony na lokalizację"]),
             ("Dominance", "Dla marek, które chcą prowadzić na rynku w wielu krajach i językach.", ["Wszystko z pakietu Momentum", "Wielojęzyczne SEO", "Dedykowany zespół treści", "Cotygodniowe raporty i rozmowy"]),
         ],
         "form_title": "Opowiedz nam o swojej firmie",

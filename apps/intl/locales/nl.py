@@ -51,7 +51,7 @@ DATA = {
         "pricing_popular": "Meest gekozen",
         "tiers": [
             ("Spark", "Voor bedrijven die een vaste stroom aanvragen willen via één of twee kanalen.", ["Strategie en positionering", "Advertenties op Google of Meta", "Maandelijkse contentproductie", "Maandelijks resultatenrapport"]),
-            ("Momentum", "Voor bedrijven die klaar zijn om op meerdere kanalen tegelijk te groeien.", ["Alles uit Spark", "Advertenties op Google en Meta", "SEO", "AI-ondersteunde contentverspreiding"]),
+            ("Momentum", "Voor bedrijven die klaar zijn om op meerdere kanalen tegelijk te groeien.", ["Alles uit Spark", "Advertenties op Google en Meta", "SEO", "AI-ondersteunde contentverspreiding", "Locatiegerichte organische Instagram-groei"]),
             ("Dominance", "Voor merken die hun markt willen leiden over landen en talen heen.", ["Alles uit Momentum", "Meertalige SEO", "Eigen contentteam", "Wekelijkse rapportage en calls"]),
         ],
         "form_title": "Vertel ons over uw bedrijf",

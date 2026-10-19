@@ -391,7 +391,7 @@ EXTRA = {
         "founder_text": "One of our founders is a dentist, so we know health businesses from the inside: patients, trust and how a clinic really runs. Write to our founder directly on Instagram.",
         "founder_cta": "Message on Instagram",
         "reach_eyebrow": "Reach", "reach_title": ("Ten channels. ", "One goal."),
-        "reach_text": "Instagram and far beyond: we multiply your digital strength from ten directions at once, across different platforms and with the institutions we partner with. On Instagram we grow you organically, focused on the locations that matter to you.",
+        "reach_text": "Instagram and far beyond: we multiply your digital strength from ten directions at once, across different platforms and with the institutions we partner with. From the Momentum plan up, we also grow you organically on Instagram, focused on the locations that matter to you.",
         "mission": ("Our goal: ", "a more accessible world", " and customers who find what they are looking for."),
     },
     "de": {
@@ -399,7 +399,7 @@ EXTRA = {
         "founder_text": "Unser Gründerteam bringt zahnärztliche Berufserfahrung mit. Deshalb kennen wir Gesundheitsunternehmen von innen: Patienten, Vertrauen und wie eine Praxis wirklich läuft. Schreiben Sie unserem Gründerteam direkt auf Instagram.",
         "founder_cta": "Auf Instagram schreiben",
         "reach_eyebrow": "Reichweite", "reach_title": ("Zehn Kanäle. ", "Ein Ziel."),
-        "reach_text": "Instagram und weit darüber hinaus: Wir vervielfachen Ihre digitale Stärke aus zehn Richtungen zugleich, über verschiedene Plattformen und mit unseren Partnerinstitutionen. Auf Instagram lassen wir Sie organisch wachsen, ausgerichtet auf die Orte, die für Sie zählen.",
+        "reach_text": "Instagram und weit darüber hinaus: Wir vervielfachen Ihre digitale Stärke aus zehn Richtungen zugleich, über verschiedene Plattformen und mit unseren Partnerinstitutionen. Ab dem Momentum-Paket lassen wir Sie zusätzlich auf Instagram organisch wachsen, ausgerichtet auf die Orte, die für Sie zählen.",
         "mission": ("Unser Ziel: ", "eine zugänglichere Welt", " und Kunden, die finden, wonach sie suchen."),
     },
     "nl": {
@@ -407,7 +407,7 @@ EXTRA = {
         "founder_text": "Eén van onze oprichters is tandarts, dus we kennen zorgbedrijven van binnenuit: patiënten, vertrouwen en hoe een praktijk echt draait. Stuur onze oprichter direct een bericht op Instagram.",
         "founder_cta": "Bericht via Instagram",
         "reach_eyebrow": "Bereik", "reach_title": ("Tien kanalen. ", "Eén doel."),
-        "reach_text": "Instagram en ver daarbuiten: we vermenigvuldigen uw digitale kracht vanuit tien richtingen tegelijk, via verschillende platforms en met de instellingen waarmee we samenwerken. Op Instagram laten we u organisch groeien, gericht op de locaties die voor u tellen.",
+        "reach_text": "Instagram en ver daarbuiten: we vermenigvuldigen uw digitale kracht vanuit tien richtingen tegelijk, via verschillende platforms en met de instellingen waarmee we samenwerken. Vanaf het Momentum-pakket laten we u ook op Instagram organisch groeien, gericht op de locaties die voor u tellen.",
         "mission": ("Ons doel: ", "een toegankelijkere wereld", " en klanten die vinden wat ze zoeken."),
     },
     "fr": {
@@ -415,7 +415,7 @@ EXTRA = {
         "founder_text": "Notre équipe fondatrice a une vraie pratique de la chirurgie dentaire : nous connaissons les entreprises de santé de l'intérieur, les patients, la confiance et le vrai fonctionnement d'un cabinet. Écrivez directement à notre équipe fondatrice sur Instagram.",
         "founder_cta": "Écrire sur Instagram",
         "reach_eyebrow": "Portée", "reach_title": ("Dix canaux. ", "Un seul objectif."),
-        "reach_text": "Instagram et bien au-delà : nous multiplions votre force numérique depuis dix directions à la fois, sur différentes plateformes et avec les institutions partenaires. Sur Instagram, nous vous faisons grandir de façon organique, en ciblant les lieux qui comptent pour vous.",
+        "reach_text": "Instagram et bien au-delà : nous multiplions votre force numérique depuis dix directions à la fois, sur différentes plateformes et avec les institutions partenaires. À partir de la formule Momentum, nous vous faisons aussi grandir de façon organique sur Instagram, en ciblant les lieux qui comptent pour vous.",
         "mission": ("Notre objectif : ", "un monde plus accessible", " et des clients qui trouvent ce qu'ils cherchent."),
     },
     "it": {
@@ -423,7 +423,7 @@ EXTRA = {
         "founder_text": "Nel nostro team di fondatori c'è esperienza odontoiatrica sul campo: conosciamo le attività sanitarie dall'interno, i pazienti, la fiducia e come funziona davvero uno studio. Scrivi direttamente ai fondatori su Instagram.",
         "founder_cta": "Scrivi su Instagram",
         "reach_eyebrow": "Portata", "reach_title": ("Dieci canali. ", "Un solo obiettivo."),
-        "reach_text": "Instagram e molto oltre: moltiplichiamo la tua forza digitale da dieci direzioni insieme, su piattaforme diverse e con gli enti con cui collaboriamo. Su Instagram ti facciamo crescere in modo organico, puntando sui luoghi che contano per te.",
+        "reach_text": "Instagram e molto oltre: moltiplichiamo la tua forza digitale da dieci direzioni insieme, su piattaforme diverse e con gli enti con cui collaboriamo. Dal piano Momentum in su ti facciamo crescere anche su Instagram in modo organico, puntando sui luoghi che contano per te.",
         "mission": ("Il nostro obiettivo: ", "un mondo più accessibile", " e clienti che trovano ciò che cercano."),
     },
     "es": {
@@ -431,7 +431,7 @@ EXTRA = {
         "founder_text": "En nuestro equipo fundador hay experiencia odontológica real: conocemos los negocios de salud por dentro, los pacientes, la confianza y cómo funciona de verdad una clínica. Escribe directamente al equipo fundador en Instagram.",
         "founder_cta": "Escribir por Instagram",
         "reach_eyebrow": "Alcance", "reach_title": ("Diez canales. ", "Un objetivo."),
-        "reach_text": "Instagram y mucho más: multiplicamos tu fuerza digital desde diez frentes a la vez, en distintas plataformas y con las instituciones con las que colaboramos. En Instagram te hacemos crecer de forma orgánica, centrados en las ubicaciones que te importan.",
+        "reach_text": "Instagram y mucho más: multiplicamos tu fuerza digital desde diez frentes a la vez, en distintas plataformas y con las instituciones con las que colaboramos. Desde el plan Momentum, también te hacemos crecer en Instagram de forma orgánica, centrados en las ubicaciones que te importan.",
         "mission": ("Nuestro objetivo: ", "un mundo más accesible", " y clientes que encuentran lo que buscan."),
     },
     "pl": {
@@ -439,7 +439,7 @@ EXTRA = {
         "founder_text": "W zespole założycieli mamy praktykę stomatologiczną, więc znamy firmy medyczne od środka: pacjentów, zaufanie i to, jak naprawdę działa gabinet. Napisz do założycieli bezpośrednio na Instagramie.",
         "founder_cta": "Napisz na Instagramie",
         "reach_eyebrow": "Zasięg", "reach_title": ("Dziesięć kanałów. ", "Jeden cel."),
-        "reach_text": "Instagram i daleko poza nim: zwielokrotniamy Twoją cyfrową siłę z dziesięciu kierunków naraz, na różnych platformach i z instytucjami, z którymi współpracujemy. Na Instagramie rozwijamy Cię organicznie, z naciskiem na lokalizacje, które się dla Ciebie liczą.",
+        "reach_text": "Instagram i daleko poza nim: zwielokrotniamy Twoją cyfrową siłę z dziesięciu kierunków naraz, na różnych platformach i z instytucjami, z którymi współpracujemy. Od pakietu Momentum rozwijamy Cię też organicznie na Instagramie, z naciskiem na lokalizacje, które się dla Ciebie liczą.",
         "mission": ("Nasz cel: ", "bardziej dostępny świat", " i klienci, którzy znajdują to, czego szukają."),
     },
     "ru": {
@@ -447,7 +447,7 @@ EXTRA = {
         "founder_text": "В команде основателей есть опыт практической стоматологии, поэтому мы знаем бизнес в сфере здоровья изнутри: пациентов, доверие и то, как на самом деле работает клиника. Напишите основателям напрямую в Instagram.",
         "founder_cta": "Написать в Instagram",
         "reach_eyebrow": "Охват", "reach_title": ("Десять каналов. ", "Одна цель."),
-        "reach_text": "Instagram и далеко за его пределами: мы умножаем вашу цифровую силу сразу с десяти направлений, на разных платформах и вместе с организациями-партнёрами. В Instagram мы растим вас органически, с упором на важные для вас локации.",
+        "reach_text": "Instagram и далеко за его пределами: мы умножаем вашу цифровую силу сразу с десяти направлений, на разных платформах и вместе с организациями-партнёрами. Начиная с пакета Momentum, мы также растим вас в Instagram органически, с упором на важные для вас локации.",
         "mission": ("Наша цель — ", "более доступный мир", " и клиенты, которые находят то, что ищут."),
     },
     "uk": {
@@ -455,7 +455,7 @@ EXTRA = {
         "founder_text": "У команді засновників є досвід практичної стоматології, тож ми знаємо бізнес у сфері здоров'я зсередини: пацієнтів, довіру і те, як насправді працює клініка. Напишіть засновникам напряму в Instagram.",
         "founder_cta": "Написати в Instagram",
         "reach_eyebrow": "Охоплення", "reach_title": ("Десять каналів. ", "Одна мета."),
-        "reach_text": "Instagram і далеко за його межами: ми примножуємо вашу цифрову силу одразу з десяти напрямків, на різних платформах і разом з організаціями-партнерами. В Instagram ми розвиваємо вас органічно, з акцентом на важливі для вас локації.",
+        "reach_text": "Instagram і далеко за його межами: ми примножуємо вашу цифрову силу одразу з десяти напрямків, на різних платформах і разом з організаціями-партнерами. Починаючи з пакета Momentum, ми також розвиваємо вас в Instagram органічно, з акцентом на важливі для вас локації.",
         "mission": ("Наша мета — ", "доступніший світ", " і клієнти, які знаходять те, що шукають."),
     },
     "ar": {
@@ -463,7 +463,7 @@ EXTRA = {
         "founder_text": "يضم فريقنا المؤسس خبرة عملية في طب الأسنان، لذلك نعرف قطاع الصحة من الداخل: المرضى والثقة وكيف تعمل العيادة فعلًا. راسل الفريق المؤسس مباشرة على Instagram.",
         "founder_cta": "راسلنا على Instagram",
         "reach_eyebrow": "الانتشار", "reach_title": ("عشر قنوات. ", "هدف واحد."),
-        "reach_text": "Instagram وأبعد بكثير: نضاعف قوتك الرقمية من عشرة اتجاهات في وقت واحد، عبر منصات مختلفة ومع المؤسسات التي نتعاون معها. وعلى Instagram ننمّي حضورك بشكل طبيعي مع التركيز على المواقع التي تهمك.",
+        "reach_text": "Instagram وأبعد بكثير: نضاعف قوتك الرقمية من عشرة اتجاهات في وقت واحد، عبر منصات مختلفة ومع المؤسسات التي نتعاون معها. وابتداءً من باقة Momentum ننمّي حضورك على Instagram أيضًا بشكل طبيعي مع التركيز على المواقع التي تهمك.",
         "mission": ("هدفنا: ", "عالم أسهل وصولًا", " وعملاء يجدون ما يبحثون عنه."),
     },
     "sv": {
@@ -471,7 +471,7 @@ EXTRA = {
         "founder_text": "En av våra grundare är tandläkare, så vi känner vårdföretag inifrån: patienterna, förtroendet och hur en klinik verkligen fungerar. Skriv direkt till vår grundare på Instagram.",
         "founder_cta": "Skriv på Instagram",
         "reach_eyebrow": "Räckvidd", "reach_title": ("Tio kanaler. ", "Ett mål."),
-        "reach_text": "Instagram och långt bortom: vi mångdubblar din digitala styrka från tio håll samtidigt, på olika plattformar och med de institutioner vi samarbetar med. På Instagram växer vi dig organiskt, med fokus på de platser som betyder något för dig.",
+        "reach_text": "Instagram och långt bortom: vi mångdubblar din digitala styrka från tio håll samtidigt, på olika plattformar och med de institutioner vi samarbetar med. Från Momentum-paketet växer vi dig också organiskt på Instagram, med fokus på de platser som betyder något för dig.",
         "mission": ("Vårt mål: ", "en mer tillgänglig värld", " och kunder som hittar det de söker."),
     },
     "da": {
@@ -479,7 +479,7 @@ EXTRA = {
         "founder_text": "En af vores stiftere er tandlæge, så vi kender sundhedsvirksomheder indefra: patienterne, tilliden og hvordan en klinik virkelig fungerer. Skriv direkte til vores stifter på Instagram.",
         "founder_cta": "Skriv på Instagram",
         "reach_eyebrow": "Rækkevidde", "reach_title": ("Ti kanaler. ", "Ét mål."),
-        "reach_text": "Instagram og langt videre: vi mangedobler din digitale styrke fra ti retninger på én gang, på forskellige platforme og med de institutioner, vi samarbejder med. På Instagram får vi dig til at vokse organisk, med fokus på de steder, der betyder noget for dig.",
+        "reach_text": "Instagram og langt videre: vi mangedobler din digitale styrke fra ti retninger på én gang, på forskellige platforme og med de institutioner, vi samarbejder med. Fra Momentum-pakken får vi dig også til at vokse organisk på Instagram, med fokus på de steder, der betyder noget for dig.",
         "mission": ("Vores mål: ", "en mere tilgængelig verden", " og kunder, der finder det, de leder efter."),
     },
     "no": {
@@ -487,7 +487,7 @@ EXTRA = {
         "founder_text": "En av gründerne våre er tannlege, så vi kjenner helsebedrifter innenfra: pasientene, tilliten og hvordan en klinikk faktisk fungerer. Skriv direkte til gründeren vår på Instagram.",
         "founder_cta": "Skriv på Instagram",
         "reach_eyebrow": "Rekkevidde", "reach_title": ("Ti kanaler. ", "Ett mål."),
-        "reach_text": "Instagram og langt videre: vi mangedobler den digitale styrken din fra ti retninger samtidig, på ulike plattformer og med institusjonene vi samarbeider med. På Instagram får vi deg til å vokse organisk, med fokus på stedene som betyr noe for deg.",
+        "reach_text": "Instagram og langt videre: vi mangedobler den digitale styrken din fra ti retninger samtidig, på ulike plattformer og med institusjonene vi samarbeider med. Fra Momentum-pakken får vi deg også til å vokse organisk på Instagram, med fokus på stedene som betyr noe for deg.",
         "mission": ("Målet vårt: ", "en mer tilgjengelig verden", " og kunder som finner det de leter etter."),
     },
     "ro": {
@@ -495,7 +495,7 @@ EXTRA = {
         "founder_text": "Echipa fondatoare are experiență practică în stomatologie, așa că știm afacerile din sănătate din interior: pacienții, încrederea și cum funcționează cu adevărat o clinică. Scrie-le fondatorilor direct pe Instagram.",
         "founder_cta": "Scrie pe Instagram",
         "reach_eyebrow": "Anvergură", "reach_title": ("Zece canale. ", "Un singur scop."),
-        "reach_text": "Instagram și mult dincolo de el: îți multiplicăm forța digitală din zece direcții deodată, pe platforme diferite și împreună cu instituțiile partenere. Pe Instagram te facem să crești organic, cu accent pe locațiile care contează pentru tine.",
+        "reach_text": "Instagram și mult dincolo de el: îți multiplicăm forța digitală din zece direcții deodată, pe platforme diferite și împreună cu instituțiile partenere. De la pachetul Momentum în sus, te facem să crești organic și pe Instagram, cu accent pe locațiile care contează pentru tine.",
         "mission": ("Scopul nostru: ", "o lume mai accesibilă", " și clienți care găsesc ce caută."),
     },
     "az": {
@@ -503,7 +503,7 @@ EXTRA = {
         "founder_text": "Təsisçilərimizdən biri diş həkimidir, ona görə də sağlamlıq bizneslərini içəridən tanıyırıq: pasiyentləri, etimadı və klinikanın əslində necə işlədiyini. Təsisçimizə birbaşa Instagram-dan yazın.",
         "founder_cta": "Instagram-dan yazın",
         "reach_eyebrow": "Əhatə", "reach_title": ("On kanal. ", "Bir məqsəd."),
-        "reach_text": "Instagram və daha çoxu: rəqəmsal gücünüzü eyni anda on istiqamətdən, müxtəlif platformalarda və tərəfdaş qurumlarımızla birlikdə artırırıq. Instagram-da sizin üçün vacib olan məkanlara fokuslanaraq orqanik böyümə təmin edirik.",
+        "reach_text": "Instagram və daha çoxu: rəqəmsal gücünüzü eyni anda on istiqamətdən, müxtəlif platformalarda və tərəfdaş qurumlarımızla birlikdə artırırıq. Momentum paketindən başlayaraq Instagram-da sizin üçün vacib olan məkanlara fokuslanan orqanik böyümə də təmin edirik.",
         "mission": ("Məqsədimiz: ", "daha əlçatan dünya", " və axtardığını tapan müştərilər."),
     },
 }
@@ -541,6 +541,6 @@ ABOUT["tr"] = {
     "founder_text": "Kurucularımızdan biri diş hekimi. Bu yüzden sağlık işletmelerini içeriden tanıyoruz: hastayı, güveni ve bir kliniğin gerçekte nasıl döndüğünü. Kendisine Instagram'dan doğrudan ulaşabilirsiniz.",
     "founder_cta": "Instagram'dan yazın",
     "reach_eyebrow": "Erişim", "reach_title": ("10 koldan. ", "Tek hedef."),
-    "reach_text": "Instagram ve çok daha fazlası: dijital gücünüzü 10 koldan, farklı farklı platformlardan ve anlaşmalı olduğumuz kurumlarla katlıyoruz. Instagram'da konum odaklı organik büyüme sağlıyoruz.",
+    "reach_text": "Instagram ve çok daha fazlası: dijital gücünüzü 10 koldan, farklı farklı platformlardan ve anlaşmalı olduğumuz kurumlarla katlıyoruz. İvme paketinden itibaren Instagram'da konum odaklı organik büyüme de sağlıyoruz.",
     "mission": ("Amacımız: ", "daha erişilebilir bir dünya", " ve aradığını bulan müşteriler."),
 }
