@@ -5,13 +5,14 @@
 
 ## Ürün (sayfalar bunu anlatacak)
 
-- **Aylık 49$ abonelik**, ödeme her ayın başında peşin.
+- **Aylık 99$ abonelik**, ödeme her ayın başında peşin.
+- **İptal:** istediği zaman iptal edebilir; iptal bir sonraki yenilemeyi durdurur. İçinde bulunulan ayın ücreti **iade edilmez** (hizmet o ay başlamış olur).
 - Ayda **ortalama 900–3.000 gerçek, organik takipçi**. Yavaş yavaş, doğal biçimde gelir.
 - **Konum odaklı:** takipçiler müşterinin seçtiği bölgeden gelir.
 - **Bot yok.** Algoritmanın ban edeceği hiçbir şey yapılmaz.
 - **Hesap/üyelik yok.** Ödeme sırasında sadece **e-posta + Instagram kullanıcı adı** alınır (Stripe Checkout).
 
-**Strateji tek cümleyle:** "Takipçi satın al" diye arayan kişiyi yakalıyoruz ama ona bot değil, **organik büyüme** satıyoruz. Her başlıkta ve açıklamada "organik" ve "bot yok" geçiyor. Rakip marka aramalarını, bedava/hile aramalarını ve 49$'ın tutmadığı pazarları bilerek dışarıda bırakıyoruz.
+**Strateji tek cümleyle:** "Takipçi satın al" diye arayan kişiyi yakalıyoruz ama ona bot değil, **organik büyüme** satıyoruz. Her başlıkta ve açıklamada "organik" ve "bot yok" geçiyor. Rakip marka aramalarını, bedava/hile aramalarını ve 99$'ın tutmadığı pazarları bilerek dışarıda bırakıyoruz.
 
 ## 1. Intent kümeleri → sayfa (İngilizce)
 
@@ -35,7 +36,7 @@ Tam liste, her keyword'ün niyeti ve hedef URL'si: [`instagram_growth_keywords.c
 | Grup | Adet | Neden |
 |---|---:|---|
 | Bedava / hile / araç / forum / panel | 54 | free, trial, apk, mod, no login, discord, telegram, reddit, smm panel: ödeme niyeti yok ya da bayi arıyor |
-| 49$'ın tutmadığı pazar ve yerel ödeme | 48 | India, Pakistan, Nigeria, Bangladesh, Nepal…; UPI, Paytm, GCash, M-Pesa, INR: fiyat beklentisi çok düşük |
+| 99$'ın tutmadığı pazar ve yerel ödeme | 48 | India, Pakistan, Nigeria, Bangladesh, Nepal…; UPI, Paytm, GCash, M-Pesa, INR: fiyat beklentisi çok düşük |
 | Rakip marka (navigasyon) | 44 | buzzoid (60.5K), passthevote (60.5K), stormlikes, famety, media mister, goread…: kullanıcı o siteyi arıyor, ayrıca marka hakkı riski |
 | Beğeni / izlenme / başka platform | 32 | likes, views, YouTube, TikTok: farklı ürün |
 | Uygulama isteyen | 9 | "app", iPhone, Android: web aboneliği değil, uygulama arıyor |
@@ -72,18 +73,19 @@ Hepsi birbirine hreflang ile bağlanır; dil menüsü aynı sayfanın diğer dil
 
 | Sayfa | Meta title | Meta description |
 |---|---|---|
-| en ana | Real Instagram Followers, Grown Organically \| No Bots, $49/mo | Stop buying bots. Get 900–3,000 real, organic Instagram followers a month, targeted to your location. Nothing that risks a ban. $49/month. |
-| en fiyat | Cheap Instagram Followers? Real Organic Growth for $49/mo | Cheap followers are bots that vanish. $49 a month brings 900–3,000 real, organic followers from the places you choose. Card, Apple Pay, Google Pay. |
+| en ana | Real Instagram Followers, Grown Organically \| No Bots, $99/mo | Stop buying bots. Get 900–3,000 real, organic Instagram followers a month, targeted to your location. Nothing that risks a ban. $99/month. |
+| en fiyat | Cheap Instagram Followers? Real Organic Growth for $99/mo | Cheap followers are bots that vanish. $99 a month brings 900–3,000 real, organic followers from the places you choose. Card, Apple Pay, Google Pay. |
 | en rehber | Should You Buy Instagram Followers? Risks & the Organic Way | Can you buy Instagram followers, does it work, can you get banned? Honest answers, and how to grow real followers organically instead. |
 | en hız | How Fast Can You Grow Instagram Followers Organically? | From 1k to 10k: realistic organic growth numbers. Our clients average 900–3,000 real followers a month, with no bots and no ban risk. |
-| tr ana | Gerçek Instagram Takipçisi, Organik Büyüme \| Bot Yok, 49$/ay | Bot takipçi almayın. Ayda ortalama 900–3.000 gerçek, organik Instagram takipçisi; konumunuza göre hedefli. Ban riskine sokan hiçbir şey yok. Aylık 49$. |
-| tr fiyat | Ucuz Instagram Takipçi mi? Organik Büyüme Aylık 49$ | Ucuz takipçi bottur, düşer. Aylık 49$ ile seçtiğiniz konumlardan ayda 900–3.000 gerçek, organik takipçi. Kart, Apple Pay, Google Pay. |
+| tr ana | Gerçek Instagram Takipçisi, Organik Büyüme \| Bot Yok, 99$/ay | Bot takipçi almayın. Ayda ortalama 900–3.000 gerçek, organik Instagram takipçisi; konumunuza göre hedefli. Ban riskine sokan hiçbir şey yok. Aylık 99$. |
+| tr fiyat | Ucuz Instagram Takipçi mi? Organik Büyüme Aylık 99$ | Ucuz takipçi bottur, düşer. Aylık 99$ ile seçtiğiniz konumlardan ayda 900–3.000 gerçek, organik takipçi. Kart, Apple Pay, Google Pay. |
 
 ## 4. Metin kuralları
 
 - **Söylenecekler:** organik, gerçek kişiler, bot yok, ban riskine sokan hiçbir şey yok, yavaş ve doğal, konum hedefli, ayda **ortalama** 900–3.000.
 - **Söylenmeyecekler:** nasıl büyüttüğümüz (yöntem, araç, platform adı); "garanti" kelimesi; rakip marka adları; "anında / instant".
 - Rakamlar her zaman "ortalama" diye geçer. 900–3.000 bir ortalamadır, söz değildir.
+- İptal/iade SSS'de ve kullanım koşullarında aynı cümleyle: "İstediğiniz zaman iptal edin; iptal bir sonraki ödemeyi durdurur, başlamış ayın ücreti iade edilmez."
 
 ## 5. Kaynak dosyalar
 
