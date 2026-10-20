@@ -167,14 +167,14 @@
   var lastField = "";
   var submitted = false;
   document.addEventListener("focusin", function (e) {
-    var f = e.target.closest("form[data-steps], form[data-dental-form]");
+    var f = e.target.closest("form[data-steps], form[data-dental-form], form[data-growth-form]");
     if (!f || !e.target.name) return;
     activeForm = f;
     lastField = e.target.name;
   });
   document.addEventListener("submit", function (e) {
     var f = e.target;
-    if (!f.matches("form[data-steps], form[data-dental-form]")) return;
+    if (!f.matches("form[data-steps], form[data-dental-form], form[data-growth-form]")) return;
     submitted = true;
     if (f.hasAttribute("data-dental-form")) track("lead_form_submit", { form_id: f.dataset.formId || "dental_inquiry", language: doc.lang });
   }, true);
@@ -189,6 +189,17 @@
     });
     activeForm = null;
   });
+
+  /* ---------- Growth subscription: purchase on the success page ---------- */
+  var purchaseData = document.getElementById("purchase-event");
+  if (purchaseData) {
+    try {
+      var buy = JSON.parse(purchaseData.textContent);
+      if (buy.user_data && window.gtag) window.gtag("set", "user_data", buy.user_data);
+      delete buy.user_data;
+      track("purchase", buy);
+    } catch (e) { /* malformed */ }
+  }
 
   /* ---------- First-touch attribution (UTM + gclid) ---------- */
   var ATTR = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "gclid"];
@@ -232,6 +243,30 @@
     });
     if (dform.dataset.formErrors) {
       track("lead_form_error", { form_id: dform.dataset.formId || "dental_inquiry", error_fields: dform.dataset.formErrors.slice(0, 100) });
+    }
+  }
+
+  /* ---------- Organic Instagram growth form (16 languages) ---------- */
+  var gform = document.querySelector("[data-growth-form]");
+  if (gform) {
+    ["utm_source", "utm_medium", "utm_campaign", "gclid"].forEach(function (k) {
+      var input = gform.querySelector('[name="' + k + '"]');
+      if (input && !input.value) input.value = params.get(k) || stored[k] || "";
+    });
+    var gsrc = gform.querySelector('[name="source_page"]');
+    if (gsrc && !gsrc.value) gsrc.value = location.pathname + (stored.landing && stored.landing !== location.pathname ? " ← " + stored.landing : "");
+    var gStarted = false;
+    gform.addEventListener("focusin", function () {
+      if (gStarted) return;
+      gStarted = true;
+      track("form_start", { form_id: "instagram_growth", language: doc.lang });
+    });
+    gform.addEventListener("submit", function () {
+      track("begin_checkout", { form_id: "instagram_growth", language: doc.lang, value: 99, currency: "USD",
+        items: [{ item_id: "organic_growth", item_name: "Organic Instagram Growth", price: 99, quantity: 1 }] });
+    });
+    if (gform.dataset.formErrors) {
+      track("lead_form_error", { form_id: "instagram_growth", error_fields: gform.dataset.formErrors.slice(0, 100) });
     }
   }
 

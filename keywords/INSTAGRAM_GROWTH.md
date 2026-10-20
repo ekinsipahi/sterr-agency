@@ -11,6 +11,7 @@
 - **Konum odaklı:** takipçiler müşterinin seçtiği bölgeden gelir.
 - **Bot yok.** Algoritmanın ban edeceği hiçbir şey yapılmaz.
 - **Hesap/üyelik yok.** Ödeme sırasında sadece **e-posta + Instagram kullanıcı adı** alınır (Stripe Checkout).
+- **Instagram şifresi istenmez.** Sayfalarda en güçlü güven cümlesi: "Şifrenizi asla istemiyoruz."
 
 **Strateji tek cümleyle:** "Takipçi satın al" diye arayan kişiyi yakalıyoruz ama ona bot değil, **organik büyüme** satıyoruz. Her başlıkta ve açıklamada "organik" ve "bot yok" geçiyor. Rakip marka aramalarını, bedava/hile aramalarını ve 99$'ın tutmadığı pazarları bilerek dışarıda bırakıyoruz.
 

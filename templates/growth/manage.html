@@ -1,0 +1,25 @@
+{% extends base_template %}
+{% block html_lang %}{{ code }}{% endblock %}
+{% block html_dir %}{% if current_lang.rtl %} dir="rtl"{% endif %}{% endblock %}
+{% block ga_page %}{"content_group": "instagram_growth", "page_type": "growth_manage", "language": "{{ code }}"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=gu.manage_title description=gu.manage_lead robots="noindex, nofollow" %}{% endblock %}
+{% block alternates %}{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container split">
+    <div class="reveal">
+      <p class="eyebrow">{{ gu.eyebrow }}</p>
+      <h1 class="h1">{{ gu.manage_title }}</h1>
+      <p class="lede">{{ gu.manage_lead }}</p>
+    </div>
+    <form class="form-card reveal" method="post" action="{% url 'growth:manage' %}">
+      {% csrf_token %}
+      <input type="hidden" name="lang" value="{{ code }}">
+      {% if manage_status == "sent" %}<div class="form-alert form-alert--ok">{{ gu.manage_sent }}</div>{% elif manage_status == "expired" %}<div class="form-alert">{{ gu.manage_expired }}</div>{% endif %}
+      <div class="field"><label for="manage-email">{{ gu.f_email }}</label><input id="manage-email" type="email" name="email" required autocomplete="email" placeholder="{{ gu.f_email_ph }}"></div>
+      <button class="btn btn--signal btn--lg mt-s" type="submit" style="width:100%">{{ gu.manage_submit }}</button>
+      <p class="muted mt-s" style="font-size:13.5px">{{ gu.policy }}</p>
+    </form>
+  </div>
+</section>
+{% endblock %}

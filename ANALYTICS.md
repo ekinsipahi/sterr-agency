@@ -134,6 +134,14 @@ Satırlar `city`, sütunlar `service`, değerler `generate_lead` sayısı + `pho
 Dental sayfalarda `content_group=dental_tourism`, `page_type=dental_hub / dental_partners`, `language=<dil>`.
 GA4'te `generate_lead` olayını `form_id` ile filtreleyerek hasta ve B2B taleplerini ayrı ayrı görebilirsiniz.
 
+## Organik Instagram büyütme (16 dil)
+
+- Sayfalarda `content_group=instagram_growth`, `page_type=growth_main / growth_pricing / growth_guide_buy / growth_guide_speed / growth_geo / growth_success`, `language=<dil>`.
+- `form_start` (`form_id=instagram_growth`), formu yarıda bırakınca `form_abandon`.
+- **`begin_checkout`**: Form gönderilip Stripe'a geçerken (`value=99`, `currency=USD`, `items`).
+- **`purchase`**: Stripe'tan dönüşte ödeme tamamlandıysa, bir kez (`transaction_id` = Checkout oturumu, `value=99`, `currency=USD`). E-posta SHA-256 ile `user_data` olarak gider.
+- GA4'te `purchase` olayını anahtar etkinlik yapın. Google Ads'e de dönüşüm olarak aktarılabilir.
+
 ## Uluslararası ajans sayfaları (15 dil)
 
 - Sayfalarda `content_group=intl_agency`, `page_type=intl_<sayfa>`, `language=<dil>`.

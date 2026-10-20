@@ -1,0 +1,25 @@
+{% extends base_template %}
+{% block html_lang %}{{ code }}{% endblock %}
+{% block html_dir %}{% if current_lang.rtl %} dir="rtl"{% endif %}{% endblock %}
+{% block ga_page %}{"content_group": "instagram_growth", "page_type": "growth_success", "language": "{{ code }}"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=gu.success_title description=gu.eyebrow robots="noindex, nofollow" %}{% endblock %}
+{% block alternates %}{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <p class="eyebrow reveal">{{ gu.eyebrow }}</p>
+    {% if pending %}
+    <h1 class="h1 reveal" style="max-width:900px">{{ gu.pending_title }}</h1>
+    <p class="lede reveal">{{ gu.pending_text }}</p>
+    {% else %}
+    <h1 class="h1 reveal" style="max-width:900px">{{ gu.success_title }}</h1>
+    <p class="lede reveal">{{ success_text }}</p>
+    {% endif %}
+    <div class="btn-row mt-m reveal">
+      <a class="btn btn--ghost btn--lg" href="{{ whatsapp_url }}" target="_blank" rel="noopener">{% include "partials/icons/whatsapp.svg" %} WhatsApp</a>
+      <a class="btn btn--ghost btn--lg" href="{% url 'growth:manage' %}?lang={{ code }}">{{ gu.manage_link }}</a>
+    </div>
+  </div>
+</section>
+{% if purchase_event %}{{ purchase_event|json_script:"purchase-event" }}{% endif %}
+{% endblock %}

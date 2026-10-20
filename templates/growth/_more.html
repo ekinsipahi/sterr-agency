@@ -1,0 +1,12 @@
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">{{ gu.guides_title }}</p></div>
+    <div class="grid grid-3">
+      {% if kind != "pricing" %}<a class="card reveal" href="{{ gurls.pricing }}"><span class="card__num">{{ g.price }}{{ gu.per_month }}</span><h3 class="h3">{{ g.pricing.h1.0 }}{{ g.pricing.h1.1 }}</h3><p>{{ g.pricing.lede|truncatewords:18 }}</p><span class="card__foot link-arrow">{{ gu.read_more }} {% include "partials/icons/arrow.svg" %}</span></a>{% endif %}
+      {% if page != "guide_buy" %}<a class="card reveal" href="{{ gurls.guide_buy }}"><span class="card__num">{{ g.guide_buy.minutes }} {{ gu.minutes }}</span><h3 class="h3">{{ g.guide_buy.h1 }}</h3><p>{{ g.guide_buy.lede|truncatewords:18 }}</p><span class="card__foot link-arrow">{{ gu.read_more }} {% include "partials/icons/arrow.svg" %}</span></a>{% endif %}
+      {% if page != "guide_speed" %}<a class="card reveal" href="{{ gurls.guide_speed }}"><span class="card__num">{{ g.guide_speed.minutes }} {{ gu.minutes }}</span><h3 class="h3">{{ g.guide_speed.h1 }}</h3><p>{{ g.guide_speed.lede|truncatewords:18 }}</p><span class="card__foot link-arrow">{{ gu.read_more }} {% include "partials/icons/arrow.svg" %}</span></a>{% endif %}
+      {% if kind != "main" and kind != "geo" %}<a class="card reveal" href="{{ gurls.main }}"><span class="card__num">{{ gu.eyebrow }}</span><h3 class="h3">{{ g.main.h1.0 }}{{ g.main.h1.1 }}</h3><p>{{ g.main.lede|truncatewords:18 }}</p><span class="card__foot link-arrow">{{ gu.read_more }} {% include "partials/icons/arrow.svg" %}</span></a>{% endif %}
+    </div>
+    {% if geo_links %}<div class="chips mt-m reveal">{% for place, url in geo_links %}<a class="chip" href="{{ url }}">{{ place }}</a>{% endfor %}</div>{% endif %}
+  </div>
+</section>

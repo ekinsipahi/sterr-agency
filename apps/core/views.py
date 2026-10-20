@@ -75,6 +75,7 @@ def robots_txt(request):
         "Disallow: /dental-tourism/send/",
         "Disallow: /dental-tourism/thank-you/",
         "Disallow: /intl/",
+        "Disallow: /growth/",
         "",
         f"Sitemap: {settings.SITE_URL}/sitemap.xml",
     ]
@@ -115,6 +116,13 @@ def intl_sitemap_urls():
     ]
 
 
+def growth_sitemap_urls():
+    """(path, priority, alternates) for the organic Instagram growth pages in every language."""
+    from apps.growth.content import alternates as growth_alternates, routes as growth_routes
+    prio = {"main": "0.9", "pricing": "0.8", "geo": "0.7", "guide_buy": "0.6", "guide_speed": "0.6"}
+    return [("/" + route, prio[page.partition(":")[0]], growth_alternates(page)) for route, code, page in growth_routes()]
+
+
 def _url(site, path, prio, alts=None):
     links = "".join(f'<xhtml:link rel="alternate" hreflang="{c}" href="{site}{a}"/>' for c, a in alts or [])
     return f"<url><loc>{site}{path}</loc><priority>{prio}</priority>{links}</url>"
@@ -128,6 +136,7 @@ def sitemap_xml(request):
     body = "".join(_url(site, path, prio, tr_alts.get(path)) for path, prio in sitemap_urls())
     body += "".join(_url(site, *row) for row in intl_sitemap_urls())
     body += "".join(_url(site, *row) for row in dental_sitemap_urls())
+    body += "".join(_url(site, *row) for row in growth_sitemap_urls())
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
            f"{body}</urlset>")

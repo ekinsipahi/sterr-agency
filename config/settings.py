@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "apps.seo",
     "apps.dental",
     "apps.intl",
+    "apps.growth",
 ]
 
 MIDDLEWARE = [
@@ -144,6 +145,16 @@ else:
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Sterr Agency <noreply@sterragency.com>")
 # Who gets the "yeni lead geldi" email. Comma-separated for multiple recipients.
 LEAD_NOTIFY_EMAILS = env.list("LEAD_NOTIFY_EMAILS", default=[])
+
+# --- Stripe (organic Instagram growth subscription) -------------------------------
+# Run `python manage.py setup_stripe` once with STRIPE_SECRET_KEY set; it creates the
+# $99/month price, the customer portal and the webhook, and prints the other values.
+STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
+STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY", default="")
+STRIPE_PRICE_ID = env("STRIPE_PRICE_ID", default="")
+STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
+STRIPE_PORTAL_CONFIG = env("STRIPE_PORTAL_CONFIG", default="")
+GROWTH_PRICE_USD = env.int("GROWTH_PRICE_USD", default=99)
 
 # --- Contact ----------------------------------------------------------------
 WHATSAPP_NUMBER = env("WHATSAPP_NUMBER", default="905414487561")

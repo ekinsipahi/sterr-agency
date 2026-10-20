@@ -1,0 +1,40 @@
+{% extends base_template %}
+{% block html_lang %}{{ code }}{% endblock %}
+{% block html_dir %}{% if current_lang.rtl %} dir="rtl"{% endif %}{% endblock %}
+{% block ga_page %}{"content_group": "instagram_growth", "page_type": "growth_{{ kind }}", "language": "{{ code }}"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=p.title description=p.description robots=robots %}{% endblock %}
+{% block schema %}
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"{{ p.h1|escapejs }}","description":"{{ p.description|escapejs }}","inLanguage":"{{ code }}","author":{"@id":"{{ SITE_URL }}/#org"},"publisher":{"@id":"{{ SITE_URL }}/#org"},"mainEntityOfPage":"{{ canonical_url }}"}</script>
+{% if faqs %}{% include "partials/faq_schema.html" %}{% endif %}
+{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <p class="eyebrow reveal">{{ gu.eyebrow }} · {{ p.minutes }} {{ gu.minutes }}</p>
+    <h1 class="h1 reveal" style="max-width:1000px">{{ p.h1 }}</h1>
+    <p class="lede reveal">{{ p.lede }}</p>
+  </div>
+</section>
+<section class="section--tight">
+  <div class="container split split--aside">
+    <aside class="sticky reveal">
+      <div class="toc"><b>{{ g.pricing.plan }} · {{ g.price }}{{ gu.per_month }}</b>
+        <ul class="check mt-s" style="font-size:14.5px">{% for t in gu.trust %}<li>{% include "partials/icons/check.svg" %}<span>{{ t }}</span></li>{% endfor %}</ul>
+        <a class="btn btn--signal btn--sm mt-s" href="#start" style="width:100%">{{ gu.cta }}</a>
+      </div>
+    </aside>
+    <article class="prose reveal">
+      {% for block in p.body %}{% with kind=block.0 %}
+      {% if kind == "h2" %}<h2>{{ block.1 }}</h2>
+      {% elif kind == "p" %}<p>{{ block.1 }}</p>
+      {% elif kind == "ul" %}<ul>{% for i in block.1 %}<li>{{ i }}</li>{% endfor %}</ul>
+      {% elif kind == "callout" %}<div class="callout">{{ block.1 }} <a href="#start">{{ gu.cta }} →</a></div>
+      {% elif kind == "table" %}<div class="table-wrap"><table>{% for row in block.1 %}<tr>{% for cell in row %}{% if forloop.parentloop.first %}<th>{{ cell }}</th>{% else %}<td>{{ cell }}</td>{% endif %}{% endfor %}</tr>{% endfor %}</table></div>
+      {% endif %}{% endwith %}{% endfor %}
+      {% if faqs %}<h2>{{ gu.faq_title }}</h2>{% for q, a in faqs %}<h3>{{ q }}</h3><p>{{ a }}</p>{% endfor %}{% endif %}
+    </article>
+  </div>
+</section>
+{% include "growth/_form.html" %}
+{% include "growth/_more.html" %}
+{% endblock %}

@@ -15,7 +15,7 @@
     <div class="nav__cta">
       {% include "partials/lang_menu.html" %}
       <a class="btn btn--ghost btn--sm" href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a>
-      <a class="btn btn--signal btn--sm" href="{% url 'leads:apply' %}">Başvuru yap</a>
+      <a class="btn btn--signal btn--sm" href="{% if nav_cta_href %}{{ nav_cta_href }}{% else %}{% url 'leads:apply' %}{% endif %}">{{ nav_cta_label|default:"Başvuru yap" }}</a>
       <button class="nav__toggle" type="button" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span></button>
     </div>
   </div>

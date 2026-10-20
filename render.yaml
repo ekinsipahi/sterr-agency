@@ -54,6 +54,16 @@ services:
         sync: false
       - key: DJANGO_SUPERUSER_PASSWORD
         sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_PRICE_ID
+        sync: false
+      - key: STRIPE_PORTAL_CONFIG
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
       - key: GA4_ID
         sync: false
       - key: GA4_API_SECRET

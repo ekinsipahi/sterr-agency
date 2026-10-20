@@ -1,0 +1,67 @@
+{% extends base_template %}
+{% block html_lang %}{{ code }}{% endblock %}
+{% block html_dir %}{% if current_lang.rtl %} dir="rtl"{% endif %}{% endblock %}
+{% block ga_page %}{"content_group": "instagram_growth", "page_type": "growth_{{ kind }}", "language": "{{ code }}"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=p.title description=p.description robots=robots %}{% endblock %}
+{% block schema %}{% include "growth/_schema.html" %}{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <p class="eyebrow reveal">{{ gu.eyebrow }}</p>
+    <h1 class="display hero__title reveal">{{ p.h1.0 }}<span class="serif">{{ p.h1.1 }}</span></h1>
+    <div class="hero__bottom">
+      <div class="reveal">
+        <p class="lede">{{ p.lede }}</p>
+        <div class="btn-row mt-m">
+          <a class="btn btn--signal btn--lg" href="#start">{{ gu.cta }} {% include "partials/icons/arrow.svg" %}</a>
+          <a class="btn btn--ghost btn--lg" href="{{ gurls.pricing }}">{{ g.price }}{{ gu.per_month }}</a>
+        </div>
+      </div>
+      <div class="reveal">
+        <ul class="check">{% for t in gu.trust %}<li>{% include "partials/icons/check.svg" %}<span>{{ t }}</span></li>{% endfor %}</ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section--tight">
+  <div class="container">
+    <div class="stats stats--4 reveal">{% for value, label in p.stats %}<div class="stat"><div class="stat__value">{{ value }}</div><div class="stat__label">{{ label }}</div></div>{% endfor %}</div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">{{ gu.eyebrow }}</p><h2 class="h2">{{ p.steps_title.0 }}<span class="serif">{{ p.steps_title.1 }}</span></h2></div>
+    <div class="grid grid-3">{% for t, x in p.steps %}<div class="card reveal"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ t }}</h3><p>{{ x }}</p></div>{% endfor %}</div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><h2 class="h2">{{ p.compare_title.0 }}<span class="serif">{{ p.compare_title.1 }}</span></h2></div>
+    <div class="prose reveal" style="max-width:none"><div class="table-wrap"><table class="compare">
+      <tr>{% for col in p.compare_cols %}<th>{{ col }}</th>{% endfor %}</tr>
+      {% for label, bad, good in p.compare_rows %}<tr><th>{{ label }}</th><td class="compare__bad">{{ bad }}</td><td class="compare__good">{{ good }}</td></tr>{% endfor %}
+    </table></div></div>
+  </div>
+</section>
+
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal"><h2 class="h2">{{ p.why_title.0 }}<span class="serif">{{ p.why_title.1 }}</span></h2></div>
+    <p class="lede reveal">{{ p.why_text }}</p>
+  </div>
+</section>
+
+{% include "growth/_form.html" %}
+{% include "growth/_faq.html" %}
+{% include "growth/_more.html" %}
+
+<section class="section section--line">
+  <div class="container">
+    <p class="statement reveal">{{ p.cta_title.0 }}<span class="serif">{{ p.cta_title.1 }}</span> <span class="dim">{{ p.cta_text }}</span></p>
+    <a class="btn btn--signal btn--lg mt-m" href="#start">{{ gu.cta }} {% include "partials/icons/arrow.svg" %}</a>
+  </div>
+</section>
+{% endblock %}

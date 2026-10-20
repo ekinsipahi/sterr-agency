@@ -1,0 +1,29 @@
+<section class="section section--line" id="start">
+  <div class="container split">
+    <div class="reveal">
+      <p class="eyebrow">{{ gu.eyebrow }}</p>
+      <h2 class="h2">{{ gu.form_title }}</h2>
+      <p class="lede">{{ gu.form_lead }}</p>
+      <p class="growth-price mt-m"><span class="growth-price__amount">{{ g.price }}</span><span class="growth-price__per">{{ gu.per_month }}</span></p>
+      <ul class="check mt-m">{% for t in gu.trust %}<li>{% include "partials/icons/check.svg" %}<span>{{ t }}</span></li>{% endfor %}</ul>
+    </div>
+    <form class="form-card reveal" method="post" action="{% url 'growth:checkout' %}" novalidate data-growth-form data-form-id="instagram_growth"{% if form.errors %} data-form-errors="{{ form.errors.keys|join:',' }}"{% endif %}>
+      {% csrf_token %}
+      <input type="hidden" name="lang" value="{{ code }}">
+      <input type="hidden" name="page" value="{{ page }}">
+      <input type="hidden" name="source_page" value="">
+      <input type="hidden" name="utm_source"><input type="hidden" name="utm_medium"><input type="hidden" name="utm_campaign"><input type="hidden" name="gclid">
+      <div class="hp" aria-hidden="true">{{ form.fax }}</div>
+      {% if canceled %}<div class="form-alert">{{ gu.canceled }}</div>{% endif %}
+      {% if form.non_field_errors %}<div class="form-alert">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+      <div class="field">{{ form.instagram.label_tag }}{{ form.instagram }}{{ form.instagram.errors }}</div>
+      <div class="field">{{ form.location.label_tag }}{{ form.location }}{{ form.location.errors }}</div>
+      <div class="field">{{ form.email.label_tag }}{{ form.email }}{{ form.email.errors }}</div>
+      <label class="consent">{{ form.consent }}<span>{{ form.consent.label }} <a href="{% url 'core:terms' %}" hreflang="tr" target="_blank" rel="noopener" aria-label="Terms">↗</a></span></label>
+      {{ form.consent.errors }}
+      <button class="btn btn--signal btn--lg mt-s" type="submit" style="width:100%">{{ gu.submit }} {% include "partials/icons/arrow.svg" %}</button>
+      <p class="muted mt-s" style="font-size:13.5px">{{ gu.secure_note }}</p>
+      <p class="muted" style="font-size:13.5px">{{ gu.policy }} <a href="{% url 'growth:manage' %}?lang={{ code }}">{{ gu.manage_link }}</a></p>
+    </form>
+  </div>
+</section>

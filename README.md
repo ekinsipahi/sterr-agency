@@ -60,6 +60,21 @@ GA4, GTM, Meta Pixel, Consent Mode v2 ve lead yaşam döngüsü olayları: [`ANA
 .venv/bin/python manage.py test apps
 ```
 
+## Organik Instagram büyütme (aylık 99$)
+
+16 dilde satış sayfası, fiyat sayfası ve iki rehber: `/instagram-takipci/`, `/en/instagram-followers/`, `/de/instagram-follower/`… (tam liste: [`keywords/INSTAGRAM_GROWTH.md`](keywords/INSTAGRAM_GROWTH.md)). İçerik `apps/growth/locales/<dil>.py` dosyalarında.
+
+- **Akış:** Ziyaretçi Instagram kullanıcı adı, hedef konum ve e-posta girer, Stripe Checkout'a yönlenir. Hesap/şifre yok.
+- **Admin → Instagram abonelikleri:** durum (ödeme bekleniyor / aktif / ödeme başarısız / iptal), dönem bitişi, Stripe kimlikleri.
+- **E-postalar:** Ekibe (Türkçe) yeni abonelik, iptal talebi, sona erme ve başarısız ödemede; müşteriye kendi dilinde hoş geldin ve abonelik yönetimi linki.
+- **İptal:** `/growth/manage/` sayfasında müşteri e-postasını girer, bir saat geçerli güvenli link gelir, Stripe müşteri portalı açılır. İptal dönem sonunda geçerli olur, başlamış ay iade edilmez.
+- **Stripe yokken:** Form yine çalışır, talep kaydedilir ve ekibe "ödeme linki gönderilecek" e-postası gider.
+
+**Stripe kurulumu (bir kez):**
+1. Stripe → Developers → API keys: `STRIPE_SECRET_KEY` ve `STRIPE_PUBLISHABLE_KEY` değerlerini `.env`'e ve Render → Environment'a ekleyin.
+2. `python manage.py setup_stripe` çalıştırın. 99$'lık aylık fiyatı, iptali dönem sonuna ayarlı müşteri portalını ve `https://sterragency.com/growth/stripe/webhook/` webhook'unu oluşturur; `STRIPE_PRICE_ID`, `STRIPE_PORTAL_CONFIG`, `STRIPE_WEBHOOK_SECRET` değerlerini yazdırır. Bunları da ekleyin.
+3. Stripe → Settings → Payment methods: kart, Apple Pay ve Google Pay açık olsun.
+
 ## Yayına alma (Render)
 
 Render'ın diski her deploy'da sıfırlanır. Bu yüzden veritabanı ve yüklenen görseller dışarıda durmalı: **Supabase** (ücretsiz plan yeterli) Postgres ve Storage için kullanılır.

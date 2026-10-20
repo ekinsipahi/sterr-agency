@@ -4,6 +4,7 @@ from django.conf import settings
 
 from apps.core.languages import LANG_BY_CODE
 from apps.dental.languages import page_path as dental_path
+from apps.growth.content import page_path as growth_path
 from apps.intl.content import CLUSTER_KEYS, GUIDE_KEYS, SECTOR_KEYS, alternates, lang_links
 
 from .company import COMPANY
@@ -25,6 +26,7 @@ def site(request):
         "phone_tel": "+" + settings.WHATSAPP_NUMBER,
         "contact_email": settings.CONTACT_EMAIL,
         "dental_url": dental_path("tr", "hub"),
+        "growth_url": growth_path("tr", "main"),
         "GA4_ID": settings.GA4_ID,
         "GTM_ID": settings.GTM_ID,
         "META_PIXEL_ID": settings.META_PIXEL_ID,
