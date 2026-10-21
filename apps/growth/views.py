@@ -18,7 +18,7 @@ from . import billing
 from .content import CONTENT, PAGES, alternates, lang_links, page_path
 from .forms import GrowthForm
 from .models import GrowthSubscription, StripeEvent
-from .notifications import confirm_cancellation, notify_team, send_manage_link, welcome_customer
+from .notifications import acknowledge_request, confirm_cancellation, notify_team, send_manage_link, welcome_customer
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +72,7 @@ def _context(code, page, form=None):
         "gurls": {k: page_path(code, k) for k in PAGES},
         "geo_links": [(v["place"], page_path(code, f"geo:{k}")) for k, v in g.get("geo", {}).items()],
         "price_usd": settings.GROWTH_PRICE_USD,
+        "payments": billing.enabled(),
         "nav_cta_href": "#start",
         "nav_cta_label": ui["cta"],
         "canceled": False,
@@ -128,8 +129,14 @@ def checkout(request):
         response.status_code = 303
         return response
 
-    # No Stripe yet: keep the request and let the team send the payment link.
+    # Payments off: a request. Team email via Resend, English auto-reply to the customer.
     notify_team(sub, "request")
+    acknowledge_request(sub)
+    request.session["growth_lead"] = {
+        "lead_id": f"ig-{sub.pk}", "form_id": "instagram_growth", "language": code,
+        "value": settings.GROWTH_PRICE_USD, "currency": "USD", "lead_location": sub.location[:40],
+        "user_data": hashed_user_data(sub.email, ""),
+    }
     return redirect(f"{reverse('growth:success')}?lang={code}&pending=1")
 
 
@@ -160,6 +167,7 @@ def success(request):
                 }
                 request.session["growth_purchases"] = (seen + [session_id])[-10:]
     ctx.update(handle=handle, pending=not handle, purchase_event=purchase,
+               lead_event=request.session.pop("growth_lead", None),
                success_text=ctx["gu"]["success_text"].replace("{handle}", handle))
     return render(request, "growth/success.html", ctx)
 

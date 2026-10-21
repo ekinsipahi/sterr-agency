@@ -68,7 +68,7 @@ GA4, GTM, Meta Pixel, Consent Mode v2 ve lead yaşam döngüsü olayları: [`ANA
 - **Admin → Instagram abonelikleri:** durum (ödeme bekleniyor / aktif / ödeme başarısız / iptal), dönem bitişi, Stripe kimlikleri.
 - **E-postalar:** Ekibe (Türkçe) yeni abonelik, iptal talebi, sona erme ve başarısız ödemede; müşteriye kendi dilinde hoş geldin ve abonelik yönetimi linki.
 - **İptal:** `/growth/manage/` sayfasında müşteri e-postasını girer, bir saat geçerli güvenli link gelir, Stripe müşteri portalı açılır. İptal dönem sonunda geçerli olur, başlamış ay iade edilmez.
-- **Stripe yokken:** Form yine çalışır, talep kaydedilir ve ekibe "ödeme linki gönderilecek" e-postası gider.
+- **Şu an başvuru modunda (`GROWTH_PAYMENTS=False`):** Form ödeme almaz; başvuru kaydedilir, ekibe Resend ile "Yeni Instagram büyütme başvurusu" e-postası, müşteriye İngilizce "talebinizi aldık" cevabı gider. Stripe'ı açmak için Render'da `GROWTH_PAYMENTS=True` yapın; Stripe key'leri tek başına ödemeyi açmaz.
 
 **Stripe kurulumu (bir kez):**
 1. Stripe → Developers → API keys: `STRIPE_SECRET_KEY` ve `STRIPE_PUBLISHABLE_KEY` değerlerini `.env`'e ve Render → Environment'a ekleyin.

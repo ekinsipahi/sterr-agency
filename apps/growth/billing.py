@@ -1,6 +1,6 @@
-"""Stripe calls for the growth subscription. Everything is keyed off env vars;
-without STRIPE_SECRET_KEY + STRIPE_PRICE_ID the site still takes requests and
-the team sends the payment link by hand."""
+"""Stripe calls for the growth subscription. Payments run only with GROWTH_PAYMENTS
+on and STRIPE_SECRET_KEY + STRIPE_PRICE_ID set; otherwise the form just takes
+requests and the team follows up by email."""
 import json
 import logging
 from datetime import datetime, timezone
@@ -16,7 +16,7 @@ STRIPE_LOCALES = {"en": "en", "tr": "tr", "de": "de", "nl": "nl", "fr": "fr", "i
 
 
 def enabled():
-    return bool(settings.STRIPE_SECRET_KEY and settings.STRIPE_PRICE_ID)
+    return bool(settings.GROWTH_PAYMENTS and settings.STRIPE_SECRET_KEY and settings.STRIPE_PRICE_ID)
 
 
 def _client():

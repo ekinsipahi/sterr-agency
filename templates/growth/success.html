@@ -17,9 +17,10 @@
     {% endif %}
     <div class="btn-row mt-m reveal">
       <a class="btn btn--ghost btn--lg" href="{{ whatsapp_url }}" target="_blank" rel="noopener">{% include "partials/icons/whatsapp.svg" %} WhatsApp</a>
-      <a class="btn btn--ghost btn--lg" href="{% url 'growth:manage' %}?lang={{ code }}">{{ gu.manage_link }}</a>
+      {% if payments %}<a class="btn btn--ghost btn--lg" href="{% url 'growth:manage' %}?lang={{ code }}">{{ gu.manage_link }}</a>{% endif %}
     </div>
   </div>
 </section>
 {% if purchase_event %}{{ purchase_event|json_script:"purchase-event" }}{% endif %}
+{% if lead_event %}{{ lead_event|json_script:"lead-event" }}{% endif %}
 {% endblock %}

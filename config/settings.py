@@ -155,6 +155,9 @@ STRIPE_PRICE_ID = env("STRIPE_PRICE_ID", default="")
 STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
 STRIPE_PORTAL_CONFIG = env("STRIPE_PORTAL_CONFIG", default="")
 GROWTH_PRICE_USD = env.int("GROWTH_PRICE_USD", default=99)
+# Off: the Instagram growth form only takes requests (team email via Resend, English
+# auto-reply to the customer). On: the form goes to Stripe Checkout.
+GROWTH_PAYMENTS = env.bool("GROWTH_PAYMENTS", default=False)
 
 # --- Contact ----------------------------------------------------------------
 WHATSAPP_NUMBER = env("WHATSAPP_NUMBER", default="905414487561")

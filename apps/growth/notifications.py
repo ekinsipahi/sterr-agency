@@ -23,6 +23,12 @@ CANCEL_BODY = (
     "As the month had already started, it isn't refunded.\n\n"
     "Changed your mind? You can keep your plan here: {manage}"
 )
+REQUEST_SUBJECT = "We received your request: organic growth for @{handle}"
+REQUEST_BODY = (
+    "Thanks! We've received your request for organic Instagram growth for @{handle} ({location}).\n\n"
+    "We'll email you within 24 hours to get started. We will never ask for your password.\n\n"
+    "Questions? Message us on WhatsApp: {whatsapp}"
+)
 MANAGE_SUBJECT = "Your subscription link"
 MANAGE_BODY = (
     "Here is your secure link to manage or cancel your Instagram growth subscription. It is valid for one hour:\n\n"
@@ -51,7 +57,7 @@ def _send(subject, body, to, reply_to=None):
 def notify_team(sub, event):
     """event: 'request' (no Stripe yet), 'started', 'payment_failed', 'cancel_scheduled', 'canceled'."""
     titles = {
-        "request": "Yeni Instagram büyütme talebi (ödeme linki gönderilecek)",
+        "request": "Yeni Instagram büyütme başvurusu",
         "started": "Yeni Instagram aboneliği başladı",
         "payment_failed": "Instagram aboneliği: ödeme başarısız",
         "cancel_scheduled": "Instagram aboneliği iptal edildi (dönem sonunda bitecek)",
@@ -68,6 +74,12 @@ def notify_team(sub, event):
         f"Admin: {settings.SITE_URL}/admin/growth/growthsubscription/{sub.pk}/change/\n"
     )
     return _send(f"{titles[event]}: @{sub.instagram}", body, settings.LEAD_NOTIFY_EMAILS, reply_to=[sub.email])
+
+
+def acknowledge_request(sub):
+    """English auto-reply when the form only takes requests (payments off)."""
+    values = {"handle": sub.instagram, "location": sub.location, "whatsapp": settings.WHATSAPP_DISPLAY}
+    return _send(_fill(REQUEST_SUBJECT, **values), _fill(REQUEST_BODY, **values), [sub.email])
 
 
 def welcome_customer(sub, cancel_url):

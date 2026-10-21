@@ -262,6 +262,7 @@
       track("form_start", { form_id: "instagram_growth", language: doc.lang });
     });
     gform.addEventListener("submit", function () {
+      if (gform.dataset.payments !== "on") return;  // request mode: generate_lead fires on the thank-you page
       track("begin_checkout", { form_id: "instagram_growth", language: doc.lang, value: 99, currency: "USD",
         items: [{ item_id: "organic_growth", item_name: "Organic Instagram Growth", price: 99, quantity: 1 }] });
     });

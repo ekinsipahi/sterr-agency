@@ -17,7 +17,7 @@ from .models import GrowthSubscription, StripeEvent
 from .views import MANAGE_SALT
 
 WEBHOOK_SECRET = "whsec_test"
-STRIPE_ON = dict(STRIPE_SECRET_KEY="sk_test_x", STRIPE_PRICE_ID="price_x", STRIPE_WEBHOOK_SECRET=WEBHOOK_SECRET,
+STRIPE_ON = dict(GROWTH_PAYMENTS=True, STRIPE_SECRET_KEY="sk_test_x", STRIPE_PRICE_ID="price_x", STRIPE_WEBHOOK_SECRET=WEBHOOK_SECRET,
                  LEAD_NOTIFY_EMAILS=["owner@example.com"], EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
 
 
@@ -91,12 +91,26 @@ def post_form(client, **extra):
 @override_settings(STRIPE_SECRET_KEY="", STRIPE_PRICE_ID="", LEAD_NOTIFY_EMAILS=["owner@example.com"],
                    EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
 class CheckoutWithoutStripeTests(TestCase):
-    def test_request_is_saved_and_team_notified(self):
-        r = post_form(self.client)
-        self.assertRedirects(r, f"{reverse('growth:success')}?lang=en&pending=1", fetch_redirect_response=False)
+    def test_request_is_saved_team_notified_and_customer_answered(self):
+        r = post_form(self.client, lang="tr")
+        self.assertRedirects(r, f"{reverse('growth:success')}?lang=tr&pending=1", fetch_redirect_response=False)
         sub = GrowthSubscription.objects.get()
         self.assertEqual((sub.instagram, sub.email, sub.status), ("my.brand", "owner@example.com", "pending"))
-        self.assertIn("@my.brand", mail.outbox[0].subject)
+        team, customer = mail.outbox
+        self.assertEqual(team.to, ["owner@example.com"])
+        self.assertIn("başvurusu", team.subject)
+        self.assertEqual(customer.subject, "We received your request: organic growth for @my.brand")  # English
+        page = self.client.get(r["Location"]).content.decode()
+        self.assertIn('id="lead-event"', page)
+
+    @override_settings(GROWTH_PAYMENTS=False, STRIPE_SECRET_KEY="sk_live_x", STRIPE_PRICE_ID="price_x")
+    def test_stripe_keys_alone_do_not_turn_payments_on(self):
+        html = self.client.get(page_path("en", "main")).content.decode()
+        self.assertIn(escape(CONTENT["en"]["ui"]["submit_request"]), html)
+        self.assertIn('data-payments="off"', html)
+        with mock.patch("apps.growth.billing.create_checkout") as create:
+            post_form(self.client)
+        create.assert_not_called()
 
     def test_invalid_handle_shows_error_in_page_language(self):
         r = post_form(self.client, lang="tr", instagram="not a handle!")

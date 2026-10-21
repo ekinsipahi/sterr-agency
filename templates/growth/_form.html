@@ -7,7 +7,7 @@
       <p class="growth-price mt-m"><span class="growth-price__amount">{{ g.price }}</span><span class="growth-price__per">{{ gu.per_month }}</span></p>
       <ul class="check mt-m">{% for t in gu.trust %}<li>{% include "partials/icons/check.svg" %}<span>{{ t }}</span></li>{% endfor %}</ul>
     </div>
-    <form class="form-card reveal" method="post" action="{% url 'growth:checkout' %}" novalidate data-growth-form data-form-id="instagram_growth"{% if form.errors %} data-form-errors="{{ form.errors.keys|join:',' }}"{% endif %}>
+    <form class="form-card reveal" method="post" action="{% url 'growth:checkout' %}" novalidate data-growth-form data-form-id="instagram_growth" data-payments="{% if payments %}on{% else %}off{% endif %}"{% if form.errors %} data-form-errors="{{ form.errors.keys|join:',' }}"{% endif %}>
       {% csrf_token %}
       <input type="hidden" name="lang" value="{{ code }}">
       <input type="hidden" name="page" value="{{ page }}">
@@ -21,9 +21,9 @@
       <div class="field">{{ form.email.label_tag }}{{ form.email }}{{ form.email.errors }}</div>
       <label class="consent">{{ form.consent }}<span>{{ form.consent.label }} <a href="{% url 'core:terms' %}" hreflang="tr" target="_blank" rel="noopener" aria-label="Terms">↗</a></span></label>
       {{ form.consent.errors }}
-      <button class="btn btn--signal btn--lg mt-s" type="submit" style="width:100%">{{ gu.submit }} {% include "partials/icons/arrow.svg" %}</button>
-      <p class="muted mt-s" style="font-size:13.5px">{{ gu.secure_note }}</p>
-      <p class="muted" style="font-size:13.5px">{{ gu.policy }} <a href="{% url 'growth:manage' %}?lang={{ code }}">{{ gu.manage_link }}</a></p>
+      <button class="btn btn--signal btn--lg mt-s" type="submit" style="width:100%">{% if payments %}{{ gu.submit }}{% else %}{{ gu.submit_request }}{% endif %} {% include "partials/icons/arrow.svg" %}</button>
+      <p class="muted mt-s" style="font-size:13.5px">{% if payments %}{{ gu.secure_note }}{% else %}{{ gu.request_note }}{% endif %}</p>
+      <p class="muted" style="font-size:13.5px">{{ gu.policy }}{% if payments %} <a href="{% url 'growth:manage' %}?lang={{ code }}">{{ gu.manage_link }}</a>{% endif %}</p>
     </form>
   </div>
 </section>

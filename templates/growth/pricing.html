@@ -35,7 +35,7 @@
 <section class="section section--line">
   <div class="container split">
     <div class="reveal"><h2 class="h2">{{ p.policy_title }}</h2></div>
-    <div class="reveal"><p class="lede">{{ gu.policy }}</p><a class="link-arrow mt-s" href="{% url 'growth:manage' %}?lang={{ code }}">{{ gu.manage_link }} {% include "partials/icons/arrow.svg" %}</a></div>
+    <div class="reveal"><p class="lede">{{ gu.policy }}</p>{% if payments %}<a class="link-arrow mt-s" href="{% url 'growth:manage' %}?lang={{ code }}">{{ gu.manage_link }} {% include "partials/icons/arrow.svg" %}</a>{% endif %}</div>
   </div>
 </section>
 
