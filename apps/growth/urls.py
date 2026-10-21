@@ -10,6 +10,7 @@ urlpatterns = [
     path("growth/success/", views.success, name="success"),
     path("growth/manage/", views.manage, name="manage"),
     path("growth/manage/<str:token>/", views.portal, name="portal"),
+    path("growth/account/<str:token>/", views.account, name="account"),
     path("growth/stripe/webhook/", views.webhook, name="webhook"),
 ] + [
     path(route, views.page, {"lang": code, "page": page}, name=f"{code}_{page.replace(':', '_')}")

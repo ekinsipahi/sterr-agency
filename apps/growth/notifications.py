@@ -42,10 +42,11 @@ def notify_team(sub, event):
     return _send(f"{titles[event]}: @{sub.instagram}", body, settings.LEAD_NOTIFY_EMAILS, reply_to=[sub.email])
 
 
-def welcome_customer(sub, ui, manage_url):
+def welcome_customer(sub, ui, cancel_url):
+    """'Your plan is active' email, with a direct cancel link for the life of the subscription."""
     subject = ui["mail_welcome_subject"].replace("{handle}", sub.instagram)
     body = (ui["mail_welcome_body"].replace("{handle}", sub.instagram).replace("{location}", sub.location)
-            .replace("{manage}", manage_url))
+            .replace("{cancel}", cancel_url))
     return _send(subject, body, [sub.email])
 
 

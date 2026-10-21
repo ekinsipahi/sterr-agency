@@ -27,6 +27,16 @@ TEMPLATES = {"main": "growth/main.html", "geo": "growth/main.html", "pricing": "
 RATE_LIMIT, RATE_WINDOW = 8, 60 * 60
 MANAGE_SALT = "growth-manage"
 MANAGE_MAX_AGE = 60 * 60
+# Links inside our emails (cancel / manage). Signed, tied to one Stripe customer and
+# subscription, no expiry: they must keep working for the life of the subscription.
+ACCOUNT_SALT = "growth-account"
+
+
+def account_link(sub, action):
+    """Direct link to the Stripe portal for this subscription; action 'cancel' opens the cancel screen."""
+    token = signing.dumps({"c": sub.stripe_customer_id, "s": sub.stripe_subscription_id, "l": sub.lang, "a": action},
+                          salt=ACCOUNT_SALT, compress=True)
+    return settings.SITE_URL + reverse("growth:account", args=[token])
 
 
 def _valid_page(code, page):
@@ -185,6 +195,18 @@ def portal(request, token):
     return redirect(billing.portal_url(data["c"], settings.SITE_URL + page_path(code, "main")))
 
 
+def account(request, token):
+    try:
+        data = signing.loads(token, salt=ACCOUNT_SALT)
+    except signing.BadSignature:
+        return redirect(f"{reverse('growth:manage')}?expired=1")
+    code = data.get("l") if data.get("l") in CONTENT else "en"
+    if not billing.enabled() or not data.get("c"):
+        return redirect(f"{reverse('growth:manage')}?lang={code}&expired=1")
+    cancel = data.get("s") if data.get("a") == "cancel" else None
+    return redirect(billing.portal_url(data["c"], settings.SITE_URL + page_path(code, "main"), cancel_subscription=cancel))
+
+
 # --- Stripe webhooks --------------------------------------------------------------
 
 STATUS_MAP = {"active": "active", "trialing": "active", "past_due": "past_due", "unpaid": "past_due",
@@ -216,8 +238,7 @@ def _on_checkout_completed(obj):
         sub.status = "active"
     sub.save()
     if not sub.welcomed:
-        manage_url = f"{settings.SITE_URL}{reverse('growth:manage')}?lang={sub.lang}"
-        sub.welcomed = welcome_customer(sub, CONTENT.get(sub.lang, CONTENT["en"])["ui"], manage_url)
+        sub.welcomed = welcome_customer(sub, CONTENT.get(sub.lang, CONTENT["en"])["ui"], account_link(sub, "cancel"))
         sub.save(update_fields=["welcomed"])
         notify_team(sub, "started")
 
@@ -235,8 +256,7 @@ def _on_subscription_changed(obj):
     sub.save()
     if sub.cancel_at_period_end and not was_canceling and sub.status != "canceled":
         notify_team(sub, "cancel_scheduled")
-        confirm_cancellation(sub, CONTENT.get(sub.lang, CONTENT["en"])["ui"],
-                             f"{settings.SITE_URL}{reverse('growth:manage')}?lang={sub.lang}")
+        confirm_cancellation(sub, CONTENT.get(sub.lang, CONTENT["en"])["ui"], account_link(sub, "portal"))
 
 
 def _on_subscription_deleted(obj):

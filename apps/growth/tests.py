@@ -156,8 +156,19 @@ class WebhookTests(TestCase):
         to = sorted(m.to[0] for m in mail.outbox)
         self.assertEqual(to, ["a@example.com", "owner@example.com"])
         welcome = next(m for m in mail.outbox if m.to == ["a@example.com"])
-        self.assertIn("@brand", welcome.subject)  # German copy, handle filled in
+        self.assertIn("Ihr Abo ist aktiv", welcome.subject)  # German copy, handle filled in
+        self.assertIn("@brand", welcome.subject)
         self.assertEqual(StripeEvent.objects.count(), 1)
+
+        # The welcome email carries a direct cancel link that opens Stripe's cancel screen.
+        token = re.search(r"/growth/account/(\S+)/", welcome.body).group(1)
+        with mock.patch("apps.growth.billing.portal_url", return_value="https://billing.stripe.com/p/cancel") as portal:
+            r = self.client.get(reverse("growth:account", args=[token]))
+        self.assertEqual(r["Location"], "https://billing.stripe.com/p/cancel")
+        self.assertEqual(portal.call_args.args[0], "cus_1")
+        self.assertEqual(portal.call_args.kwargs["cancel_subscription"], "sub_1")
+        r = self.client.get(reverse("growth:account", args=[token[:-2] + "xx"]))
+        self.assertEqual(r["Location"], f"{reverse('growth:manage')}?expired=1")
 
     def test_cancellation_and_end(self):
         self.sub.stripe_subscription_id = "sub_1"

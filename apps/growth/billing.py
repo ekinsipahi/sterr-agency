@@ -43,10 +43,20 @@ def retrieve_checkout(session_id):
     return _client().v1.checkout.sessions.retrieve(session_id)
 
 
-def portal_url(customer_id, return_url):
+def portal_url(customer_id, return_url, cancel_subscription=None):
+    """Customer portal session. With `cancel_subscription` it opens straight on the
+    cancellation screen; if Stripe refuses that (e.g. already set to cancel), the
+    normal portal opens instead."""
     params = {"customer": customer_id, "return_url": return_url}
     if settings.STRIPE_PORTAL_CONFIG:
         params["configuration"] = settings.STRIPE_PORTAL_CONFIG
+    if cancel_subscription:
+        flow = {"type": "subscription_cancel", "subscription_cancel": {"subscription": cancel_subscription},
+                "after_completion": {"type": "redirect", "redirect": {"return_url": return_url}}}
+        try:
+            return _client().v1.billing_portal.sessions.create(params={**params, "flow_data": flow}).url
+        except stripe.InvalidRequestError:
+            logger.info("Cancel flow refused for %s; opening the portal instead", cancel_subscription)
     return _client().v1.billing_portal.sessions.create(params=params).url
 
 
