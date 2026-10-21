@@ -42,6 +42,8 @@ DATA = {
         "mail_manage_body": "Here is your secure link to manage or cancel your Instagram growth subscription. It is valid for one hour:\n\n{link}\n\nIf you didn't request this, you can ignore this email.",
         "mail_welcome_subject": "Organic growth for @{handle} has started",
         "mail_welcome_body": "Thanks for subscribing. Organic growth for @{handle} ({location}) starts now. New followers arrive gradually; on average our clients gain 900–3,000 real followers a month.\n\nWe will never ask for your password.\n\nYou can cancel any time. Cancellation stops the next renewal; the month already started is not refunded.\n\nManage your subscription: {manage}",
+        "mail_cancel_subject": "Cancellation confirmed: your plan stays active until {date}",
+        "mail_cancel_body": "Your cancellation for @{handle} is confirmed.\n\nYour plan stays active until {date}: growth continues until then, and you won't be charged again. As the month had already started, it isn't refunded.\n\nChanged your mind? You can keep your plan from the manage page: {manage}",
         "policy": "Cancel anytime: cancellation stops the next renewal. The month already started is not refunded.",
     },
     "main": {

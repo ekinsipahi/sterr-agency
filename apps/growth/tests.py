@@ -172,7 +172,11 @@ class WebhookTests(TestCase):
         self.send("evt_3", "customer.subscription.deleted", {**updated, "status": "canceled"})
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.status, "canceled")
-        self.assertEqual(len(mail.outbox), 2)  # cancel scheduled + ended, both to the team
+        # Team: cancel scheduled + ended. Customer (German): plan stays active until the period end.
+        self.assertEqual(sorted(m.to[0] for m in mail.outbox), ["a@example.com", "owner@example.com", "owner@example.com"])
+        customer = next(m for m in mail.outbox if m.to == ["a@example.com"])
+        self.assertIn("2030", customer.subject)
+        self.assertIn("Kündigung bestätigt", customer.subject)
 
     def test_failed_invoice_marks_past_due(self):
         self.sub.stripe_subscription_id = "sub_1"

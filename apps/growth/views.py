@@ -18,7 +18,7 @@ from . import billing
 from .content import CONTENT, PAGES, alternates, lang_links, page_path
 from .forms import GrowthForm
 from .models import GrowthSubscription, StripeEvent
-from .notifications import notify_team, send_manage_link, welcome_customer
+from .notifications import confirm_cancellation, notify_team, send_manage_link, welcome_customer
 
 logger = logging.getLogger(__name__)
 
@@ -235,6 +235,8 @@ def _on_subscription_changed(obj):
     sub.save()
     if sub.cancel_at_period_end and not was_canceling and sub.status != "canceled":
         notify_team(sub, "cancel_scheduled")
+        confirm_cancellation(sub, CONTENT.get(sub.lang, CONTENT["en"])["ui"],
+                             f"{settings.SITE_URL}{reverse('growth:manage')}?lang={sub.lang}")
 
 
 def _on_subscription_deleted(obj):

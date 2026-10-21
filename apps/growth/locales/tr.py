@@ -42,6 +42,8 @@ DATA = {
         "mail_manage_body": "Instagram büyütme aboneliğinizi yönetmek ya da iptal etmek için güvenli linkiniz. Link bir saat geçerli:\n\n{link}\n\nBu isteği siz yapmadıysanız bu e-postayı dikkate almayın.",
         "mail_welcome_subject": "@{handle} için organik büyüme başladı",
         "mail_welcome_body": "Abone olduğunuz için teşekkürler. @{handle} ({location}) için organik büyüme şimdi başlıyor. Yeni takipçiler yavaş yavaş gelir; müşterilerimiz ayda ortalama 900–3.000 gerçek takipçi kazanıyor.\n\nŞifrenizi asla istemeyeceğiz.\n\nİstediğiniz zaman iptal edebilirsiniz. İptal bir sonraki yenilemeyi durdurur; başlamış ayın ücreti iade edilmez.\n\nAboneliğinizi yönetin: {manage}",
+        "mail_cancel_subject": "İptaliniz alındı: planınız {date} tarihine kadar aktif",
+        "mail_cancel_body": "@{handle} için iptal talebiniz onaylandı.\n\nPlanınız {date} tarihine kadar aktif: büyüme o güne kadar devam eder ve sizden tekrar ücret alınmaz. Başlamış ayın ücreti iade edilmez.\n\nFikrinizi mi değiştirdiniz? Planınızı yönetim sayfasından devam ettirebilirsiniz: {manage}",
         "policy": "İstediğiniz zaman iptal edin: iptal bir sonraki yenilemeyi durdurur. Başlamış ayın ücreti iade edilmez.",
     },
     "main": {

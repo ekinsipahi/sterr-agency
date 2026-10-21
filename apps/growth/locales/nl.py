@@ -42,6 +42,8 @@ DATA = {
         "mail_manage_body": "Hier is uw veilige link om uw Instagram-groeiabonnement te beheren of op te zeggen. De link is een uur geldig:\n\n{link}\n\nHeeft u dit niet aangevraagd? Dan kunt u deze e-mail negeren.",
         "mail_welcome_subject": "Organische groei voor @{handle} is gestart",
         "mail_welcome_body": "Bedankt voor uw abonnement. De organische groei voor @{handle} ({location}) begint nu. Nieuwe volgers komen geleidelijk; gemiddeld krijgen onze klanten 900–3.000 echte volgers per maand.\n\nWe vragen nooit om uw wachtwoord.\n\nU kunt altijd opzeggen. Opzeggen stopt de volgende verlenging; de al begonnen maand wordt niet terugbetaald.\n\nAbonnement beheren: {manage}",
+        "mail_cancel_subject": "Opzegging bevestigd: uw abonnement loopt tot {date}",
+        "mail_cancel_body": "Uw opzegging voor @{handle} is bevestigd.\n\nUw abonnement blijft actief tot {date}: de groei loopt tot dan door en er wordt niets meer afgeschreven. De begonnen maand wordt niet terugbetaald.\n\nToch doorgaan? Op de beheerpagina kunt u uw abonnement behouden: {manage}",
         "policy": "Altijd opzegbaar: opzeggen stopt de volgende verlenging. De al begonnen maand wordt niet terugbetaald.",
     },
     "main": {

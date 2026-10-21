@@ -42,6 +42,8 @@ DATA = {
         "mail_manage_body": "Her er den sikre lenken din for å administrere eller si opp abonnementet på Instagram-vekst. Den gjelder i én time:\n\n{link}\n\nHar du ikke bedt om dette, kan du se bort fra e-posten.",
         "mail_welcome_subject": "Organisk vekst for @{handle} har startet",
         "mail_welcome_body": "Takk for abonnementet. Den organiske veksten for @{handle} ({location}) starter nå. Nye følgere kommer gradvis; i snitt får kundene våre 900–3 000 ekte følgere i måneden.\n\nVi kommer aldri til å be om passordet ditt.\n\nDu kan si opp når du vil. Oppsigelsen stopper neste fornyelse; måneden som allerede er startet, refunderes ikke.\n\nAdministrer abonnementet: {manage}",
+        "mail_cancel_subject": "Oppsigelse bekreftet: abonnementet ditt er aktivt til {date}",
+        "mail_cancel_body": "Oppsigelsen din for @{handle} er bekreftet.\n\nAbonnementet ditt er aktivt til {date}: veksten fortsetter frem til da, og det trekkes ikke mer. Den påbegynte måneden refunderes ikke.\n\nAngrer du? Du kan beholde abonnementet via administrasjonssiden: {manage}",
         "policy": "Si opp når du vil: oppsigelsen stopper neste fornyelse. Måneden som allerede er startet, refunderes ikke.",
     },
     "main": {

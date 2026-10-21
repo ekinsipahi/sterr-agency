@@ -49,5 +49,20 @@ def welcome_customer(sub, ui, manage_url):
     return _send(subject, body, [sub.email])
 
 
+def confirm_cancellation(sub, ui, manage_url):
+    """Customer email when they cancel: the plan stays active until the paid month ends."""
+    from django.utils import formats, translation
+
+    from apps.core.languages import LANG_BY_CODE
+
+    date = ""
+    if sub.current_period_end:
+        lang = LANG_BY_CODE.get(sub.lang)
+        with translation.override(lang.django if lang else "en"):
+            date = formats.date_format(sub.current_period_end, "DATE_FORMAT")
+    fill = lambda text: text.replace("{handle}", sub.instagram).replace("{date}", date).replace("{manage}", manage_url)
+    return _send(fill(ui["mail_cancel_subject"]), fill(ui["mail_cancel_body"]), [sub.email])
+
+
 def send_manage_link(email, ui, link):
     return _send(ui["mail_manage_subject"], ui["mail_manage_body"].replace("{link}", link), [email])

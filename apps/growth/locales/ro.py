@@ -42,6 +42,8 @@ DATA = {
         "mail_manage_body": "Iată linkul tău securizat pentru a gestiona sau anula abonamentul de creștere pe Instagram. Este valabil o oră:\n\n{link}\n\nDacă nu ai cerut acest lucru, ignoră acest e-mail.",
         "mail_welcome_subject": "Creșterea organică pentru @{handle} a început",
         "mail_welcome_body": "Mulțumim pentru abonament. Creșterea organică pentru @{handle} ({location}) începe acum. Noii urmăritori vin treptat; în medie, clienții noștri câștigă 900–3.000 de urmăritori reali pe lună.\n\nNu îți vom cere niciodată parola.\n\nPoți anula oricând. Anularea oprește următoarea reînnoire; luna deja începută nu se rambursează.\n\nGestionează abonamentul: {manage}",
+        "mail_cancel_subject": "Anulare confirmată: planul tău rămâne activ până pe {date}",
+        "mail_cancel_body": "Anularea pentru @{handle} este confirmată.\n\nPlanul tău rămâne activ până pe {date}: creșterea continuă până atunci și nu se mai fac plăți. Luna începută nu se rambursează.\n\nTe-ai răzgândit? Poți păstra planul din pagina de gestionare: {manage}",
         "policy": "Anulezi oricând: anularea oprește următoarea reînnoire. Luna deja începută nu se rambursează.",
     },
     "main": {

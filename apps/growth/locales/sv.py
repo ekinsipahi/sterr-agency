@@ -42,6 +42,8 @@ DATA = {
         "mail_manage_body": "Här är din säkra länk för att hantera eller avsluta din prenumeration på Instagram-tillväxt. Den gäller i en timme:\n\n{link}\n\nOm du inte har begärt detta kan du ignorera mejlet.",
         "mail_welcome_subject": "Organisk tillväxt för @{handle} har startat",
         "mail_welcome_body": "Tack för din prenumeration. Den organiska tillväxten för @{handle} ({location}) börjar nu. Nya följare kommer gradvis; i snitt får våra kunder 900–3 000 äkta följare i månaden.\n\nVi kommer aldrig att be om ditt lösenord.\n\nDu kan avsluta när du vill. Uppsägningen stoppar nästa förnyelse; den redan påbörjade månaden återbetalas inte.\n\nHantera prenumerationen: {manage}",
+        "mail_cancel_subject": "Uppsägning bekräftad: din plan är aktiv till {date}",
+        "mail_cancel_body": "Din uppsägning för @{handle} är bekräftad.\n\nDin plan är aktiv till {date}: tillväxten fortsätter fram till dess och inga fler dragningar görs. Den påbörjade månaden återbetalas inte.\n\nÅngrat dig? Du kan behålla planen via hanteringssidan: {manage}",
         "policy": "Avsluta när du vill: uppsägningen stoppar nästa förnyelse. Den redan påbörjade månaden återbetalas inte.",
     },
     "main": {
