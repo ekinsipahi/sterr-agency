@@ -38,12 +38,6 @@ DATA = {
         "manage_submit": "Recevoir le lien",
         "manage_sent": "S'il existe un abonnement avec cet e-mail, un lien est en route. Il est valable une heure.",
         "manage_expired": "Ce lien a expiré ou n'est pas valide. Demandez-en un nouveau ci-dessous.",
-        "mail_manage_subject": "Votre lien d'abonnement",
-        "mail_manage_body": "Voici votre lien sécurisé pour gérer ou résilier votre abonnement de croissance Instagram. Il est valable une heure :\n\n{link}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.",
-        "mail_welcome_subject": "Votre abonnement est actif : la croissance organique de @{handle} a commencé",
-        "mail_welcome_body": "Merci pour votre abonnement. La croissance organique de @{handle} ({location}) commence maintenant. Les nouveaux abonnés arrivent progressivement ; en moyenne, nos clients gagnent 900 à 3 000 vrais abonnés par mois.\n\nNous ne vous demanderons jamais votre mot de passe.\n\nVous pouvez résilier à tout moment. La résiliation arrête le prochain renouvellement ; le mois déjà commencé n'est pas remboursé.\n\nPour résilier, utilisez ce lien à tout moment : {cancel}",
-        "mail_cancel_subject": "Résiliation confirmée : votre abonnement reste actif jusqu'au {date}",
-        "mail_cancel_body": "Votre résiliation pour @{handle} est confirmée.\n\nVotre abonnement reste actif jusqu'au {date} : la croissance continue jusque-là et aucun nouveau prélèvement ne sera effectué. Le mois commencé n'est pas remboursé.\n\nVous changez d'avis ? Vous pouvez conserver votre abonnement depuis la page de gestion : {manage}",
         "policy": "Résiliable à tout moment : la résiliation arrête le prochain renouvellement. Le mois déjà commencé n'est pas remboursé.",
     },
     "main": {

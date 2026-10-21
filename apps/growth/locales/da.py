@@ -38,12 +38,6 @@ DATA = {
         "manage_submit": "Send mig linket",
         "manage_sent": "Hvis der findes et abonnement med den e-mail, er et link på vej. Det gælder i en time.",
         "manage_expired": "Linket er udløbet eller ugyldigt. Bed om et nyt nedenfor.",
-        "mail_manage_subject": "Dit abonnementslink",
-        "mail_manage_body": "Her er dit sikre link til at administrere eller opsige dit abonnement på Instagram-vækst. Det gælder i en time:\n\n{link}\n\nHar du ikke bedt om det, kan du se bort fra denne e-mail.",
-        "mail_welcome_subject": "Dit abonnement er aktivt: organisk vækst for @{handle} er startet",
-        "mail_welcome_body": "Tak for dit abonnement. Den organiske vækst for @{handle} ({location}) starter nu. Nye følgere kommer gradvist; i gennemsnit får vores kunder 900–3.000 ægte følgere om måneden.\n\nVi vil aldrig bede om din adgangskode.\n\nDu kan opsige når som helst. Opsigelsen stopper næste fornyelse; den allerede påbegyndte måned refunderes ikke.\n\nVil du opsige? Brug dette link når som helst: {cancel}",
-        "mail_cancel_subject": "Opsigelse bekræftet: dit abonnement er aktivt til {date}",
-        "mail_cancel_body": "Din opsigelse for @{handle} er bekræftet.\n\nDit abonnement er aktivt til {date}: væksten fortsætter indtil da, og der trækkes ikke flere penge. Den påbegyndte måned refunderes ikke.\n\nFortryder du? Du kan beholde abonnementet via administrationssiden: {manage}",
         "policy": "Opsig når som helst: opsigelsen stopper næste fornyelse. Den allerede påbegyndte måned refunderes ikke.",
     },
     "main": {

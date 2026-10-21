@@ -38,12 +38,6 @@ DATA = {
         "manage_submit": "Link senden",
         "manage_sent": "Falls es ein Abo mit dieser E-Mail gibt, ist ein Link unterwegs. Er ist eine Stunde gültig.",
         "manage_expired": "Dieser Link ist abgelaufen oder ungültig. Fordern Sie unten einen neuen an.",
-        "mail_manage_subject": "Ihr Abo-Link",
-        "mail_manage_body": "Hier ist Ihr sicherer Link, um Ihr Instagram-Wachstums-Abo zu verwalten oder zu kündigen. Er ist eine Stunde gültig:\n\n{link}\n\nWenn Sie das nicht angefordert haben, ignorieren Sie diese E-Mail einfach.",
-        "mail_welcome_subject": "Ihr Abo ist aktiv: organisches Wachstum für @{handle} hat begonnen",
-        "mail_welcome_body": "Danke für Ihr Abo. Das organische Wachstum für @{handle} ({location}) beginnt jetzt. Neue Follower kommen nach und nach; im Schnitt gewinnen unsere Kunden 900–3.000 echte Follower pro Monat.\n\nWir werden nie nach Ihrem Passwort fragen.\n\nSie können jederzeit kündigen. Die Kündigung stoppt die nächste Verlängerung; der bereits begonnene Monat wird nicht erstattet.\n\nWenn Sie kündigen möchten, nutzen Sie jederzeit diesen Link: {cancel}",
-        "mail_cancel_subject": "Kündigung bestätigt: Ihr Abo läuft bis {date}",
-        "mail_cancel_body": "Ihre Kündigung für @{handle} ist bestätigt.\n\nIhr Abo bleibt bis {date} aktiv: Das Wachstum läuft bis dahin weiter, und es wird nichts mehr abgebucht. Der begonnene Monat wird nicht erstattet.\n\nDoch weitermachen? Auf der Verwaltungsseite können Sie Ihr Abo behalten: {manage}",
         "policy": "Jederzeit kündbar: Die Kündigung stoppt die nächste Verlängerung. Der bereits begonnene Monat wird nicht erstattet.",
     },
     "main": {

@@ -178,7 +178,7 @@ def manage(request):
             sub = GrowthSubscription.objects.filter(email__iexact=email).exclude(stripe_customer_id="").first()
             if sub and billing.enabled():
                 token = signing.dumps({"c": sub.stripe_customer_id, "l": code}, salt=MANAGE_SALT)
-                send_manage_link(email, ctx["gu"], settings.SITE_URL + reverse("growth:portal", args=[token]))
+                send_manage_link(email, settings.SITE_URL + reverse("growth:portal", args=[token]))
         status = "sent"  # same answer whether or not the email exists
     ctx["manage_status"] = status
     return render(request, "growth/manage.html", ctx)
@@ -238,7 +238,7 @@ def _on_checkout_completed(obj):
         sub.status = "active"
     sub.save()
     if not sub.welcomed:
-        sub.welcomed = welcome_customer(sub, CONTENT.get(sub.lang, CONTENT["en"])["ui"], account_link(sub, "cancel"))
+        sub.welcomed = welcome_customer(sub, account_link(sub, "cancel"))
         sub.save(update_fields=["welcomed"])
         notify_team(sub, "started")
 
@@ -256,7 +256,7 @@ def _on_subscription_changed(obj):
     sub.save()
     if sub.cancel_at_period_end and not was_canceling and sub.status != "canceled":
         notify_team(sub, "cancel_scheduled")
-        confirm_cancellation(sub, CONTENT.get(sub.lang, CONTENT["en"])["ui"], account_link(sub, "portal"))
+        confirm_cancellation(sub, account_link(sub, "portal"))
 
 
 def _on_subscription_deleted(obj):

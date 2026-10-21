@@ -1,11 +1,39 @@
-"""Emails for the growth subscription: Turkish notes to the team, the customer's
-language for the customer. Failures are logged, never raised."""
+"""Emails for the growth subscription: Turkish notes to the team, English for the
+customer whatever language the page was in. Failures are logged, never raised."""
 import logging
 
 from django.conf import settings
 from django.core.mail import EmailMessage
+from django.utils import formats, translation
 
 logger = logging.getLogger(__name__)
+
+WELCOME_SUBJECT = "Your plan is active: organic growth for @{handle} has started"
+WELCOME_BODY = (
+    "Thanks for subscribing. Organic growth for @{handle} ({location}) starts now. New followers arrive "
+    "gradually; on average our clients gain 900–3,000 real followers a month.\n\n"
+    "We will never ask for your password.\n\n"
+    "You can cancel any time. Cancellation stops the next renewal; the month already started is not refunded.\n\n"
+    "To cancel, use this link at any time: {cancel}"
+)
+CANCEL_SUBJECT = "Cancellation confirmed: your plan stays active until {date}"
+CANCEL_BODY = (
+    "Your cancellation for @{handle} is confirmed.\n\n"
+    "Your plan stays active until {date}: growth continues until then, and you won't be charged again. "
+    "As the month had already started, it isn't refunded.\n\n"
+    "Changed your mind? You can keep your plan here: {manage}"
+)
+MANAGE_SUBJECT = "Your subscription link"
+MANAGE_BODY = (
+    "Here is your secure link to manage or cancel your Instagram growth subscription. It is valid for one hour:\n\n"
+    "{link}\n\nIf you didn't request this, you can ignore this email."
+)
+
+
+def _fill(text, **values):
+    for key, value in values.items():
+        text = text.replace("{" + key + "}", value)
+    return text
 
 
 def _send(subject, body, to, reply_to=None):
@@ -42,28 +70,21 @@ def notify_team(sub, event):
     return _send(f"{titles[event]}: @{sub.instagram}", body, settings.LEAD_NOTIFY_EMAILS, reply_to=[sub.email])
 
 
-def welcome_customer(sub, ui, cancel_url):
+def welcome_customer(sub, cancel_url):
     """'Your plan is active' email, with a direct cancel link for the life of the subscription."""
-    subject = ui["mail_welcome_subject"].replace("{handle}", sub.instagram)
-    body = (ui["mail_welcome_body"].replace("{handle}", sub.instagram).replace("{location}", sub.location)
-            .replace("{cancel}", cancel_url))
-    return _send(subject, body, [sub.email])
+    values = {"handle": sub.instagram, "location": sub.location, "cancel": cancel_url}
+    return _send(_fill(WELCOME_SUBJECT, **values), _fill(WELCOME_BODY, **values), [sub.email])
 
 
-def confirm_cancellation(sub, ui, manage_url):
+def confirm_cancellation(sub, manage_url):
     """Customer email when they cancel: the plan stays active until the paid month ends."""
-    from django.utils import formats, translation
-
-    from apps.core.languages import LANG_BY_CODE
-
     date = ""
     if sub.current_period_end:
-        lang = LANG_BY_CODE.get(sub.lang)
-        with translation.override(lang.django if lang else "en"):
-            date = formats.date_format(sub.current_period_end, "DATE_FORMAT")
-    fill = lambda text: text.replace("{handle}", sub.instagram).replace("{date}", date).replace("{manage}", manage_url)
-    return _send(fill(ui["mail_cancel_subject"]), fill(ui["mail_cancel_body"]), [sub.email])
+        with translation.override("en"):
+            date = formats.date_format(sub.current_period_end, "F j, Y")
+    values = {"handle": sub.instagram, "date": date, "manage": manage_url}
+    return _send(_fill(CANCEL_SUBJECT, **values), _fill(CANCEL_BODY, **values), [sub.email])
 
 
-def send_manage_link(email, ui, link):
-    return _send(ui["mail_manage_subject"], ui["mail_manage_body"].replace("{link}", link), [email])
+def send_manage_link(email, link):
+    return _send(MANAGE_SUBJECT, _fill(MANAGE_BODY, link=link), [email])

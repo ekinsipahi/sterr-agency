@@ -38,12 +38,6 @@ DATA = {
         "manage_submit": "Linki göndər",
         "manage_sent": "Bu e-poçtla abunəlik varsa, link yoldadır. Bir saat etibarlıdır.",
         "manage_expired": "Bu linkin vaxtı bitib və ya etibarsızdır. Aşağıdan yenisini istəyin.",
-        "mail_manage_subject": "Abunəlik linkiniz",
-        "mail_manage_body": "Instagram böyüməsi abunəliyinizi idarə etmək və ya ləğv etmək üçün təhlükəsiz linkiniz. Bir saat etibarlıdır:\n\n{link}\n\nBunu siz istəməmisinizsə, bu e-poçtu nəzərə almayın.",
-        "mail_welcome_subject": "Planınız aktivdir: @{handle} üçün orqanik böyümə başladı",
-        "mail_welcome_body": "Abunə olduğunuz üçün təşəkkürlər. @{handle} ({location}) üçün orqanik böyümə indi başlayır. Yeni izləyicilər yavaş-yavaş gəlir; müştərilərimiz ayda orta hesabla 900–3.000 real izləyici qazanır.\n\nŞifrənizi heç vaxt istəməyəcəyik.\n\nİstədiyiniz vaxt ləğv edə bilərsiniz. Ləğv növbəti yenilənməni dayandırır; artıq başlamış ayın ödənişi qaytarılmır.\n\nLəğv etmək istəsəniz, bu linkdən istənilən vaxt istifadə edin: {cancel}",
-        "mail_cancel_subject": "Ləğv təsdiqləndi: planınız {date} tarixinədək aktivdir",
-        "mail_cancel_body": "@{handle} üçün ləğv təsdiqləndi.\n\nPlanınız {date} tarixinədək aktivdir: böyümə o vaxta qədər davam edir və yenidən ödəniş tutulmayacaq. Başlamış ayın ödənişi qaytarılmır.\n\nFikrinizi dəyişdiniz? Planı idarəetmə səhifəsindən saxlaya bilərsiniz: {manage}",
         "policy": "İstədiyiniz vaxt ləğv edin: ləğv növbəti yenilənməni dayandırır. Artıq başlamış ayın ödənişi qaytarılmır.",
     },
     "main": {
