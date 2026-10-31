@@ -97,6 +97,7 @@ class CheckoutWithoutStripeTests(TestCase):
         sub = GrowthSubscription.objects.get()
         self.assertEqual((sub.instagram, sub.email, sub.status), ("my.brand", "owner@example.com", "pending"))
         team, customer = mail.outbox
+        self.assertTrue(GrowthSubscription.objects.get().notified)
         self.assertEqual(team.to, ["owner@example.com"])
         self.assertIn("başvurusu", team.subject)
         self.assertEqual(customer.subject, "We received your request: organic growth for @my.brand")  # English
@@ -111,6 +112,18 @@ class CheckoutWithoutStripeTests(TestCase):
         with mock.patch("apps.growth.billing.create_checkout") as create:
             post_form(self.client)
         create.assert_not_called()
+
+    def test_mail_failure_is_recorded_for_the_admin(self):
+        with mock.patch("django.core.mail.EmailMessage.send", side_effect=RuntimeError("Resend error 403: domain not verified")):
+            post_form(self.client)
+        sub = GrowthSubscription.objects.get()
+        self.assertFalse(sub.notified)
+        self.assertIn("Resend error 403", sub.mail_error)
+
+    @override_settings(LEAD_NOTIFY_EMAILS=[])
+    def test_missing_recipient_is_recorded(self):
+        post_form(self.client)
+        self.assertIn("LEAD_NOTIFY_EMAILS", GrowthSubscription.objects.get().mail_error)
 
     def test_invalid_handle_shows_error_in_page_language(self):
         r = post_form(self.client, lang="tr", instagram="not a handle!")

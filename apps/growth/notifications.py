@@ -42,16 +42,29 @@ def _fill(text, **values):
     return text
 
 
+class MailResult:
+    """Truthy when sent; `error` says why not (shown in the admin)."""
+
+    def __init__(self, ok, error=""):
+        self.ok, self.error = ok, error
+
+    def __bool__(self):
+        return self.ok
+
+
 def _send(subject, body, to, reply_to=None):
     if not to:
-        return False
+        logger.warning("Growth email skipped, no recipient: %s", subject)
+        return MailResult(False, "Alıcı yok (LEAD_NOTIFY_EMAILS boş)")
     try:
         EmailMessage(subject=subject, body=body, from_email=settings.DEFAULT_FROM_EMAIL, to=to,
                      reply_to=reply_to).send(fail_silently=False)
-    except Exception:
+    except Exception as exc:
         logger.exception("Growth email failed: %s", subject)
-        return False
-    return True
+        return MailResult(False, str(exc)[:500])
+    if "console" in settings.EMAIL_BACKEND:
+        return MailResult(False, "RESEND_API_KEY yok: e-posta sadece loga yazıldı")
+    return MailResult(True)
 
 
 def notify_team(sub, event):

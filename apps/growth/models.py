@@ -23,6 +23,8 @@ class GrowthSubscription(models.Model):
     stripe_subscription_id = models.CharField(max_length=64, blank=True, db_index=True)
     stripe_checkout_session_id = models.CharField(max_length=128, blank=True)
     welcomed = models.BooleanField("Hoş geldin e-postası", default=False)
+    notified = models.BooleanField("Bildirim gönderildi", default=False)
+    mail_error = models.TextField("E-posta hatası", blank=True)
     note = models.TextField("Not", blank=True)
     ip = models.GenericIPAddressField(null=True, blank=True)
     source_page = models.CharField(max_length=300, blank=True)

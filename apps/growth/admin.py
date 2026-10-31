@@ -6,14 +6,15 @@ from .models import GrowthSubscription, StripeEvent
 
 @admin.register(GrowthSubscription)
 class GrowthSubscriptionAdmin(admin.ModelAdmin):
-    list_display = ("handle", "location", "email", "status", "cancel_at_period_end", "current_period_end", "lang", "created_at")
-    list_filter = ("status", "cancel_at_period_end", "lang", "created_at")
+    list_display = ("handle", "location", "email", "status", "notified", "cancel_at_period_end", "current_period_end", "lang", "created_at")
+    list_filter = ("status", "notified", "cancel_at_period_end", "lang", "created_at")
     search_fields = ("instagram", "email", "location", "stripe_customer_id", "stripe_subscription_id")
     readonly_fields = ("stripe_customer_id", "stripe_subscription_id", "stripe_checkout_session_id", "current_period_end",
-                       "cancel_at_period_end", "welcomed", "ip", "source_page", "utm_source", "utm_medium",
+                       "cancel_at_period_end", "welcomed", "notified", "mail_error", "ip", "source_page", "utm_source", "utm_medium",
                        "utm_campaign", "gclid", "created_at", "updated_at")
     fieldsets = (
         (None, {"fields": ("instagram", "location", "email", "lang", "status", "note")}),
+        ("E-posta", {"fields": ("notified", "mail_error")}),
         ("Stripe", {"fields": ("stripe_customer_id", "stripe_subscription_id", "stripe_checkout_session_id",
                                "current_period_end", "cancel_at_period_end", "welcomed")}),
         ("Kaynak", {"classes": ("collapse",), "fields": ("ip", "source_page", "utm_source", "utm_medium", "utm_campaign",

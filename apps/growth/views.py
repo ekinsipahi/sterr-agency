@@ -130,8 +130,11 @@ def checkout(request):
         return response
 
     # Payments off: a request. Team email via Resend, English auto-reply to the customer.
-    notify_team(sub, "request")
-    acknowledge_request(sub)
+    team = notify_team(sub, "request")
+    customer = acknowledge_request(sub)
+    sub.notified = bool(team)
+    sub.mail_error = "\n".join(f"{who}: {r.error}" for who, r in (("Ekip", team), ("Müşteri", customer)) if not r)
+    sub.save(update_fields=["notified", "mail_error"])
     request.session["growth_lead"] = {
         "lead_id": f"ig-{sub.pk}", "form_id": "instagram_growth", "language": code,
         "value": settings.GROWTH_PRICE_USD, "currency": "USD", "lead_location": sub.location[:40],
@@ -246,7 +249,7 @@ def _on_checkout_completed(obj):
         sub.status = "active"
     sub.save()
     if not sub.welcomed:
-        sub.welcomed = welcome_customer(sub, account_link(sub, "cancel"))
+        sub.welcomed = bool(welcome_customer(sub, account_link(sub, "cancel")))
         sub.save(update_fields=["welcomed"])
         notify_team(sub, "started")
 
