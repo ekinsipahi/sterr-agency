@@ -16,6 +16,7 @@
       <a href="{{ urls.sectors }}"{% if key|slice:':6' == 'sector' %} aria-current="page"{% endif %}>{{ ui.nav_sectors }}</a>
       <a href="{{ urls.guides }}"{% if key|slice:':5' == 'guide' %} aria-current="page"{% endif %}>{{ ui.nav_guides }}</a>
       <a href="{{ urls.home }}#pricing">{{ ui.nav_pricing }}</a>
+      {% if urls.growth %}<a href="{{ urls.growth }}"{% if key|slice:':7' == 'growth_' %} aria-current="page"{% endif %}>{{ growth_nav }}</a>{% endif %}
       <a href="{{ urls.dental }}">{{ ui.nav_dental }}</a>
     </nav>
     <div class="nav__cta">

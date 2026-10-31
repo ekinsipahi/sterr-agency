@@ -1,7 +1,7 @@
 DATA = {
     "base": "pidpysnyky-instagram",
     "subs": {"pricing": "tsiny", "guide_buy": "chy-varto-kupuvaty", "guide_speed": "skilky-na-misyats"},
-    "nav": "Зростання в Instagram",
+    "nav": "Підписники Instagram",
     "price": "99 $",
     "ui": {
         "eyebrow": "Органічне зростання в Instagram",

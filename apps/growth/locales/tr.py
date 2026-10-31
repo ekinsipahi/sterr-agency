@@ -1,7 +1,7 @@
 DATA = {
     "base": "instagram-takipci",
     "subs": {"pricing": "fiyat", "guide_buy": "satin-almak-guvenli-mi", "guide_speed": "ayda-kac-takipci"},
-    "nav": "Instagram büyütme",
+    "nav": "Instagram Takipçi",
     "price": "99$",
     "ui": {
         "eyebrow": "Organik Instagram büyümesi",

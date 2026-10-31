@@ -1,7 +1,7 @@
 DATA = {
     "base": "instagram-volgers",
     "subs": {"pricing": "prijzen", "guide_buy": "volgers-kopen-veilig", "guide_speed": "hoe-snel-groeien"},
-    "nav": "Instagram-groei",
+    "nav": "Instagram Volgers",
     "price": "$99",
     "ui": {
         "eyebrow": "Organische Instagram-groei",

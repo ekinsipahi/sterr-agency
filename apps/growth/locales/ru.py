@@ -1,7 +1,7 @@
 DATA = {
     "base": "podpischiki-instagram",
     "subs": {"pricing": "ceny", "guide_buy": "stoit-li-pokupat", "guide_speed": "skolko-v-mesyac"},
-    "nav": "Рост в Instagram",
+    "nav": "Подписчики Instagram",
     "price": "99 $",
     "ui": {
         "eyebrow": "Органический рост в Instagram",

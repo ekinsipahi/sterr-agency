@@ -1,7 +1,7 @@
 DATA = {
     "base": "instagram-follower",
     "subs": {"pricing": "preise", "guide_buy": "follower-kaufen-sinnvoll", "guide_speed": "wie-schnell-wachsen"},
-    "nav": "Instagram-Wachstum",
+    "nav": "Instagram Follower",
     "price": "99 $",
     "ui": {
         "eyebrow": "Organisches Instagram-Wachstum",

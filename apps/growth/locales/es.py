@@ -1,7 +1,7 @@
 DATA = {
     "base": "seguidores-instagram",
     "subs": {"pricing": "precios", "guide_buy": "comprar-seguidores-es-seguro", "guide_speed": "cuantos-al-mes"},
-    "nav": "Crecimiento en Instagram",
+    "nav": "Seguidores Instagram",
     "price": "99 $",
     "ui": {
         "eyebrow": "Crecimiento orgánico en Instagram",

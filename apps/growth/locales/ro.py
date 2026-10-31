@@ -1,7 +1,7 @@
 DATA = {
     "base": "urmaritori-instagram",
     "subs": {"pricing": "preturi", "guide_buy": "merita-sa-cumperi", "guide_speed": "cati-pe-luna"},
-    "nav": "Creștere pe Instagram",
+    "nav": "Urmăritori Instagram",
     "price": "99 $",
     "ui": {
         "eyebrow": "Creștere organică pe Instagram",

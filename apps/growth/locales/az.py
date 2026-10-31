@@ -1,7 +1,7 @@
 DATA = {
     "base": "instagram-izleyici",
     "subs": {"pricing": "qiymetler", "guide_buy": "almaq-tehlukesizdirmi", "guide_speed": "ayda-nece-izleyici"},
-    "nav": "Instagram böyüməsi",
+    "nav": "Instagram İzləyici",
     "price": "99 $",
     "ui": {
         "eyebrow": "Orqanik Instagram böyüməsi",

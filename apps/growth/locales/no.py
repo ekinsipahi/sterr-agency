@@ -1,7 +1,7 @@
 DATA = {
     "base": "instagram-folgere",
     "subs": {"pricing": "priser", "guide_buy": "er-det-trygt-a-kjope", "guide_speed": "hvor-raskt-vokse"},
-    "nav": "Instagram-vekst",
+    "nav": "Instagram-følgere",
     "price": "99 $",
     "ui": {
         "eyebrow": "Organisk vekst på Instagram",

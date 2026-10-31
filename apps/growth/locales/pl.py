@@ -1,7 +1,7 @@
 DATA = {
     "base": "obserwujacy-instagram",
     "subs": {"pricing": "cennik", "guide_buy": "czy-warto-kupowac", "guide_speed": "ilu-miesiecznie"},
-    "nav": "Wzrost na Instagramie",
+    "nav": "Obserwujący Instagram",
     "price": "99 $",
     "ui": {
         "eyebrow": "Organiczny wzrost na Instagramie",

@@ -10,11 +10,11 @@
       <a href="{{ u_sectors }}" {% if u_sectors in request.path %}aria-current="page"{% endif %}>Sektörler</a>
       <a href="{{ u_works }}" {% if u_works in request.path %}aria-current="page"{% endif %}>Çalışmalar</a>
       <a href="{{ u_packages }}" {% if request.path == u_packages %}aria-current="page"{% endif %}>Paketler</a>
+      <a href="{{ growth_url }}"{% if growth_url in request.path %} aria-current="page"{% endif %}>{{ growth_nav }}</a>
       <a href="{{ dental_url }}">Diş Turizmi</a>
     </nav>
     <div class="nav__cta">
       {% include "partials/lang_menu.html" %}
-      <a class="btn btn--ghost btn--sm" href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a>
       <a class="btn btn--signal btn--sm" href="{% if nav_cta_href %}{{ nav_cta_href }}{% else %}{% url 'leads:apply' %}{% endif %}">{{ nav_cta_label|default:"Başvuru yap" }}</a>
       <button class="nav__toggle" type="button" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span></button>
     </div>

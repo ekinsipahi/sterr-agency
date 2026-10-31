@@ -1,7 +1,7 @@
 DATA = {
     "base": "abonnes-instagram",
     "subs": {"pricing": "tarifs", "guide_buy": "acheter-des-abonnes-risques", "guide_speed": "combien-par-mois"},
-    "nav": "Croissance Instagram",
+    "nav": "Abonnés Instagram",
     "price": "99 $",
     "ui": {
         "eyebrow": "Croissance Instagram organique",

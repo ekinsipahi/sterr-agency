@@ -1,7 +1,7 @@
 DATA = {
     "base": "mutabieen-instagram",
     "subs": {"pricing": "asaar", "guide_buy": "hal-shiraa-mutabieen-aman", "guide_speed": "kam-mutabie-shahriyan"},
-    "nav": "نمو انستقرام",
+    "nav": "متابعين انستقرام",
     "price": "99$",
     "ui": {
         "eyebrow": "نمو طبيعي على انستقرام",
