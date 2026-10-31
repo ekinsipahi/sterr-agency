@@ -5,6 +5,7 @@ from django.conf import settings
 from apps.core.languages import LANG_BY_CODE
 from apps.dental.languages import page_path as dental_path
 from apps.growth.content import CONTENT as GROWTH
+from apps.intl.about import FOUNDER_INSTAGRAM
 from apps.growth.content import page_path as growth_path
 from apps.intl.content import CLUSTER_KEYS, GUIDE_KEYS, SECTOR_KEYS, alternates, lang_links
 
@@ -16,8 +17,11 @@ WHATSAPP_TEXT = "Merhaba Sterr Agency, işletmem için müşteri kazanımı hakk
 
 def site(request):
     key = _page_key(request)
+    settings_obj = SiteSettings.load()
     return {
-        "site": SiteSettings.load(),
+        "site": settings_obj,
+        # Footer Instagram: the admin setting, else the founder's account.
+        "instagram_link": settings_obj.instagram_url or f"https://www.instagram.com/{FOUNDER_INSTAGRAM}/",
         "company": COMPANY,
         "SITE_URL": settings.SITE_URL,
         "canonical_url": settings.SITE_URL + request.path,

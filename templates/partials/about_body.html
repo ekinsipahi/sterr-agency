@@ -21,7 +21,7 @@ wrapper template adds its proof/work section through the `proof` include.{% endc
       <p class="eyebrow">{{ a.founder_eyebrow }}</p>
       <h2 class="h2">{{ a.founder_title.0 }}<span class="serif">{{ a.founder_title.1 }}</span></h2>
       <a class="founder-card mt-m" href="https://www.instagram.com/{{ instagram }}/" target="_blank" rel="noopener" data-loc="about_founder_card">
-        <span class="founder-card__avatar" aria-hidden="true">{{ a.founder_title.1|slice:":1" }}</span>
+        <span class="founder-card__avatar" aria-hidden="true">{{ a.founder_name|cut:"Dt. "|slice:":1" }}</span>
         <span><b>{{ a.founder_name }}</b><span class="founder-card__handle">{% include "partials/icons/instagram.svg" %} @{{ instagram }}</span></span>
       </a>
     </div>
