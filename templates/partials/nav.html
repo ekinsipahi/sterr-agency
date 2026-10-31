@@ -1,4 +1,4 @@
-{% url 'core:home' as u_home %}{% url 'core:services' as u_services %}{% url 'core:packages' as u_packages %}{% url 'works:list' as u_works %}{% url 'core:method' as u_method %}{% url 'seo:sectors' as u_sectors %}
+{% url 'core:home' as u_home %}{% url 'core:services' as u_services %}{% url 'core:packages' as u_packages %}{% url 'works:list' as u_works %}{% url 'core:method' as u_method %}{% url 'seo:sectors' as u_sectors %}{% url 'core:about' as u_about %}
 <header class="nav">
   <div class="container nav__inner">
     <a href="{{ u_home }}" class="brand" aria-label="Sterr Agency ana sayfa">
@@ -12,6 +12,7 @@
       <a href="{{ u_packages }}" {% if request.path == u_packages %}aria-current="page"{% endif %}>Paketler</a>
       <a href="{{ growth_url }}"{% if growth_url in request.path %} aria-current="page"{% endif %}>{{ growth_nav }}</a>
       <a href="{{ dental_url }}">Diş Turizmi</a>
+      <a href="{{ u_about }}"{% if request.path == u_about %} aria-current="page"{% endif %}>Hakkımızda</a>
     </nav>
     <div class="nav__cta">
       {% include "partials/lang_menu.html" %}

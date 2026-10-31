@@ -15,21 +15,27 @@ wrapper template adds its proof/work section through the `proof` include.{% endc
   </div>
 </section>
 
-<section class="section section--line">
-  <div class="container">
-    <div class="section-head reveal"><p class="eyebrow">{{ a.story_eyebrow }}</p><h2 class="h2">{{ a.story_title.0 }}<span class="serif">{{ a.story_title.1 }}</span></h2></div>
-    <div class="grid grid-3">{% for t, x in a.story %}<div class="card reveal"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ t }}</h3><p>{{ x }}</p></div>{% endfor %}</div>
+<section class="section section--line" id="founder">
+  <div class="container split">
+    <div class="reveal">
+      <p class="eyebrow">{{ a.founder_eyebrow }}</p>
+      <h2 class="h2">{{ a.founder_title.0 }}<span class="serif">{{ a.founder_title.1 }}</span></h2>
+      <a class="founder-card mt-m" href="https://www.instagram.com/{{ instagram }}/" target="_blank" rel="noopener" data-loc="about_founder_card">
+        <span class="founder-card__avatar" aria-hidden="true">{{ a.founder_title.1|slice:":1" }}</span>
+        <span><b>{{ a.founder_name }}</b><span class="founder-card__handle">{% include "partials/icons/instagram.svg" %} @{{ instagram }}</span></span>
+      </a>
+    </div>
+    <div class="reveal founder-text">
+      {% for para in a.founder_paras %}<p{% if forloop.first %} class="lede"{% endif %}>{{ para }}</p>{% endfor %}
+      <a class="btn btn--signal btn--lg mt-m" href="https://www.instagram.com/{{ instagram }}/" target="_blank" rel="noopener" data-loc="about_founder">{% include "partials/icons/instagram.svg" %} {{ a.founder_cta }}</a>
+    </div>
   </div>
 </section>
 
 <section class="section section--line">
-  <div class="container split">
-    <div class="reveal"><p class="eyebrow">{{ a.founder_eyebrow }}</p><h2 class="h2">{{ a.founder_title.0 }}<span class="serif">{{ a.founder_title.1 }}</span></h2></div>
-    <div class="reveal">
-      <p class="lede">{{ a.founder_text }}</p>
-      <a class="btn btn--signal btn--lg mt-m" href="https://www.instagram.com/{{ instagram }}/" target="_blank" rel="noopener" data-loc="about_founder">{% include "partials/icons/instagram.svg" %} @{{ instagram }}</a>
-      <p class="muted mt-s" style="font-size:14.5px">{{ a.founder_cta }}</p>
-    </div>
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">{{ a.story_eyebrow }}</p><h2 class="h2">{{ a.story_title.0 }}<span class="serif">{{ a.story_title.1 }}</span></h2></div>
+    <div class="grid grid-3">{% for t, x in a.story %}<div class="card reveal"><span class="card__num">{{ forloop.counter|stringformat:"02d" }}</span><h3 class="h3">{{ t }}</h3><p>{{ x }}</p></div>{% endfor %}</div>
   </div>
 </section>
 

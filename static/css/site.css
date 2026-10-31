@@ -125,14 +125,13 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; letter-spac
 .brand__mark { width: 26px; height: 26px; color: var(--signal); }
 .brand__sub { font-weight: 400; color: var(--muted); font-size: 13px; letter-spacing: 0.02em; margin-left: 2px; }
 .brand img { height: 30px; width: auto; }
-.nav__links { display: flex; align-items: center; gap: 4px; }
-.nav__links a { padding: 8px 14px; border-radius: 999px; font-size: 14.5px; color: var(--muted); white-space: nowrap; transition: color .2s, background .2s; }
-@media (max-width: 1360px) { .nav__links { gap: 2px; } .nav__links a { padding: 8px 10px; font-size: 14px; } }
+.nav__links { display: flex; align-items: center; gap: 2px; }
+.nav__links a { padding: 8px 9px; border-radius: 999px; font-size: 14px; color: var(--muted); white-space: nowrap; transition: color .2s, background .2s; }
 .nav__links a:hover, .nav__links a[aria-current="page"] { color: var(--text); background: rgba(255,255,255,.04); }
 .nav__cta { display: flex; gap: 8px; align-items: center; }
 .nav__toggle { display: none; background: none; border: 1px solid var(--line-strong); color: var(--text); width: 44px; height: 44px; border-radius: 50%; cursor: pointer; }
 .nav__toggle span { display: block; width: 16px; height: 1.5px; background: currentColor; margin: 4px auto; transition: transform .3s; }
-@media (max-width: 1180px) {
+@media (max-width: 1260px) {
   .nav__links, .nav__cta .btn--ghost { display: none; }
   .nav__toggle { display: block; }
   .nav.is-open .nav__links {
@@ -488,3 +487,14 @@ fieldset.field legend { font-size: 14px; color: var(--muted); margin-bottom: 8px
 .compare__good { color: var(--text); font-weight: 600; }
 .form-alert--ok { border-color: rgba(212,255,58,.35); background: rgba(212,255,58,.07); color: var(--text); }
 @media (max-width: 700px) { .stats--4 { grid-template-columns: repeat(2, 1fr); } .stats--4 .stat { padding: 22px 16px; } .stats--4 .stat:nth-child(odd) { border-right: 1px solid var(--line); } .stats--4 .stat:nth-last-child(-n+2) { border-bottom: 0; } }
+
+/* ---------- About: founder ---------- */
+.founder-card { display: inline-flex; align-items: center; gap: 14px; padding: 12px 18px 12px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); transition: border-color .2s; }
+.founder-card:hover { border-color: var(--line-strong); }
+.founder-card b { display: block; font-size: 16px; }
+.founder-card__avatar { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--signal); color: #0a0a09; font-family: var(--font-display); font-weight: 700; font-size: 20px; }
+.founder-card__handle { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 14px; }
+.founder-card__handle svg { width: 15px; height: 15px; }
+.founder-text p + p { margin-top: 16px; color: var(--muted); font-size: 17px; line-height: 1.6; }
+/* Long menu labels (Russian): tighter tabs so the bar still fits on one line. */
+html[lang="ru"] .nav__links a { padding: 8px 6px; font-size: 13.5px; }

@@ -18,6 +18,7 @@
       <a href="{{ urls.home }}#pricing">{{ ui.nav_pricing }}</a>
       {% if urls.growth %}<a href="{{ urls.growth }}"{% if key|slice:':7' == 'growth_' %} aria-current="page"{% endif %}>{{ growth_nav }}</a>{% endif %}
       <a href="{{ urls.dental }}">{{ ui.nav_dental }}</a>
+      <a href="{{ urls.about }}"{% if key == 'about' %} aria-current="page"{% endif %}>{{ ui.nav_about }}</a>
     </nav>
     <div class="nav__cta">
       {% include "partials/lang_menu.html" with lang_label=ui.lang_label %}

@@ -387,121 +387,76 @@ ABOUT = {
 # Wording stays gender-neutral in every language.
 EXTRA = {
     "en": {
-        "founder_eyebrow": "Founders", "founder_title": ("A dentist ", "among our founders."),
-        "founder_text": "One of our founders is a dentist, so we know health businesses from the inside: patients, trust and how a clinic really runs. Write to our founder directly on Instagram.",
-        "founder_cta": "Message on Instagram",
         "reach_eyebrow": "Reach", "reach_title": ("Ten channels. ", "One goal."),
         "reach_text": "Instagram and far beyond: we multiply your digital strength from ten directions at once, across different platforms and with the institutions we partner with. From the Momentum plan up, we also grow you organically on Instagram, focused on the locations that matter to you.",
         "mission": ("Our goal: ", "a more accessible world", " and customers who find what they are looking for."),
     },
     "de": {
-        "founder_eyebrow": "Gründer", "founder_title": ("Zahnärztliche Erfahrung ", "im Gründerteam."),
-        "founder_text": "Unser Gründerteam bringt zahnärztliche Berufserfahrung mit. Deshalb kennen wir Gesundheitsunternehmen von innen: Patienten, Vertrauen und wie eine Praxis wirklich läuft. Schreiben Sie unserem Gründerteam direkt auf Instagram.",
-        "founder_cta": "Auf Instagram schreiben",
         "reach_eyebrow": "Reichweite", "reach_title": ("Zehn Kanäle. ", "Ein Ziel."),
         "reach_text": "Instagram und weit darüber hinaus: Wir vervielfachen Ihre digitale Stärke aus zehn Richtungen zugleich, über verschiedene Plattformen und mit unseren Partnerinstitutionen. Ab dem Momentum-Paket lassen wir Sie zusätzlich auf Instagram organisch wachsen, ausgerichtet auf die Orte, die für Sie zählen.",
         "mission": ("Unser Ziel: ", "eine zugänglichere Welt", " und Kunden, die finden, wonach sie suchen."),
     },
     "nl": {
-        "founder_eyebrow": "Oprichters", "founder_title": ("Een tandarts ", "in ons oprichtersteam."),
-        "founder_text": "Eén van onze oprichters is tandarts, dus we kennen zorgbedrijven van binnenuit: patiënten, vertrouwen en hoe een praktijk echt draait. Stuur onze oprichter direct een bericht op Instagram.",
-        "founder_cta": "Bericht via Instagram",
         "reach_eyebrow": "Bereik", "reach_title": ("Tien kanalen. ", "Eén doel."),
         "reach_text": "Instagram en ver daarbuiten: we vermenigvuldigen uw digitale kracht vanuit tien richtingen tegelijk, via verschillende platforms en met de instellingen waarmee we samenwerken. Vanaf het Momentum-pakket laten we u ook op Instagram organisch groeien, gericht op de locaties die voor u tellen.",
         "mission": ("Ons doel: ", "een toegankelijkere wereld", " en klanten die vinden wat ze zoeken."),
     },
     "fr": {
-        "founder_eyebrow": "Fondateurs", "founder_title": ("Une expertise dentaire ", "au cœur de l'équipe fondatrice."),
-        "founder_text": "Notre équipe fondatrice a une vraie pratique de la chirurgie dentaire : nous connaissons les entreprises de santé de l'intérieur, les patients, la confiance et le vrai fonctionnement d'un cabinet. Écrivez directement à notre équipe fondatrice sur Instagram.",
-        "founder_cta": "Écrire sur Instagram",
         "reach_eyebrow": "Portée", "reach_title": ("Dix canaux. ", "Un seul objectif."),
         "reach_text": "Instagram et bien au-delà : nous multiplions votre force numérique depuis dix directions à la fois, sur différentes plateformes et avec les institutions partenaires. À partir de la formule Momentum, nous vous faisons aussi grandir de façon organique sur Instagram, en ciblant les lieux qui comptent pour vous.",
         "mission": ("Notre objectif : ", "un monde plus accessible", " et des clients qui trouvent ce qu'ils cherchent."),
     },
     "it": {
-        "founder_eyebrow": "Fondatori", "founder_title": ("Esperienza odontoiatrica ", "nel team dei fondatori."),
-        "founder_text": "Nel nostro team di fondatori c'è esperienza odontoiatrica sul campo: conosciamo le attività sanitarie dall'interno, i pazienti, la fiducia e come funziona davvero uno studio. Scrivi direttamente ai fondatori su Instagram.",
-        "founder_cta": "Scrivi su Instagram",
         "reach_eyebrow": "Portata", "reach_title": ("Dieci canali. ", "Un solo obiettivo."),
         "reach_text": "Instagram e molto oltre: moltiplichiamo la tua forza digitale da dieci direzioni insieme, su piattaforme diverse e con gli enti con cui collaboriamo. Dal piano Momentum in su ti facciamo crescere anche su Instagram in modo organico, puntando sui luoghi che contano per te.",
         "mission": ("Il nostro obiettivo: ", "un mondo più accessibile", " e clienti che trovano ciò che cercano."),
     },
     "es": {
-        "founder_eyebrow": "Fundadores", "founder_title": ("Experiencia odontológica ", "en el equipo fundador."),
-        "founder_text": "En nuestro equipo fundador hay experiencia odontológica real: conocemos los negocios de salud por dentro, los pacientes, la confianza y cómo funciona de verdad una clínica. Escribe directamente al equipo fundador en Instagram.",
-        "founder_cta": "Escribir por Instagram",
         "reach_eyebrow": "Alcance", "reach_title": ("Diez canales. ", "Un objetivo."),
         "reach_text": "Instagram y mucho más: multiplicamos tu fuerza digital desde diez frentes a la vez, en distintas plataformas y con las instituciones con las que colaboramos. Desde el plan Momentum, también te hacemos crecer en Instagram de forma orgánica, centrados en las ubicaciones que te importan.",
         "mission": ("Nuestro objetivo: ", "un mundo más accesible", " y clientes que encuentran lo que buscan."),
     },
     "pl": {
-        "founder_eyebrow": "Założyciele", "founder_title": ("Doświadczenie stomatologiczne ", "w zespole założycieli."),
-        "founder_text": "W zespole założycieli mamy praktykę stomatologiczną, więc znamy firmy medyczne od środka: pacjentów, zaufanie i to, jak naprawdę działa gabinet. Napisz do założycieli bezpośrednio na Instagramie.",
-        "founder_cta": "Napisz na Instagramie",
         "reach_eyebrow": "Zasięg", "reach_title": ("Dziesięć kanałów. ", "Jeden cel."),
         "reach_text": "Instagram i daleko poza nim: zwielokrotniamy Twoją cyfrową siłę z dziesięciu kierunków naraz, na różnych platformach i z instytucjami, z którymi współpracujemy. Od pakietu Momentum rozwijamy Cię też organicznie na Instagramie, z naciskiem na lokalizacje, które się dla Ciebie liczą.",
         "mission": ("Nasz cel: ", "bardziej dostępny świat", " i klienci, którzy znajdują to, czego szukają."),
     },
     "ru": {
-        "founder_eyebrow": "Основатели", "founder_title": ("Стоматологический опыт ", "в команде основателей."),
-        "founder_text": "В команде основателей есть опыт практической стоматологии, поэтому мы знаем бизнес в сфере здоровья изнутри: пациентов, доверие и то, как на самом деле работает клиника. Напишите основателям напрямую в Instagram.",
-        "founder_cta": "Написать в Instagram",
         "reach_eyebrow": "Охват", "reach_title": ("Десять каналов. ", "Одна цель."),
         "reach_text": "Instagram и далеко за его пределами: мы умножаем вашу цифровую силу сразу с десяти направлений, на разных платформах и вместе с организациями-партнёрами. Начиная с пакета Momentum, мы также растим вас в Instagram органически, с упором на важные для вас локации.",
         "mission": ("Наша цель — ", "более доступный мир", " и клиенты, которые находят то, что ищут."),
     },
     "uk": {
-        "founder_eyebrow": "Засновники", "founder_title": ("Стоматологічний досвід ", "у команді засновників."),
-        "founder_text": "У команді засновників є досвід практичної стоматології, тож ми знаємо бізнес у сфері здоров'я зсередини: пацієнтів, довіру і те, як насправді працює клініка. Напишіть засновникам напряму в Instagram.",
-        "founder_cta": "Написати в Instagram",
         "reach_eyebrow": "Охоплення", "reach_title": ("Десять каналів. ", "Одна мета."),
         "reach_text": "Instagram і далеко за його межами: ми примножуємо вашу цифрову силу одразу з десяти напрямків, на різних платформах і разом з організаціями-партнерами. Починаючи з пакета Momentum, ми також розвиваємо вас в Instagram органічно, з акцентом на важливі для вас локації.",
         "mission": ("Наша мета — ", "доступніший світ", " і клієнти, які знаходять те, що шукають."),
     },
     "ar": {
-        "founder_eyebrow": "المؤسسون", "founder_title": ("خبرة في طب الأسنان ", "ضمن الفريق المؤسس."),
-        "founder_text": "يضم فريقنا المؤسس خبرة عملية في طب الأسنان، لذلك نعرف قطاع الصحة من الداخل: المرضى والثقة وكيف تعمل العيادة فعلًا. راسل الفريق المؤسس مباشرة على Instagram.",
-        "founder_cta": "راسلنا على Instagram",
         "reach_eyebrow": "الانتشار", "reach_title": ("عشر قنوات. ", "هدف واحد."),
         "reach_text": "Instagram وأبعد بكثير: نضاعف قوتك الرقمية من عشرة اتجاهات في وقت واحد، عبر منصات مختلفة ومع المؤسسات التي نتعاون معها. وابتداءً من باقة Momentum ننمّي حضورك على Instagram أيضًا بشكل طبيعي مع التركيز على المواقع التي تهمك.",
         "mission": ("هدفنا: ", "عالم أسهل وصولًا", " وعملاء يجدون ما يبحثون عنه."),
     },
     "sv": {
-        "founder_eyebrow": "Grundare", "founder_title": ("En tandläkare ", "bland grundarna."),
-        "founder_text": "En av våra grundare är tandläkare, så vi känner vårdföretag inifrån: patienterna, förtroendet och hur en klinik verkligen fungerar. Skriv direkt till vår grundare på Instagram.",
-        "founder_cta": "Skriv på Instagram",
         "reach_eyebrow": "Räckvidd", "reach_title": ("Tio kanaler. ", "Ett mål."),
         "reach_text": "Instagram och långt bortom: vi mångdubblar din digitala styrka från tio håll samtidigt, på olika plattformar och med de institutioner vi samarbetar med. Från Momentum-paketet växer vi dig också organiskt på Instagram, med fokus på de platser som betyder något för dig.",
         "mission": ("Vårt mål: ", "en mer tillgänglig värld", " och kunder som hittar det de söker."),
     },
     "da": {
-        "founder_eyebrow": "Stiftere", "founder_title": ("En tandlæge ", "blandt stifterne."),
-        "founder_text": "En af vores stiftere er tandlæge, så vi kender sundhedsvirksomheder indefra: patienterne, tilliden og hvordan en klinik virkelig fungerer. Skriv direkte til vores stifter på Instagram.",
-        "founder_cta": "Skriv på Instagram",
         "reach_eyebrow": "Rækkevidde", "reach_title": ("Ti kanaler. ", "Ét mål."),
         "reach_text": "Instagram og langt videre: vi mangedobler din digitale styrke fra ti retninger på én gang, på forskellige platforme og med de institutioner, vi samarbejder med. Fra Momentum-pakken får vi dig også til at vokse organisk på Instagram, med fokus på de steder, der betyder noget for dig.",
         "mission": ("Vores mål: ", "en mere tilgængelig verden", " og kunder, der finder det, de leder efter."),
     },
     "no": {
-        "founder_eyebrow": "Gründere", "founder_title": ("En tannlege ", "blant gründerne."),
-        "founder_text": "En av gründerne våre er tannlege, så vi kjenner helsebedrifter innenfra: pasientene, tilliten og hvordan en klinikk faktisk fungerer. Skriv direkte til gründeren vår på Instagram.",
-        "founder_cta": "Skriv på Instagram",
         "reach_eyebrow": "Rekkevidde", "reach_title": ("Ti kanaler. ", "Ett mål."),
         "reach_text": "Instagram og langt videre: vi mangedobler den digitale styrken din fra ti retninger samtidig, på ulike plattformer og med institusjonene vi samarbeider med. Fra Momentum-pakken får vi deg også til å vokse organisk på Instagram, med fokus på stedene som betyr noe for deg.",
         "mission": ("Målet vårt: ", "en mer tilgjengelig verden", " og kunder som finner det de leter etter."),
     },
     "ro": {
-        "founder_eyebrow": "Fondatori", "founder_title": ("Experiență stomatologică ", "în echipa fondatoare."),
-        "founder_text": "Echipa fondatoare are experiență practică în stomatologie, așa că știm afacerile din sănătate din interior: pacienții, încrederea și cum funcționează cu adevărat o clinică. Scrie-le fondatorilor direct pe Instagram.",
-        "founder_cta": "Scrie pe Instagram",
         "reach_eyebrow": "Anvergură", "reach_title": ("Zece canale. ", "Un singur scop."),
         "reach_text": "Instagram și mult dincolo de el: îți multiplicăm forța digitală din zece direcții deodată, pe platforme diferite și împreună cu instituțiile partenere. De la pachetul Momentum în sus, te facem să crești organic și pe Instagram, cu accent pe locațiile care contează pentru tine.",
         "mission": ("Scopul nostru: ", "o lume mai accesibilă", " și clienți care găsesc ce caută."),
     },
     "az": {
-        "founder_eyebrow": "Təsisçilər", "founder_title": ("Təsisçilərimizdən biri ", "diş həkimidir."),
-        "founder_text": "Təsisçilərimizdən biri diş həkimidir, ona görə də sağlamlıq bizneslərini içəridən tanıyırıq: pasiyentləri, etimadı və klinikanın əslində necə işlədiyini. Təsisçimizə birbaşa Instagram-dan yazın.",
-        "founder_cta": "Instagram-dan yazın",
         "reach_eyebrow": "Əhatə", "reach_title": ("On kanal. ", "Bir məqsəd."),
         "reach_text": "Instagram və daha çoxu: rəqəmsal gücünüzü eyni anda on istiqamətdən, müxtəlif platformalarda və tərəfdaş qurumlarımızla birlikdə artırırıq. Momentum paketindən başlayaraq Instagram-da sizin üçün vacib olan məkanlara fokuslanan orqanik böyümə də təmin edirik.",
         "mission": ("Məqsədimiz: ", "daha əlçatan dünya", " və axtardığını tapan müştərilər."),
@@ -537,10 +492,175 @@ ABOUT["tr"] = {
     "rows": [("Ticari unvan", "Sterr Technologies OÜ"), ("Sicil", "Estonya Ticaret Sicili · 17591465"),
              ("Kayıtlı adres", "Tornimäe tn 5, 10145 Tallinn, Estonya"), ("Merkez", "Türkiye"),
              ("Hizmet bölgesi", "Türkiye, Avrupa ve tüm dünya")],
-    "founder_eyebrow": "Kurucular", "founder_title": ("Kurucularımızdan biri ", "diş hekimi."),
-    "founder_text": "Kurucularımızdan biri diş hekimi. Bu yüzden sağlık işletmelerini içeriden tanıyoruz: hastayı, güveni ve bir kliniğin gerçekte nasıl döndüğünü. Kendisine Instagram'dan doğrudan ulaşabilirsiniz.",
-    "founder_cta": "Instagram'dan yazın",
     "reach_eyebrow": "Erişim", "reach_title": ("10 koldan. ", "Tek hedef."),
     "reach_text": "Instagram ve çok daha fazlası: dijital gücünüzü 10 koldan, farklı farklı platformlardan ve anlaşmalı olduğumuz kurumlarla katlıyoruz. İvme paketinden itibaren Instagram'da konum odaklı organik büyüme de sağlıyoruz.",
     "mission": ("Amacımız: ", "daha erişilebilir bir dünya", " ve aradığını bulan müşteriler."),
 }
+
+# Personal founder intro, first person so no pronouns are needed. Wording avoids
+# gendered nouns ("dentist", "founder") in the languages that have them. The mission
+# line is the user's own: bring every business the attention and customers it deserves.
+FOUNDER = {
+    "en": {
+        "founder_eyebrow": "Behind Sterr", "founder_title": ("Hi, I'm ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Message me on Instagram",
+        "founder_paras": [
+            "I'm a dentist, and I work across several projects at once: Sterr Agency, linksterr.com, dentaltourism.tr and the clinics we grow with. What connects them is one belief: good work deserves to be seen.",
+            "That's our goal at Sterr: to make the world a little better by bringing every business the attention and the customers it deserves. A clinic doing excellent work, lessons of real quality, a brand with something real to offer: they all deserve to be found.",
+            "Our own projects come first, as proof: linksterr.com reached 3,000 users in five months, and dentaltourism.tr brings patients in 16 languages. I also run our organic Instagram growth personally. Want to talk? Message me directly on Instagram.",
+        ],
+        "mission": ("Our goal: ", "a brighter future", " where every business gets the attention and the customers it deserves."),
+    },
+    "tr": {
+        "founder_eyebrow": "Sterr'in arkasında", "founder_title": ("Merhaba, ben ", "Ekin."),
+        "founder_name": "Dt. Ekin Sipahi", "founder_cta": "Instagram'dan yazın",
+        "founder_paras": [
+            "Diş hekimiyim ve aynı anda birden fazla projede çalışıyorum: Sterr Agency, linksterr.com, dentaltourism.tr ve birlikte büyüdüğümüz klinikler. Hepsini birleştiren tek bir inanç var: iyi iş görülmeyi hak eder.",
+            "Sterr'deki amacımız da bu: her işletmeye hak ettiği ilgiyi ve müşteriyi getirerek dünyayı biraz daha güzel bir yer yapmak. İşini çok iyi yapan bir klinik, kaliteli dersler, gerçekten değerli bir şey sunan bir marka; hepsi bulunmayı hak ediyor.",
+            "Önce kendi projelerimizle kanıtladık: linksterr.com 5 ayda 3.000 kullanıcıya ulaştı, dentaltourism.tr 16 dilde hasta getiriyor. Organik Instagram büyütmeyi de bizzat ben yönetiyorum. Konuşmak isterseniz bana doğrudan Instagram'dan yazın.",
+        ],
+        "mission": ("Amacımız: ", "daha parlak bir gelecek;", " her işletmenin hak ettiği ilgiyi ve müşteriyi bulduğu bir dünya."),
+    },
+    "de": {
+        "founder_eyebrow": "Hinter Sterr", "founder_title": ("Hallo, ich bin ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Auf Instagram schreiben",
+        "founder_paras": [
+            "Ich komme aus der Zahnmedizin und arbeite an mehreren Projekten gleichzeitig: Sterr Agency, linksterr.com, dentaltourism.tr und die Praxen, mit denen wir wachsen. Was sie verbindet, ist eine Überzeugung: Gute Arbeit verdient es, gesehen zu werden.",
+            "Das ist unser Ziel bei Sterr: die Welt ein Stück besser machen, indem wir jedem Unternehmen die Aufmerksamkeit und die Kunden bringen, die es verdient. Eine Praxis, die hervorragend arbeitet, Unterricht von hoher Qualität, eine Marke mit echtem Wert: Sie alle verdienen es, gefunden zu werden.",
+            "Den Beweis liefern zuerst unsere eigenen Projekte: linksterr.com erreichte in fünf Monaten 3.000 Nutzer, dentaltourism.tr bringt Patienten in 16 Sprachen. Das organische Instagram-Wachstum leite ich persönlich. Lust auf ein Gespräch? Schreiben Sie mir direkt auf Instagram.",
+        ],
+        "mission": ("Unser Ziel: ", "eine hellere Zukunft,", " in der jedes Unternehmen die Aufmerksamkeit und die Kunden bekommt, die es verdient."),
+    },
+    "nl": {
+        "founder_eyebrow": "Achter Sterr", "founder_title": ("Hoi, ik ben ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Bericht via Instagram",
+        "founder_paras": [
+            "Ik ben tandarts en werk aan meerdere projecten tegelijk: Sterr Agency, linksterr.com, dentaltourism.tr en de praktijken waarmee we groeien. Wat ze verbindt is één overtuiging: goed werk verdient het om gezien te worden.",
+            "Dat is ons doel bij Sterr: de wereld een beetje mooier maken door elk bedrijf de aandacht en de klanten te brengen die het verdient. Een praktijk die uitstekend werk levert, lessen van echte kwaliteit, een merk met iets echts te bieden: ze verdienen het allemaal om gevonden te worden.",
+            "Het bewijs leveren eerst onze eigen projecten: linksterr.com bereikte 3.000 gebruikers in vijf maanden, dentaltourism.tr brengt patiënten in 16 talen. De organische Instagram-groei doe ik persoonlijk. Zin om te praten? Stuur me direct een bericht op Instagram.",
+        ],
+        "mission": ("Ons doel: ", "een stralendere toekomst,", " waarin elk bedrijf de aandacht en de klanten krijgt die het verdient."),
+    },
+    "fr": {
+        "founder_eyebrow": "Derrière Sterr", "founder_title": ("Bonjour, je suis ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Écrire sur Instagram",
+        "founder_paras": [
+            "Je suis dentiste et je travaille sur plusieurs projets à la fois : Sterr Agency, linksterr.com, dentaltourism.tr et les cabinets avec lesquels nous grandissons. Ce qui les relie, c'est une conviction : le bon travail mérite d'être vu.",
+            "C'est notre objectif chez Sterr : rendre le monde un peu meilleur en apportant à chaque entreprise l'attention et les clients qu'elle mérite. Un cabinet qui fait un excellent travail, des cours de qualité, une marque qui a quelque chose de vrai à offrir : tout cela mérite d'être trouvé.",
+            "La preuve, ce sont d'abord nos propres projets : linksterr.com a atteint 3 000 utilisateurs en cinq mois, dentaltourism.tr amène des patients en 16 langues. Je gère aussi personnellement la croissance Instagram organique. Envie d'en parler ? Écrivez-moi directement sur Instagram.",
+        ],
+        "mission": ("Notre objectif : ", "un avenir plus lumineux,", " où chaque entreprise reçoit l'attention et les clients qu'elle mérite."),
+    },
+    "it": {
+        "founder_eyebrow": "Dietro Sterr", "founder_title": ("Ciao, sono ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Scrivimi su Instagram",
+        "founder_paras": [
+            "Sono dentista e lavoro a più progetti contemporaneamente: Sterr Agency, linksterr.com, dentaltourism.tr e gli studi con cui cresciamo. Li unisce una convinzione: il buon lavoro merita di essere visto.",
+            "È il nostro obiettivo in Sterr: rendere il mondo un po' migliore portando a ogni attività l'attenzione e i clienti che merita. Uno studio che lavora benissimo, lezioni di qualità, un brand con qualcosa di vero da offrire: meritano tutti di essere trovati.",
+            "La prova sono prima di tutto i nostri progetti: linksterr.com ha raggiunto 3.000 utenti in cinque mesi, dentaltourism.tr porta pazienti in 16 lingue. E la crescita organica su Instagram la seguo personalmente. Vuoi parlarne? Scrivimi direttamente su Instagram.",
+        ],
+        "mission": ("Il nostro obiettivo: ", "un futuro più luminoso,", " in cui ogni attività riceve l'attenzione e i clienti che merita."),
+    },
+    "es": {
+        "founder_eyebrow": "Detrás de Sterr", "founder_title": ("Hola, soy ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Escríbeme por Instagram",
+        "founder_paras": [
+            "Soy dentista y trabajo en varios proyectos a la vez: Sterr Agency, linksterr.com, dentaltourism.tr y las clínicas con las que crecemos. Los une una convicción: el buen trabajo merece ser visto.",
+            "Ese es nuestro objetivo en Sterr: hacer el mundo un poco mejor llevando a cada negocio la atención y los clientes que merece. Una clínica que hace un trabajo excelente, clases de calidad, una marca con algo real que ofrecer: todos merecen ser encontrados.",
+            "La prueba son primero nuestros propios proyectos: linksterr.com llegó a 3.000 usuarios en cinco meses y dentaltourism.tr atrae pacientes en 16 idiomas. Y el crecimiento orgánico en Instagram lo llevo personalmente. ¿Hablamos? Escríbeme directamente por Instagram.",
+        ],
+        "mission": ("Nuestro objetivo: ", "un futuro más brillante,", " donde cada negocio recibe la atención y los clientes que merece."),
+    },
+    "pl": {
+        "founder_eyebrow": "Kto stoi za Sterr", "founder_title": ("Cześć, tu ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Napisz na Instagramie",
+        "founder_paras": [
+            "Moje zawodowe korzenie to stomatologia, a dziś pracuję nad kilkoma projektami naraz: Sterr Agency, linksterr.com, dentaltourism.tr i gabinetami, z którymi rośniemy. Łączy je jedno przekonanie: dobra praca zasługuje na to, by ją było widać.",
+            "To nasz cel w Sterr: uczynić świat trochę lepszym, dając każdej firmie uwagę i klientów, na jakich zasługuje. Gabinet, który świetnie pracuje, wartościowe lekcje, marka z czymś prawdziwym do zaoferowania: wszyscy zasługują na to, by ich znaleziono.",
+            "Dowodem są najpierw nasze własne projekty: linksterr.com zdobył 3000 użytkowników w pięć miesięcy, dentaltourism.tr przyciąga pacjentów w 16 językach. Organicznym wzrostem na Instagramie zajmuję się osobiście. Chcesz porozmawiać? Napisz do mnie bezpośrednio na Instagramie.",
+        ],
+        "mission": ("Nasz cel: ", "jaśniejsza przyszłość,", " w której każda firma dostaje uwagę i klientów, na jakich zasługuje."),
+    },
+    "ru": {
+        "founder_eyebrow": "Кто стоит за Sterr", "founder_title": ("Привет, я ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Написать в Instagram",
+        "founder_paras": [
+            "Моя профессия — стоматология, и сейчас я веду сразу несколько проектов: Sterr Agency, linksterr.com, dentaltourism.tr и клиники, вместе с которыми мы растём. Их объединяет одно убеждение: хорошая работа заслуживает того, чтобы её увидели.",
+            "В этом и есть наша цель в Sterr: сделать мир чуточку лучше, принося каждому бизнесу внимание и клиентов, которых он заслуживает. Клиника, которая отлично работает, сильные уроки, бренд с настоящей ценностью — всех их должны находить.",
+            "Доказательство — прежде всего наши собственные проекты: linksterr.com за пять месяцев собрал 3000 пользователей, dentaltourism.tr приводит пациентов на 16 языках. А органическим ростом в Instagram я занимаюсь лично. Хотите поговорить? Напишите мне напрямую в Instagram.",
+        ],
+        "mission": ("Наша цель — ", "светлое будущее,", " в котором каждый бизнес получает внимание и клиентов, которых заслуживает."),
+    },
+    "uk": {
+        "founder_eyebrow": "Хто стоїть за Sterr", "founder_title": ("Привіт, я ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Написати в Instagram",
+        "founder_paras": [
+            "Моя професія — стоматологія, і зараз я веду одразу кілька проєктів: Sterr Agency, linksterr.com, dentaltourism.tr і клініки, разом з якими ми зростаємо. Їх об'єднує одне переконання: хороша робота заслуговує, щоб її побачили.",
+            "У цьому і є наша мета в Sterr: зробити світ трохи кращим, приносячи кожному бізнесу увагу та клієнтів, на яких він заслуговує. Клініка, що чудово працює, сильні уроки, бренд зі справжньою цінністю — усіх їх мають знаходити.",
+            "Доказ — насамперед наші власні проєкти: linksterr.com за п'ять місяців зібрав 3000 користувачів, dentaltourism.tr приводить пацієнтів 16 мовами. А органічним зростанням в Instagram я займаюся особисто. Хочете поговорити? Напишіть мені напряму в Instagram.",
+        ],
+        "mission": ("Наша мета — ", "світле майбутнє,", " у якому кожен бізнес отримує увагу та клієнтів, на яких заслуговує."),
+    },
+    "ar": {
+        "founder_eyebrow": "من وراء Sterr", "founder_title": ("مرحبًا، أنا ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "راسلني على انستقرام",
+        "founder_paras": [
+            "مهنتي طب الأسنان، وأعمل على عدة مشاريع في الوقت نفسه: Sterr Agency وlinksterr.com وdentaltourism.tr والعيادات التي ننمو معها. ما يجمعها قناعة واحدة: العمل الجيد يستحق أن يُرى.",
+            "وهذا هدفنا في Sterr: أن نجعل العالم مكانًا أجمل قليلًا، بأن نوصل إلى كل عمل الاهتمام والعملاء الذين يستحقهم. عيادة تقدّم عملًا ممتازًا، ودروس عالية الجودة، وعلامة لديها ما تقدّمه فعلًا: كلها تستحق أن تُكتشف.",
+            "الدليل أولًا مشاريعنا الخاصة: وصل linksterr.com إلى 3000 مستخدم خلال خمسة أشهر، ويجلب dentaltourism.tr المرضى بـ16 لغة. وأتولى النمو الطبيعي على انستقرام بنفسي. هل تريد التحدث؟ راسلني مباشرة على انستقرام.",
+        ],
+        "mission": ("هدفنا: ", "مستقبل أكثر إشراقًا", "، يحصل فيه كل عمل على الاهتمام والعملاء الذين يستحقهم."),
+    },
+    "sv": {
+        "founder_eyebrow": "Bakom Sterr", "founder_title": ("Hej, jag heter ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Skriv på Instagram",
+        "founder_paras": [
+            "Jag är tandläkare och arbetar med flera projekt samtidigt: Sterr Agency, linksterr.com, dentaltourism.tr och klinikerna vi växer tillsammans med. Det som förenar dem är en övertygelse: bra arbete förtjänar att synas.",
+            "Det är vårt mål på Sterr: att göra världen lite bättre genom att ge varje företag den uppmärksamhet och de kunder det förtjänar. En klinik som gör ett fantastiskt jobb, lektioner av hög kvalitet, ett varumärke med något äkta att erbjuda: alla förtjänar att bli hittade.",
+            "Beviset är först och främst våra egna projekt: linksterr.com nådde 3 000 användare på fem månader, dentaltourism.tr ger patienter på 16 språk. Den organiska Instagram-tillväxten sköter jag personligen. Vill du prata? Skriv till mig direkt på Instagram.",
+        ],
+        "mission": ("Vårt mål: ", "en ljusare framtid,", " där varje företag får den uppmärksamhet och de kunder det förtjänar."),
+    },
+    "da": {
+        "founder_eyebrow": "Bag Sterr", "founder_title": ("Hej, jeg hedder ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Skriv på Instagram",
+        "founder_paras": [
+            "Jeg er tandlæge og arbejder på flere projekter på én gang: Sterr Agency, linksterr.com, dentaltourism.tr og de klinikker, vi vokser sammen med. Det, der forbinder dem, er én overbevisning: godt arbejde fortjener at blive set.",
+            "Det er vores mål hos Sterr: at gøre verden lidt bedre ved at give hver virksomhed den opmærksomhed og de kunder, den fortjener. En klinik, der laver fremragende arbejde, undervisning af høj kvalitet, et brand med noget ægte at byde på: de fortjener alle at blive fundet.",
+            "Beviset er først og fremmest vores egne projekter: linksterr.com nåede 3.000 brugere på fem måneder, dentaltourism.tr skaffer patienter på 16 sprog. Den organiske Instagram-vækst står jeg selv for. Lyst til at tale? Skriv direkte til mig på Instagram.",
+        ],
+        "mission": ("Vores mål: ", "en lysere fremtid,", " hvor hver virksomhed får den opmærksomhed og de kunder, den fortjener."),
+    },
+    "no": {
+        "founder_eyebrow": "Bak Sterr", "founder_title": ("Hei, jeg heter ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Skriv på Instagram",
+        "founder_paras": [
+            "Jeg er tannlege og jobber med flere prosjekter samtidig: Sterr Agency, linksterr.com, dentaltourism.tr og klinikkene vi vokser sammen med. Det som binder dem sammen, er én overbevisning: godt arbeid fortjener å bli sett.",
+            "Det er målet vårt i Sterr: å gjøre verden litt bedre ved å gi hver bedrift oppmerksomheten og kundene den fortjener. En klinikk som gjør en fremragende jobb, undervisning av høy kvalitet, en merkevare med noe ekte å tilby: alle fortjener å bli funnet.",
+            "Beviset er først og fremst våre egne prosjekter: linksterr.com nådde 3 000 brukere på fem måneder, dentaltourism.tr skaffer pasienter på 16 språk. Den organiske Instagram-veksten står jeg for personlig. Lyst til å snakke? Skriv direkte til meg på Instagram.",
+        ],
+        "mission": ("Målet vårt: ", "en lysere fremtid,", " der hver bedrift får oppmerksomheten og kundene den fortjener."),
+    },
+    "ro": {
+        "founder_eyebrow": "În spatele Sterr", "founder_title": ("Salut, sunt ", "Ekin."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Scrie-mi pe Instagram",
+        "founder_paras": [
+            "Profesia mea este stomatologia și lucrez la mai multe proiecte în același timp: Sterr Agency, linksterr.com, dentaltourism.tr și clinicile cu care creștem. Le unește o singură convingere: munca bună merită să fie văzută.",
+            "Acesta este scopul nostru la Sterr: să facem lumea puțin mai bună, aducând fiecărei afaceri atenția și clienții pe care îi merită. O clinică ce face o treabă excelentă, lecții de calitate, un brand cu ceva real de oferit: toate merită să fie găsite.",
+            "Dovada sunt mai întâi propriile noastre proiecte: linksterr.com a ajuns la 3.000 de utilizatori în cinci luni, dentaltourism.tr aduce pacienți în 16 limbi. Iar de creșterea organică pe Instagram mă ocup personal. Vrei să vorbim? Scrie-mi direct pe Instagram.",
+        ],
+        "mission": ("Scopul nostru: ", "un viitor mai luminos,", " în care fiecare afacere primește atenția și clienții pe care îi merită."),
+    },
+    "az": {
+        "founder_eyebrow": "Sterr-in arxasında", "founder_title": ("Salam, mən ", "Ekinəm."),
+        "founder_name": "Ekin Sipahi", "founder_cta": "Instagram-dan yazın",
+        "founder_paras": [
+            "Diş həkimiyəm və eyni anda bir neçə layihədə çalışıram: Sterr Agency, linksterr.com, dentaltourism.tr və birlikdə böyüdüyümüz klinikalar. Onları bir inam birləşdirir: yaxşı iş görünməyə layiqdir.",
+            "Sterr-də məqsədimiz də budur: hər biznesə layiq olduğu diqqəti və müştəriləri gətirərək dünyanı bir az daha gözəl etmək. Əla işləyən klinika, keyfiyyətli dərslər, həqiqətən dəyərli bir şey təklif edən brend — hamısı tapılmağa layiqdir.",
+            "Sübut ilk növbədə öz layihələrimizdir: linksterr.com beş ayda 3.000 istifadəçiyə çatdı, dentaltourism.tr 16 dildə pasiyent gətirir. Orqanik Instagram böyüməsini isə şəxsən mən idarə edirəm. Danışmaq istəyirsiniz? Mənə birbaşa Instagram-dan yazın.",
+        ],
+        "mission": ("Məqsədimiz: ", "daha parlaq gələcək,", " hər biznesin layiq olduğu diqqəti və müştəriləri aldığı dünya."),
+    },
+}
+for _code, _founder in FOUNDER.items():
+    ABOUT[_code].update(_founder)
