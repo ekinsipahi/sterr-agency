@@ -103,7 +103,7 @@ DATA = {
         "description": "Partenariat avec une agence de tourisme dentaire en Turquie : patients internationaux qualifiés en 16 langues pour les cliniques, conditions écrites claires.",
         "eyebrow": "Partenariat · B2B",
         "h1": "Partenariat avec une agence de tourisme dentaire : plus de patients internationaux qualifiés.",
-        "lede": "Nous aidons les cliniques dentaires en Turquie à atteindre des patients à l'étranger, et nous travaillons avec les agences et facilitateurs qui orientent des patients. SEO multilingue, publicité et préqualification au même endroit.",
+        "lede": "Nous aidons les cliniques dentaires en Turquie à atteindre des patients à l'étranger, et nous travaillons avec les agences et facilitateurs qui orientent des patients. Publicité et préqualification au même endroit.",
         "badges": [
             "Acquisition de patients en 16 langues",
             "Demandes préqualifiées, pas des clics au hasard",
@@ -116,7 +116,6 @@ DATA = {
         ],
         "offer_title": "Ce que comprend un partenariat",
         "offers": [
-            ("SEO multilingue", "Visibilité sur Google en 16 langues"),
             ("Publicité et contenus", "campagnes Google et Meta par pays, et production de contenu si vous n'en avez pas"),
             ("Préqualification des patients", "photos, radio, budget et dates collectés avant que le dossier n'arrive au dentiste"),
             ("Reporting", "rapport mensuel sur les demandes, le coût par patient et les conversions par pays"),

@@ -21,7 +21,7 @@ SECTORS = [
         slug="ozel-ders-ogretmenleri",
         name="Özel Ders Öğretmenleri",
         title="Özel Ders Öğretmenleri İçin Dijital Pazarlama | Sterr",
-        description="Özel ders öğretmenlerine öğrenci getiriyoruz: Google, sosyal medya ve SEO ile dolu bir ders takvimi. Fiyatçı veliyi eleyen başvuru sistemi.",
+        description="Özel ders öğretmenlerine öğrenci getiriyoruz: Google ve sosyal medya ile dolu bir ders takvimi. Fiyatçı veliyi eleyen başvuru sistemi.",
         headline="Takviminiz boş kalmasın. Öğrenciyi biz getirelim.",
         lede="Özel ders pazarı, platform komisyonları ve fiyat kırmaya çalışan velilerle dolu. Kendi markanızı kurup, doğrudan size ulaşan ve değerinizi bilen öğrencileri getiriyoruz.",
         pains=(
@@ -32,7 +32,7 @@ SECTORS = [
         ),
         system=(
             ("Kişisel marka", "Branşınızı, başarı hikâyelerinizi ve yönteminizi anlatan güçlü bir profil ve web sayfası."),
-            ("Google'da görünürlük", "Reklam ve SEO ile sizi kolay bulunur kılıyoruz."),
+            ("Google'da görünürlük", "Reklamla sizi kolay bulunur kılıyoruz."),
             ("Kalite filtresi", "Seviye, hedef sınav ve bütçe soran başvuru formu — ciddi veliler size ulaşır."),
             ("Sezon planlaması", "LGS, YKS ve dönem başı talep dalgalarına göre önceden kurulan kampanyalar."),
         ),
@@ -82,7 +82,7 @@ SECTORS = [
         ),
         system=(
             ("Uzman konumlandırma", "Fizikte fark yaratan yönteminizi öne çıkaran marka dili."),
-            ("SEO & reklam", "Google'da görünürlük."),
+            ("Reklam", "Google'da görünürlük."),
             ("İçerik yayılımı", "Soru çözümleri ve konu anlatımlarıyla uzman içerikler."),
             ("Filtrelenmiş talep", "Hedef, seviye ve bütçe netleşmiş başvurular."),
         ),
@@ -96,9 +96,9 @@ SECTORS = [
         slug="e-ticaret",
         name="E-Ticaret Markaları",
         title="E-Ticaret Dijital Pazarlama Ajansı | Kurulum + Satış | Sterr",
-        description="E-ticaret sistemi kuruyor, trafiği ve satışı getiriyoruz. Google Shopping, Meta reklamları, SEO ve içerik üretimi tek ekipte. Aylık rapor.",
+        description="E-ticaret sistemi kuruyor, trafiği ve satışı getiriyoruz. Google Shopping, Meta reklamları ve içerik üretimi tek ekipte. Aylık rapor.",
         headline="Mağazayı kuruyoruz. Satışı da getiriyoruz.",
-        lede="Bir e-ticaret sitesi, ziyaretçi gelmediği sürece sadece bir katalogdur. Altyapıyı kuruyor, ardından reklam, SEO ve içerikle siparişleri getiriyoruz.",
+        lede="Bir e-ticaret sitesi, ziyaretçi gelmediği sürece sadece bir katalogdur. Altyapıyı kuruyor, ardından reklam ve içerikle siparişleri getiriyoruz.",
         pains=(
             "Ziyaretçi var, satış yok",
             "Yükselen reklam maliyetleri (ROAS düşüşü)",
@@ -108,10 +108,9 @@ SECTORS = [
         system=(
             ("E-ticaret kurulumu", "Hızlı, mobil uyumlu ve dönüşüm odaklı mağaza altyapısı; ödeme ve kargo entegrasyonları."),
             ("Performans reklamları", "Google Shopping, Performance Max ve Meta katalog reklamlarıyla kârlı büyüme."),
-            ("SEO", "Mağazanızın Google'da kalıcı görünürlüğü."),
             ("İçerik prodüksiyonu", "Ürün çekimleri, UGC videolar ve reklam kreatifleri."),
         ),
-        searches=("online satış", "e-ticaret sitesi kurmak", "e-ticaret reklam ajansı", "google shopping reklam", "e-ticaret SEO"),
+        searches=("online satış", "e-ticaret sitesi kurmak", "e-ticaret reklam ajansı", "google shopping reklam"),
         faqs=(
             ("Hangi altyapıları kullanıyorsunuz?", "İhtiyaca göre Shopify, WooCommerce, İkas, Ticimax veya özel altyapı öneriyoruz."),
             ("Mevcut sitemle çalışabilir misiniz?", "Evet. Önce mevcut sitenizi dönüşüm açısından denetler, ardından büyümeyi planlarız."),
@@ -131,7 +130,6 @@ SECTORS = [
             "Yerel aramalarda rakiplerin gerisinde kalmak",
         ),
         system=(
-            ("SEO", "Google'da ve Google Haritalar'da görünürlük."),
             ("Bilgilendirici içerik", "Hekim odaklı, güven veren ve mevzuata uygun içerikler."),
             ("Randevu funnel'ı", "Talebi önceden nitelendiren, no-show oranını düşüren başvuru akışı."),
             ("İtibar yönetimi", "Gerçek hasta memnuniyetini görünür kılan yorum stratejisi."),
@@ -164,7 +162,7 @@ SECTORS = [
         searches=("avukat", "mali müşavir", "iç mimar", "işletme danışmanı", "kurumsal danışmanlık"),
         faqs=(
             ("B2B firmalarla da çalışıyor musunuz?", "Evet. B2B'de LinkedIn, Google ve içerik odaklı uzun vadeli funnel'lar kuruyoruz."),
-            ("Meslek kurallarımız reklam yapmamızı kısıtlıyor, ne yapabiliriz?", "Reklam kısıtı olan mesleklerde bilgilendirici içerik ve SEO odaklı, kurallara uygun bir strateji izliyoruz."),
+            ("Meslek kurallarımız reklam yapmamızı kısıtlıyor, ne yapabiliriz?", "Reklam kısıtı olan mesleklerde bilgilendirici içerik odaklı, kurallara uygun bir strateji izliyoruz."),
         ),
     ),
 ]

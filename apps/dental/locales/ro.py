@@ -103,7 +103,7 @@ DATA = {
         "description": "Parteneriat cu o agenție de turism dentar din Turcia: pacienți internaționali calificați în 16 limbi pentru clinici și condiții scrise clare pentru agenții.",
         "eyebrow": "Parteneriat · B2B",
         "h1": "Parteneriat cu o agenție de turism dentar: mai mulți pacienți internaționali calificați.",
-        "lede": "Ajutăm clinicile stomatologice din Turcia să ajungă la pacienți din străinătate și lucrăm cu agenții și intermediari care recomandă pacienți. SEO multilingv, reclame și precalificare într-un singur loc.",
+        "lede": "Ajutăm clinicile stomatologice din Turcia să ajungă la pacienți din străinătate și lucrăm cu agenții și intermediari care recomandă pacienți. Reclame și precalificare într-un singur loc.",
         "badges": [
             "Atragere de pacienți în 16 limbi",
             "Cereri precalificate, nu clickuri la întâmplare",
@@ -116,7 +116,6 @@ DATA = {
         ],
         "offer_title": "Ce include un parteneriat",
         "offers": [
-            ("SEO multilingv", "Vizibilitate pe Google în 16 limbi"),
             ("Reclame și conținut", "campanii Google și Meta pe fiecare țară, plus producție de conținut dacă nu aveți"),
             ("Precalificarea pacienților", "poze, radiografie, buget și date colectate înainte ca un caz să ajungă la medic"),
             ("Raportare", "raport lunar despre cereri, cost pe pacient și conversii pe țări"),

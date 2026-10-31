@@ -21,13 +21,13 @@ GUIDES = [
     Guide(
         slug="dijital-pazarlama-ajansi-ne-is-yapar",
         title="Dijital Pazarlama Ajansı Ne İş Yapar? 2026 Rehberi | Sterr",
-        description="Dijital pazarlama ajansı ne iş yapar, hangi hizmetleri verir, doğru ajans nasıl seçilir? Reklam, SEO ve içeriğin müşteriye dönüştüğü sistemi anlatıyoruz.",
+        description="Dijital pazarlama ajansı ne iş yapar, hangi hizmetleri verir, doğru ajans nasıl seçilir? Reklam ve içeriğin müşteriye dönüştüğü sistemi anlatıyoruz.",
         h1="Dijital pazarlama ajansı ne iş yapar?",
         lede="Kısa cevap: iyi bir dijital pazarlama ajansı size müşteri getirir. Uzun cevap aşağıda — ve ajans seçerken sormanız gereken soruları da ekledik.",
         keywords=("dijital pazarlama ajansı ne iş yapar", "dijital pazarlama ajansı nedir", "dijital pazarlama ajansı ne yapar", "dijital ajans ne iş yapar"),
         minutes=6,
         faqs=(
-            ("Dijital pazarlama ajansı ile reklam ajansı arasındaki fark nedir?", "Klasik reklam ajansı genellikle yaratıcı kampanya üretir. Dijital pazarlama ajansı ise reklam, SEO, sosyal medya ve veri analizini birlikte yöneterek ölçülebilir satış hedefiyle çalışır."),
+            ("Dijital pazarlama ajansı ile reklam ajansı arasındaki fark nedir?", "Klasik reklam ajansı genellikle yaratıcı kampanya üretir. Dijital pazarlama ajansı ise reklam, sosyal medya ve veri analizini birlikte yöneterek ölçülebilir satış hedefiyle çalışır."),
             ("Küçük işletmeler dijital pazarlama ajansıyla çalışmalı mı?", "Müşteri başı değeri ajans maliyetini karşılayan her işletme için evet. Ajans; uzman ekip, araç ve deneyimi tek bir aylık bedelle sunar."),
         ),
     ),
@@ -41,7 +41,7 @@ GUIDES = [
         minutes=5,
         faqs=(
             ("Reklam bütçesi ajans ücretine dahil mi?", "Hayır. Reklam bütçesi doğrudan Google ve Meta'ya ödenir; ajans ücreti yönetim, strateji ve içerik üretimini kapsar."),
-            ("Neden 50.000 ₺'den başlıyorsunuz?", "Çünkü tek bir kanalı değil; reklam, SEO, içerik ve funnel'ı birlikte kuruyoruz. Bu kapsamın altında müşteri getiren bir sistem kurmak gerçekçi değil."),
+            ("Neden 50.000 ₺'den başlıyorsunuz?", "Çünkü tek bir kanalı değil; reklam, içerik ve funnel'ı birlikte kuruyoruz. Bu kapsamın altında müşteri getiren bir sistem kurmak gerçekçi değil."),
         ),
     ),
     Guide(
@@ -89,7 +89,7 @@ GUIDES = [
         minutes=5,
         faqs=(
             ("Dijital pazarlama uzmanı hangi araçları kullanır?", "Google Ads, Meta Business, GA4, tasarım ve otomasyon yazılımları."),
-            ("Tek bir uzman her kanalı yönetebilir mi?", "Temel düzeyde evet, ama reklam, SEO ve içerik prodüksiyonunun her birinde derin uzmanlık gerekir. Bu yüzden ekip modeli daha hızlı sonuç verir."),
+            ("Tek bir uzman her kanalı yönetebilir mi?", "Temel düzeyde evet, ama reklam ve içerik prodüksiyonunun her birinde derin uzmanlık gerekir. Bu yüzden ekip modeli daha hızlı sonuç verir."),
         ),
     ),
 ]

@@ -198,20 +198,14 @@ a.card:hover { transform: translateY(-3px); }
 .statement .dim { color: var(--dim); }
 
 /* ---------- Pillars (combo) ---------- */
-.combo { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.combo { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
 .combo__item { padding: 32px 28px; border-right: 1px solid var(--line); position: relative; background: var(--bg-2); }
 .combo__item:last-child { border-right: 0; }
 .combo__plus { position: absolute; right: -13px; top: 32px; z-index: 2; width: 26px; height: 26px; border-radius: 50%; background: var(--signal); color: var(--signal-ink); display: grid; place-items: center; font-weight: 700; font-size: 15px; }
 .combo__item h3 { font-size: 20px; margin-bottom: 8px; }
 .combo__item p { color: var(--muted); font-size: 15px; margin: 0; }
 .combo__label { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); margin-bottom: 40px; display: block; }
-@media (max-width: 900px) {
-  .combo { grid-template-columns: 1fr 1fr; }
-  .combo__item:nth-child(2) { border-right: 0; }
-  .combo__item:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
-  .combo__item:nth-child(2) .combo__plus { display: none; }
-}
-@media (max-width: 560px) {
+@media (max-width: 760px) {
   .combo { grid-template-columns: 1fr; }
   .combo__item { border-right: 0; border-bottom: 1px solid var(--line); }
   .combo__item:last-child { border-bottom: 0; }

@@ -103,7 +103,7 @@ DATA = {
         "description": "Samenwerken met een bureau voor tandheelkundig toerisme in Turkije: gekwalificeerde internationale patiënten in 16 talen voor klinieken, heldere afspraken.",
         "eyebrow": "Samenwerking · B2B",
         "h1": "Samenwerken met een tandartsreis bureau: meer gekwalificeerde patiënten uit het buitenland.",
-        "lede": "We helpen tandartsklinieken in Turkije patiënten in het buitenland te bereiken en werken samen met bureaus en bemiddelaars die patiënten doorverwijzen. Meertalige SEO, advertenties en voorselectie onder één dak.",
+        "lede": "We helpen tandartsklinieken in Turkije patiënten in het buitenland te bereiken en werken samen met bureaus en bemiddelaars die patiënten doorverwijzen. Advertenties en voorselectie onder één dak.",
         "badges": [
             "Patiëntenwerving in 16 talen",
             "Voorgeselecteerde aanvragen, geen willekeurige klikken",
@@ -116,7 +116,6 @@ DATA = {
         ],
         "offer_title": "Wat een samenwerking omvat",
         "offers": [
-            ("Meertalige SEO", "Google-zichtbaarheid in 16 talen"),
             ("Advertenties en content", "Google- en Meta-campagnes per land, plus contentproductie als u die niet heeft"),
             ("Voorselectie van patiënten", "foto's, röntgenfoto, budget en data verzameld voordat de casus bij de tandarts komt"),
             ("Rapportage", "maandelijks rapport over aanvragen, kosten per patiënt en conversie per land"),

@@ -103,7 +103,7 @@ DATA = {
         "description": "Partnerschaft mit einer Zahntourismus-Agentur in der Türkei: qualifizierte internationale Patienten in 16 Sprachen für Kliniken, klare Konditionen für Agenturen.",
         "eyebrow": "Partnerschaft · B2B",
         "h1": "Partnerschaft mit einer Zahntourismus-Agentur: mehr qualifizierte Patienten aus dem Ausland.",
-        "lede": "Wir helfen Zahnkliniken in der Türkei, Patienten im Ausland zu erreichen, und arbeiten mit Agenturen und Vermittlern zusammen, die Patienten empfehlen. Mehrsprachiges SEO, Anzeigen und Vorqualifizierung aus einer Hand.",
+        "lede": "Wir helfen Zahnkliniken in der Türkei, Patienten im Ausland zu erreichen, und arbeiten mit Agenturen und Vermittlern zusammen, die Patienten empfehlen. Anzeigen und Vorqualifizierung aus einer Hand.",
         "badges": [
             "Patientengewinnung in 16 Sprachen",
             "Vorqualifizierte Anfragen statt Zufallsklicks",
@@ -116,7 +116,6 @@ DATA = {
         ],
         "offer_title": "Was eine Partnerschaft umfasst",
         "offers": [
-            ("Mehrsprachiges SEO", "Google-Sichtbarkeit in 16 Sprachen"),
             ("Anzeigen und Inhalte", "Google- und Meta-Kampagnen pro Land, dazu Content-Produktion, falls Sie keine haben"),
             ("Vorqualifizierung", "Fotos, Röntgenbild, Budget und Termine werden gesammelt, bevor der Fall beim Zahnarzt landet"),
             ("Reporting", "monatlicher Bericht zu Anfragen, Kosten pro Patient und Abschlüssen nach Land"),

@@ -56,20 +56,19 @@ CLUSTERS = [
             "Dijital Pazarlama Ajansı {city}",
         ),
         descriptions=(
-            "{loc} dijital pazarlama ajansı mı arıyorsunuz? Reklam, SEO ve içeriği tek sistemde birleştirip size müşteri getiriyoruz. Aylık rapor, net hedef.",
-            "{city} için performans odaklı dijital pazarlama: Google & Meta reklam, SEO, içerik üretimi. Beğeni değil, satış ve randevu. Ön görüşme alın.",
-            "{loc} işletmenize müşteri getiren dijital pazarlama. Reklam + SEO + AI destekli içerik yayılımı. Paketler aylık 50.000 ₺'den.",
+            "{loc} dijital pazarlama ajansı mı arıyorsunuz? Reklam ve içeriği tek sistemde birleştirip size müşteri getiriyoruz. Aylık rapor, net hedef.",
+            "{city} için performans odaklı dijital pazarlama: Google & Meta reklam, içerik üretimi. Beğeni değil, satış ve randevu. Ön görüşme alın.",
+            "{loc} işletmenize müşteri getiren dijital pazarlama. Reklam + AI destekli içerik yayılımı. Paketler aylık 50.000 ₺'den.",
         ),
         h1="{city} Dijital Pazarlama Ajansı",
         intros=(
-            "{loc} dijital pazarlama ajansı seçerken sorulacak tek soru var: bu ajans bana kaç müşteri getirecek? Sterr Agency olarak reklamı, SEO'yu ve içerik üretimini ayrı ayrı satmıyoruz; hepsini {gen} pazarına göre kurgulanmış tek bir büyüme sistemine bağlıyoruz.",
+            "{loc} dijital pazarlama ajansı seçerken sorulacak tek soru var: bu ajans bana kaç müşteri getirecek? Sterr Agency olarak reklamı ve içerik üretimini ayrı ayrı satmıyoruz; hepsini {gen} pazarına göre kurgulanmış tek bir büyüme sistemine bağlıyoruz.",
             "{city} merkezli ya da {loc} müşterisi olan işletmeler için çalışıyoruz. Amacımız takipçi sayısını değil, telefonunuzun kaç kez çaldığını artırmak. Reklam, arama motoru optimizasyonu ve özel içerik ekibimiz aynı hedef için çalışır.",
             "Bir dijital pazarlama ajansının işi rapor süslemek değil, müşteri getirmektir. {abl} gelen talepleri ölçüyor, fiyat odaklı kitleyi eliyor ve size yalnızca satın almaya hazır kişileri yönlendiriyoruz.",
         ),
-        national_intro="Türkiye'nin 81 ilinde işletmelere reklam, SEO, sosyal medya ve AI destekli içerik yayılımını tek bir büyüme sisteminde sunuyoruz. Konumunuz fark etmez; hedefimiz her ay ölçülebilir yeni müşteri.",
+        national_intro="Türkiye'nin 81 ilinde işletmelere reklam, sosyal medya ve AI destekli içerik yayılımını tek bir büyüme sisteminde sunuyoruz. Konumunuz fark etmez; hedefimiz her ay ölçülebilir yeni müşteri.",
         deliverables=(
             ("Google & Meta reklam yönetimi", "{city} ve çevresindeki doğru kitleye, satın alma niyeti yüksek kitleye ulaşan kampanyalar."),
-            ("SEO", "Google'da kalıcı, organik görünürlük."),
             ("AI destekli içerik yayılımı", "Markanızı internette konuşturan özel içerik çalışmaları."),
             ("Kalite filtresi olan funnel", "Fiyat avcılarını eleyen, sadece nitelikli talebi size ileten başvuru akışı."),
             ("İçerik prodüksiyonu", "İçeriğiniz yoksa ekibimiz gelir; video, fotoğraf ve metin üretimini biz yaparız."),
@@ -78,7 +77,7 @@ CLUSTERS = [
         faqs=(
             ("{loc} dijital pazarlama ajansı ile çalışmak için ofisinize gelmem gerekiyor mu?", "Hayır. Türkiye'nin 81 ilinde uzaktan çalışıyoruz; strateji görüşmeleri online yapılır. İçerik çekimi gerektiğinde ekibimiz {city} dahil bulunduğunuz yere gelir."),
             ("Dijital pazarlama ajansı fiyatları {loc} ne kadar?", "Paketlerimiz aylık 50.000 ₺'den başlar. Ödeme her ayın başında peşin alınır. Reklam bütçesi hizmet bedelinden ayrıdır."),
-            ("Ne kadar sürede sonuç alırım?", "Reklam kanalında ilk nitelikli talepler genellikle ilk haftalarda gelir. SEO ve marka yayılımı ise 3–6 ay içinde birikerek büyür; bu yüzden ikisini birlikte kurgularız."),
+            ("Ne kadar sürede sonuç alırım?", "Reklam kanalında ilk nitelikli talepler genellikle ilk haftalarda gelir. Marka yayılımı ise 3–6 ay içinde birikerek büyür; bu yüzden ikisini birlikte kurgularız."),
             ("Hangi sektörlerle çalışıyorsunuz?", "Özel ders öğretmenlerinden e-ticaret markalarına, kliniklerden profesyonel hizmetlere kadar talebin ölçülebildiği her sektörle çalışıyoruz."),
         ),
         pricing_heading="{city} dijital pazarlama ajansı fiyatları",
@@ -199,20 +198,19 @@ CLUSTERS = [
             "Dijital Pazarlama Uzmanı {city}",
         ),
         descriptions=(
-            "{loc} dijital pazarlama uzmanı mı arıyorsunuz? Tek bir uzman maaşına reklam, SEO, içerik ve strateji uzmanlarından oluşan bir ekip. Ön görüşme alın.",
-            "{city} için dijital pazarlama uzmanları: reklam, SEO, sosyal medya ve içerik ekibi tek pakette. İşe alım yükü yok, sonuç odaklı sistem var.",
-            "{loc}ki işletmenize kıdemli dijital pazarlama uzmanları. Google, Meta, SEO ve içerik — aylık rapor, net hedef. Paketler 50.000 ₺'den.",
+            "{loc} dijital pazarlama uzmanı mı arıyorsunuz? Tek bir uzman maaşına reklam, içerik ve strateji uzmanlarından oluşan bir ekip. Ön görüşme alın.",
+            "{city} için dijital pazarlama uzmanları: reklam, sosyal medya ve içerik ekibi tek pakette. İşe alım yükü yok, sonuç odaklı sistem var.",
+            "{loc}ki işletmenize kıdemli dijital pazarlama uzmanları. Google, Meta ve içerik — aylık rapor, net hedef. Paketler 50.000 ₺'den.",
         ),
         h1="{city} Dijital Pazarlama Uzmanı",
         intros=(
-            "{loc} tek bir dijital pazarlama uzmanı işe almak; maaş, eğitim, yazılım ve deneme-yanılma maliyeti demek. Sterr ile aynı bütçeye reklam, SEO, içerik ve strateji uzmanlarından oluşan kıdemli bir ekip kazanırsınız.",
-            "İyi bir dijital pazarlama uzmanı her şeyi bilemez; iyi bir ekip bilir. {city} işletmeleri için reklam uzmanı, SEO uzmanı ve içerik ekibi aynı hedef için çalışır.",
+            "{loc} tek bir dijital pazarlama uzmanı işe almak; maaş, eğitim, yazılım ve deneme-yanılma maliyeti demek. Sterr ile aynı bütçeye reklam, içerik ve strateji uzmanlarından oluşan kıdemli bir ekip kazanırsınız.",
+            "İyi bir dijital pazarlama uzmanı her şeyi bilemez; iyi bir ekip bilir. {city} işletmeleri için reklam uzmanı ve içerik ekibi aynı hedef için çalışır.",
             "Kurum içi uzman arayışınız aylar sürebilir. Biz ilk hafta çalışmaya başlar, {gen} pazarını analiz eder ve müşteri getiren sistemi kurarız.",
         ),
-        national_intro="Tek bir uzman yerine reklam, SEO, içerik ve strateji uzmanlarından oluşan bir ekip. Türkiye'nin 81 ilindeki işletmelere hizmet veriyoruz.",
+        national_intro="Tek bir uzman yerine reklam, içerik ve strateji uzmanlarından oluşan bir ekip. Türkiye'nin 81 ilindeki işletmelere hizmet veriyoruz.",
         deliverables=(
             ("Performans reklam uzmanı", "Google Ads ve Meta kampanyalarınızı günlük optimize eden uzman."),
-            ("SEO uzmanı", "Google'da kalıcı, organik görünürlük."),
             ("İçerik & prodüksiyon ekibi", "Metin, video ve görsel üretimi; gerekirse yerinde çekim."),
             ("Strateji direktörü", "Sektörünüzü, rakiplerinizi ve müşterinizi analiz edip yön çizen kıdemli bakış."),
             ("Veri & ölçümleme", "GA4 ve dönüşüm takibi kurulumu; her şeyi ölçeriz."),
@@ -234,7 +232,7 @@ CLUSTER_BY_SLUG = {c.slug: c for c in CLUSTERS}
 # Market-size copy. Tier only changes the argument, never the offer.
 TIER_COPY = {
     "metro": "{city}, Türkiye'nin en rekabetçi dijital pazarlarından biri. Tıklama maliyetleri yüksek, her sektörde onlarca rakip aynı müşteriye ulaşmaya çalışıyor. Burada kazanan, en çok harcayan değil; bütçesini en isabetli kullanan ve fiyatçıyı en erken eleyen marka oluyor.",
-    "large": "{city} hızla büyüyen ve dijital rekabetin her yıl sertleştiği bir pazar. Rakipleriniz reklama yeni yeni yatırım yaparken; reklam, SEO ve içerik yayılımını birlikte kuran işletmeler arama sonuçlarında kalıcı bir yer ediniyor.",
+    "large": "{city} hızla büyüyen ve dijital rekabetin her yıl sertleştiği bir pazar. Rakipleriniz reklama yeni yeni yatırım yaparken; reklam ve içerik yayılımını birlikte kuran işletmeler kalıcı bir yer ediniyor.",
     "growing": "{loc} dijital rekabet henüz düşük; bu büyük bir fırsat. Arama sonuçlarını ve sosyal medya akışını erken sahiplenen işletme, rakipleri harekete geçtiğinde çoktan bölgenin bilinen markası olmuş oluyor.",
 }
 
@@ -243,7 +241,7 @@ CLOSING = {
     "dijital-pazarlama-ajansi": "{city} dijital pazarlama ajansları arasında karar verirken portföye, raporlama şeffaflığına ve müşteri getirme sistemine bakın. Dijital pazarlama ajansı fiyatları {loc} kapsamına göre değişir; biz her paketin içeriğini açıkça yazıyor ve her ay ne getirdiğimizi raporluyoruz.",
     "sosyal-medya-ajansi": "{city} sosyal medya ajansları çoğunlukla paylaşım adedi satar. Biz ise içerik, reklam ve mesaj yönetimini tek bir satış akışına bağlarız. Sosyal medya ajansı fiyatları {loc} kapsamına göre değişir; paketlerimizin neleri içerdiğini aşağıda açıkça görebilirsiniz.",
     "sosyal-medya-yonetimi-ajansi": "{loc} sosyal medya yönetimi hizmeti alırken hesapların sizde kalmasına, içerik onay sürecine ve raporlamanın satış odaklı olmasına dikkat edin. Sosyal medya yönetimi ajansı olarak bu üçünü sözleşmemizde garanti altına alıyoruz.",
-    "dijital-pazarlama-uzmani": "{city} dijital pazarlama uzmanları arasında seçim yapmak yerine, farklı alanlarda uzmanlaşmış bir ekiple çalışın. Dijital pazarlama uzmanlığı gerektiren her işi — reklam, SEO, içerik, analiz — tek bir aylık bedelle yönetiyoruz.",
+    "dijital-pazarlama-uzmani": "{city} dijital pazarlama uzmanları arasında seçim yapmak yerine, farklı alanlarda uzmanlaşmış bir ekiple çalışın. Dijital pazarlama uzmanlığı gerektiren her işi — reklam, içerik, analiz — tek bir aylık bedelle yönetiyoruz.",
 }
 
 

@@ -103,7 +103,7 @@ DATA = {
         "description": "Türkiyədə diş turizmi agentliyi ilə tərəfdaşlıq: klinikalar üçün 16 dildə keyfiyyətli beynəlxalq pasiyentlər, agentliklər üçün aydın yazılı şərtlər.",
         "eyebrow": "Tərəfdaşlıq · B2B",
         "h1": "Diş turizmi agentliyi ilə tərəfdaşlıq: xaricdən daha çox keyfiyyətli pasiyent.",
-        "lede": "Türkiyədəki diş klinikalarına xaricdəki pasiyentlərə çatmağa kömək edir, pasiyent yönləndirən agentlik və vasitəçilərlə işləyirik. Çoxdilli SEO, reklam və ilkin seçim bir yerdə.",
+        "lede": "Türkiyədəki diş klinikalarına xaricdəki pasiyentlərə çatmağa kömək edir, pasiyent yönləndirən agentlik və vasitəçilərlə işləyirik. Reklam və ilkin seçim bir yerdə.",
         "badges": [
             "16 dildə pasiyent cəlbi",
             "Təsadüfi kliklər yox, seçilmiş müraciətlər",
@@ -116,7 +116,6 @@ DATA = {
         ],
         "offer_title": "Tərəfdaşlığa nələr daxildir",
         "offers": [
-            ("Çoxdilli SEO", "16 dildə Google-da görünürlük"),
             ("Reklam və məzmun", "ölkələr üzrə Google və Meta kampaniyaları, məzmununuz yoxdursa istehsal"),
             ("Pasiyentlərin ilkin seçimi", "şəkil, rentgen, büdcə və tarixlər həkimə çatmazdan əvvəl toplanır"),
             ("Hesabat", "müraciətlər, pasiyent başına xərc və ölkələr üzrə dönüşüm haqqında aylıq hesabat"),

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block ga_page %}{"content_group": "ana_sayfa", "page_type": "home"}{% endblock %}
 
-{% block meta %}{% include "partials/meta.html" with title="Sterr Agency | Müşteri Getiren Dijital Pazarlama Ajansı" description="Beğeni değil, müşteri getiriyoruz. Reklam + SEO + AI destekli içerik yayılımı tek sistemde. Türkiye'nin 81 ilinde, paketler aylık 50.000 ₺'den." %}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title="Sterr Agency | Müşteri Getiren Dijital Pazarlama Ajansı" description="Beğeni değil, müşteri getiriyoruz. Reklam + AI destekli içerik yayılımı tek sistemde. Türkiye'nin 81 ilinde, paketler aylık 50.000 ₺'den." %}{% endblock %}
 {% block schema %}{% include "partials/faq_schema.html" %}{% endblock %}
 
 {% block content %}
@@ -11,7 +11,7 @@
     <h1 class="display hero__title reveal">Beğeni değil,<br><span class="serif">müşteri</span> getiriyoruz.</h1>
     <div class="hero__bottom">
       <div class="reveal">
-        <p class="lede">Reklamı, SEO'yu ve yapay zekâ destekli içerik yayılımını tek bir büyüme sisteminde birleştiriyoruz. Fiyatçı kitleyi eliyor, size yalnızca satın almaya hazır müşterileri gönderiyoruz.</p>
+        <p class="lede">Reklamı ve yapay zekâ destekli içerik yayılımını tek bir büyüme sisteminde birleştiriyoruz. Fiyatçı kitleyi eliyor, size yalnızca satın almaya hazır müşterileri gönderiyoruz.</p>
         <div class="btn-row mt-m">
           <a class="btn btn--signal btn--lg" href="{% url 'leads:apply' %}">Başvuru yap {% include "partials/icons/arrow.svg" %}</a>
           <a class="btn btn--ghost btn--lg" href="{% url 'core:method' %}">Sistemi inceleyin</a>
@@ -51,11 +51,10 @@
     <div class="section-head reveal">
       <p class="eyebrow"><span class="num">02</span> Nasıl sağlıyoruz</p>
       <h2 class="h2">Tek kanal yetmez. <span class="serif">Kombine</span> çalışırız.</h2>
-      <p class="lede">Çoğu ajans tek bir şey satar: ya reklam, ya sosyal medya, ya SEO. Biz dört gücü aynı hedefe kilitliyoruz ve markanızı internetin her köşesinde görünür kılıyoruz.</p>
+      <p class="lede">Çoğu ajans tek bir şey satar: ya reklam ya sosyal medya. Biz üç gücü aynı hedefe kilitliyoruz ve markanızı internetin her köşesinde görünür kılıyoruz.</p>
     </div>
     <div class="combo reveal">
       <div class="combo__item"><span class="combo__label">Anında talep</span><h3>Reklam</h3><p>Google, Meta ve TikTok'ta satın alma niyeti taşıyan kişiyi tam o anda yakalarız.</p><span class="combo__plus">+</span></div>
-      <div class="combo__item"><span class="combo__label">Kalıcı trafik</span><h3>SEO</h3><p>Google'da kalıcı görünürlük, sürekli gelen müşteri.</p><span class="combo__plus">+</span></div>
       <div class="combo__item"><span class="combo__label">Yayılım</span><h3>AI içerik yayılımı</h3><p>Özel yapay zekâ altyapımızla markanızı internette konuştururuz.</p><span class="combo__plus">+</span></div>
       <div class="combo__item"><span class="combo__label">Tercih edilme</span><h3>Marka</h3><p>Sizi rakiplerinizden ayıran net bir fikir ve güven veren bir marka dili inşa ederiz.</p></div>
     </div>
@@ -71,7 +70,7 @@
       <a class="link-arrow mt-m" href="{% url 'core:method' %}">Yöntemimiz nasıl çalışır {% include "partials/icons/arrow.svg" %}</a>
     </div>
     <div class="funnel reveal" role="list" aria-label="Müşteri funnel'ı">
-      <div class="funnel__row" role="listitem"><div><b>Görünürlük</b><small>Reklam · SEO · içerik · sosyal medya</small></div><span class="funnel__tag">Herkes</span></div>
+      <div class="funnel__row" role="listitem"><div><b>Görünürlük</b><small>Reklam · içerik · sosyal medya</small></div><span class="funnel__tag">Herkes</span></div>
       <div class="funnel__row" role="listitem"><div><b>İlgi & güven</b><small>İçerik · vaka çalışmaları · yorumlar</small></div><span class="funnel__tag">İlgilenen</span></div>
       <div class="funnel__row" role="listitem"><div><b>Kalite filtresi</b><small>Başvuru formu · bütçe · hedef · zamanlama</small></div><span class="funnel__tag">Ciddi</span></div>
       <div class="funnel__row" role="listitem"><div><b>Nitelikli müşteri</b><small>Doğrudan size ulaşır</small></div><span class="funnel__tag">Sizin</span></div>
@@ -109,7 +108,6 @@
       <li>{% include "partials/icons/check.svg" %}<span><b>Yerinde çekim:</b> Reels, TikTok, ürün ve hizmet videoları</span></li>
       <li>{% include "partials/icons/check.svg" %}<span><b>Metin & senaryo:</b> müşterinizin dilinde, satışa yönelik</span></li>
       <li>{% include "partials/icons/check.svg" %}<span><b>Reklam kreatifleri:</b> sürekli test edilen varyasyonlar</span></li>
-      <li>{% include "partials/icons/check.svg" %}<span><b>SEO içerikleri:</b> Google'da görünürlük için içerik</span></li>
       <li>{% include "partials/icons/check.svg" %}<span><b>AI destekli yayılım:</b> markanızı konuşturan uzman içerikler</span></li>
     </ul>
   </div>

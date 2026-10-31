@@ -103,7 +103,7 @@ DATA = {
         "description": "Współpraca z agencją turystyki dentystycznej w Turcji: wartościowi pacjenci z zagranicy w 16 językach dla klinik i jasne warunki dla agencji.",
         "eyebrow": "Współpraca · B2B",
         "h1": "Współpraca z agencją turystyki dentystycznej: więcej wartościowych pacjentów z zagranicy.",
-        "lede": "Pomagamy klinikom stomatologicznym w Turcji docierać do pacjentów za granicą i współpracujemy z agencjami oraz pośrednikami, którzy polecają pacjentów. Wielojęzyczne SEO, reklamy i wstępna kwalifikacja w jednym miejscu.",
+        "lede": "Pomagamy klinikom stomatologicznym w Turcji docierać do pacjentów za granicą i współpracujemy z agencjami oraz pośrednikami, którzy polecają pacjentów. Reklamy i wstępna kwalifikacja w jednym miejscu.",
         "badges": [
             "Pozyskiwanie pacjentów w 16 językach",
             "Wstępnie zakwalifikowane zapytania, nie przypadkowe kliknięcia",
@@ -116,7 +116,6 @@ DATA = {
         ],
         "offer_title": "Co obejmuje współpraca",
         "offers": [
-            ("Wielojęzyczne SEO", "Widoczność w Google w 16 językach"),
             ("Reklamy i treści", "kampanie Google i Meta dla każdego kraju oraz produkcja treści, jeśli ich nie macie"),
             ("Wstępna kwalifikacja pacjentów", "zdjęcia, RTG, budżet i terminy zebrane, zanim przypadek trafi do dentysty"),
             ("Raporty", "comiesięczny raport o zapytaniach, koszcie pacjenta i konwersji według krajów"),

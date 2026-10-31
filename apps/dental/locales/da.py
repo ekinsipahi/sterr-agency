@@ -103,7 +103,7 @@ DATA = {
         "description": "Samarbejd med et tandturisme-bureau i Tyrkiet: kvalificerede internationale patienter på 16 sprog til klinikker og klare skriftlige vilkår til bureauer.",
         "eyebrow": "Partnerskab · B2B",
         "h1": "Partnerskab med et tandturisme-bureau: flere kvalificerede patienter fra udlandet.",
-        "lede": "Vi hjælper tandklinikker i Tyrkiet med at nå patienter i udlandet og arbejder med bureauer og formidlere, der henviser patienter. Flersproget SEO, annoncer og forhåndskvalificering samlet ét sted.",
+        "lede": "Vi hjælper tandklinikker i Tyrkiet med at nå patienter i udlandet og arbejder med bureauer og formidlere, der henviser patienter. Annoncer og forhåndskvalificering samlet ét sted.",
         "badges": [
             "Patientrekruttering på 16 sprog",
             "Forhåndskvalificerede henvendelser, ikke tilfældige klik",
@@ -116,7 +116,6 @@ DATA = {
         ],
         "offer_title": "Det indeholder et partnerskab",
         "offers": [
-            ("Flersproget SEO", "Synlighed på Google på 16 sprog"),
             ("Annoncer og indhold", "Google- og Meta-kampagner pr. land, plus indholdsproduktion hvis I ikke har noget"),
             ("Forhåndskvalificering af patienter", "billeder, røntgen, budget og datoer indsamles, før sagen når tandlægen"),
             ("Rapportering", "månedlig rapport om henvendelser, pris pr. patient og konvertering pr. land"),

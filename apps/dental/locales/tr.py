@@ -103,7 +103,7 @@ DATA = {
         "description": "Diş turizmi acentesi iş birliği: kliniklere 16 dilde nitelikli yabancı hasta, sağlık turizmi acentelerine yazılı ve şeffaf iş birliği koşulları.",
         "eyebrow": "İş birliği · B2B",
         "h1": "Diş turizmi acentesi iş birliği: yurt dışından daha fazla nitelikli hasta.",
-        "lede": "Türkiye'deki diş kliniklerinin yurt dışındaki hastalara ulaşmasını sağlıyor, hasta yönlendiren sağlık turizmi acenteleri ve aracılarla çalışıyoruz. Çok dilli SEO, reklam ve ön eleme tek çatı altında.",
+        "lede": "Türkiye'deki diş kliniklerinin yurt dışındaki hastalara ulaşmasını sağlıyor, hasta yönlendiren sağlık turizmi acenteleri ve aracılarla çalışıyoruz. Reklam ve ön eleme tek çatı altında.",
         "badges": [
             "16 dilde hasta kazanımı",
             "Rastgele tıklama değil, ön elemeden geçmiş talepler",
@@ -116,7 +116,6 @@ DATA = {
         ],
         "offer_title": "İş birliğine neler dahil",
         "offers": [
-            ("Çok dilli SEO", "16 dilde Google görünürlüğü"),
             ("Reklam ve içerik", "ülke bazlı Google ve Meta kampanyaları, içeriğiniz yoksa prodüksiyon"),
             ("Hasta ön elemesi", "fotoğraf, röntgen, bütçe ve tarihler vaka hekime ulaşmadan toplanır"),
             ("Raporlama", "talepler, hasta başı maliyet ve ülke bazında dönüşüm üzerine aylık rapor"),

@@ -2,7 +2,7 @@
 
 Merged into CONTENT[code] by apps.intl.content: data["about"], slugs["about"], ui["nav_about"].
 Facts only: headquartered in Turkey, team working across Europe and beyond, 16 languages,
-EU company (Sterr Technologies OÜ, Tallinn). No invented client counts or SEO method talk.
+EU company (Sterr Technologies OÜ, Tallinn). No invented client counts; the word SEO never appears on the site.
 """
 
 ABOUT = {
