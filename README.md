@@ -60,7 +60,9 @@ GA4, GTM, Meta Pixel, Consent Mode v2 ve lead yaşam döngüsü olayları: [`ANA
 .venv/bin/python manage.py test apps
 ```
 
-## Organik Instagram büyütme (aylık 99$)
+## Organik Instagram ve TikTok büyütme (aylık 79$)
+
+İki platform aynı sistemi kullanır. TikTok metinleri `apps/growth/tiktok/<dil>.py` içinde, Instagram metinlerinin üzerine yazılan farklar olarak durur (TikTok'ta aylık takipçi sayısı iddiası yok). Navbar'daki **Takipçi** menüsü (`FOLLOWERS_NAV`) iki platformu her dilde listeler; kayıtlar `GrowthSubscription.platform` alanıyla ayrılır.
 
 16 dilde satış sayfası, fiyat sayfası ve iki rehber: `/instagram-takipci/`, `/en/instagram-followers/`, `/de/instagram-follower/`… (tam liste: [`keywords/INSTAGRAM_GROWTH.md`](keywords/INSTAGRAM_GROWTH.md)). İçerik `apps/growth/locales/<dil>.py` dosyalarında.
 
@@ -72,7 +74,7 @@ GA4, GTM, Meta Pixel, Consent Mode v2 ve lead yaşam döngüsü olayları: [`ANA
 
 **Stripe kurulumu (bir kez):**
 1. Stripe → Developers → API keys: `STRIPE_SECRET_KEY` ve `STRIPE_PUBLISHABLE_KEY` değerlerini `.env`'e ve Render → Environment'a ekleyin.
-2. `python manage.py setup_stripe` çalıştırın. 99$'lık aylık fiyatı, iptali dönem sonuna ayarlı müşteri portalını ve `https://sterragency.com/growth/stripe/webhook/` webhook'unu oluşturur; `STRIPE_PRICE_ID`, `STRIPE_PORTAL_CONFIG`, `STRIPE_WEBHOOK_SECRET` değerlerini yazdırır. Bunları da ekleyin.
+2. `python manage.py setup_stripe` çalıştırın. 79$'lık aylık fiyatı, iptali dönem sonuna ayarlı müşteri portalını ve `https://sterragency.com/growth/stripe/webhook/` webhook'unu oluşturur; `STRIPE_PRICE_ID`, `STRIPE_PORTAL_CONFIG`, `STRIPE_WEBHOOK_SECRET` değerlerini yazdırır. Bunları da ekleyin.
 3. Stripe → Settings → Payment methods: kart, Apple Pay ve Google Pay açık olsun.
 
 ## Yayına alma (Render)

@@ -16,7 +16,7 @@
       <a href="{{ urls.sectors }}"{% if key|slice:':6' == 'sector' %} aria-current="page"{% endif %}>{{ ui.nav_sectors }}</a>
       <a href="{{ urls.guides }}"{% if key|slice:':5' == 'guide' %} aria-current="page"{% endif %}>{{ ui.nav_guides }}</a>
       <a href="{{ urls.home }}#pricing">{{ ui.nav_pricing }}</a>
-      {% if urls.growth %}<a href="{{ urls.growth }}"{% if key|slice:':7' == 'growth_' %} aria-current="page"{% endif %}>{{ growth_nav }}</a>{% endif %}
+      {% if followers_menu %}<details class="nav-drop"><summary{% if followers_active %} aria-current="page"{% endif %}>{{ followers_nav }}</summary><div class="nav-drop__menu">{% for label, url in followers_menu %}<a href="{{ url }}">{{ label }}</a>{% endfor %}</div></details>{% endif %}
       <a href="{{ urls.dental }}">{{ ui.nav_dental }}</a>
       <a href="{{ urls.about }}"{% if key == 'about' %} aria-current="page"{% endif %}>{{ ui.nav_about }}</a>
     </nav>
@@ -54,7 +54,7 @@
           <li><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
           <li><a href="{{ urls.guides }}">{{ ui.nav_guides }}</a></li>
           <li><a href="{{ urls.about }}">{{ ui.nav_about }}</a></li>
-          {% if urls.growth %}<li><a href="{{ urls.growth }}">{{ growth_nav }}</a></li>{% endif %}
+          {% for label, url in followers_menu %}<li><a href="{{ url }}">{{ label }} {{ followers_nav }}</a></li>{% endfor %}
           <li><a href="{{ instagram_link }}" target="_blank" rel="noopener">Instagram</a></li>
           {% if site.linkedin_url %}<li><a href="{{ site.linkedin_url }}" target="_blank" rel="noopener">LinkedIn</a></li>{% endif %}
         </ul>

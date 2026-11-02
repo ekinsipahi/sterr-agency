@@ -6,11 +6,13 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.utils import formats, translation
 
+from .content import PLATFORM_NAMES, PROFILE_URL
+
 logger = logging.getLogger(__name__)
 
-WELCOME_SUBJECT = "Your plan is active: organic growth for @{handle} has started"
+WELCOME_SUBJECT = "Your plan is active: organic {platform} growth for @{handle} has started"
 WELCOME_BODY = (
-    "Thanks for subscribing. Organic growth for @{handle} ({location}) starts now. New followers arrive "
+    "Thanks for subscribing. Organic {platform} growth for @{handle} ({location}) starts now. New followers arrive "
     "gradually; on average our clients gain 900–3,000 real followers a month.\n\n"
     "We will never ask for your password.\n\n"
     "You can cancel any time. Cancellation stops the next renewal; the month already started is not refunded.\n\n"
@@ -23,15 +25,15 @@ CANCEL_BODY = (
     "As the month had already started, it isn't refunded.\n\n"
     "Changed your mind? You can keep your plan here: {manage}"
 )
-REQUEST_SUBJECT = "We received your request: organic growth for @{handle}"
+REQUEST_SUBJECT = "We received your request: organic {platform} growth for @{handle}"
 REQUEST_BODY = (
-    "Thanks! We've received your request for organic Instagram growth for @{handle} ({location}).\n\n"
+    "Thanks! We've received your request for organic {platform} growth for @{handle} ({location}).\n\n"
     "We'll email you within 24 hours to get started. We will never ask for your password.\n\n"
     "Questions? Message us on WhatsApp: {whatsapp}"
 )
 MANAGE_SUBJECT = "Your subscription link"
 MANAGE_BODY = (
-    "Here is your secure link to manage or cancel your Instagram growth subscription. It is valid for one hour:\n\n"
+    "Here is your secure link to manage or cancel your growth subscription. It is valid for one hour:\n\n"
     "{link}\n\nIf you didn't request this, you can ignore this email."
 )
 
@@ -70,15 +72,17 @@ def _send(subject, body, to, reply_to=None):
 def notify_team(sub, event):
     """event: 'request' (no Stripe yet), 'started', 'payment_failed', 'cancel_scheduled', 'canceled'."""
     titles = {
-        "request": "Yeni Instagram büyütme başvurusu",
-        "started": "Yeni Instagram aboneliği başladı",
-        "payment_failed": "Instagram aboneliği: ödeme başarısız",
-        "cancel_scheduled": "Instagram aboneliği iptal edildi (dönem sonunda bitecek)",
-        "canceled": "Instagram aboneliği sona erdi",
+        "request": "Yeni {platform} büyütme başvurusu",
+        "started": "Yeni {platform} aboneliği başladı",
+        "payment_failed": "{platform} aboneliği: ödeme başarısız",
+        "cancel_scheduled": "{platform} aboneliği iptal edildi (dönem sonunda bitecek)",
+        "canceled": "{platform} aboneliği sona erdi",
     }
+    platform = PLATFORM_NAMES[sub.platform]
+    title = titles[event].replace("{platform}", platform)
     body = (
-        f"{titles[event]}\n\n"
-        f"Instagram: @{sub.instagram}  (https://www.instagram.com/{sub.instagram}/)\n"
+        f"{title}\n\n"
+        f"{platform}: @{sub.instagram}  ({PROFILE_URL[sub.platform].format(sub.instagram)})\n"
         f"Hedef konum: {sub.location}\n"
         f"E-posta: {sub.email}\n"
         f"Dil: {sub.lang}\n"
@@ -86,18 +90,19 @@ def notify_team(sub, event):
         f"Kaynak: {sub.source_page or '-'} {sub.utm_source or ''}\n\n"
         f"Admin: {settings.SITE_URL}/admin/growth/growthsubscription/{sub.pk}/change/\n"
     )
-    return _send(f"{titles[event]}: @{sub.instagram}", body, settings.LEAD_NOTIFY_EMAILS, reply_to=[sub.email])
+    return _send(f"{title}: @{sub.instagram}", body, settings.LEAD_NOTIFY_EMAILS, reply_to=[sub.email])
 
 
 def acknowledge_request(sub):
     """English auto-reply when the form only takes requests (payments off)."""
-    values = {"handle": sub.instagram, "location": sub.location, "whatsapp": settings.WHATSAPP_DISPLAY}
+    values = {"handle": sub.instagram, "location": sub.location, "whatsapp": settings.WHATSAPP_DISPLAY,
+              "platform": PLATFORM_NAMES[sub.platform]}
     return _send(_fill(REQUEST_SUBJECT, **values), _fill(REQUEST_BODY, **values), [sub.email])
 
 
 def welcome_customer(sub, cancel_url):
     """'Your plan is active' email, with a direct cancel link for the life of the subscription."""
-    values = {"handle": sub.instagram, "location": sub.location, "cancel": cancel_url}
+    values = {"handle": sub.instagram, "location": sub.location, "cancel": cancel_url, "platform": PLATFORM_NAMES[sub.platform]}
     return _send(_fill(WELCOME_SUBJECT, **values), _fill(WELCOME_BODY, **values), [sub.email])
 
 

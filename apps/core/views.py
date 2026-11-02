@@ -117,10 +117,11 @@ def intl_sitemap_urls():
 
 
 def growth_sitemap_urls():
-    """(path, priority, alternates) for the organic Instagram growth pages in every language."""
+    """(path, priority, alternates) for the Instagram and TikTok follower pages in every language."""
     from apps.growth.content import alternates as growth_alternates, routes as growth_routes
     prio = {"main": "0.9", "pricing": "0.8", "geo": "0.7", "guide_buy": "0.6", "guide_speed": "0.6"}
-    return [("/" + route, prio[page.partition(":")[0]], growth_alternates(page)) for route, code, page in growth_routes()]
+    return [("/" + route, prio[page.partition(":")[0]], growth_alternates(page, platform))
+            for route, code, page, platform in growth_routes()]
 
 
 def _url(site, path, prio, alts=None):

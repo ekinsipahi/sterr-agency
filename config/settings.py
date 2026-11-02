@@ -148,13 +148,13 @@ LEAD_NOTIFY_EMAILS = env.list("LEAD_NOTIFY_EMAILS", default=[])
 
 # --- Stripe (organic Instagram growth subscription) -------------------------------
 # Run `python manage.py setup_stripe` once with STRIPE_SECRET_KEY set; it creates the
-# $99/month price, the customer portal and the webhook, and prints the other values.
+# $79/month price, the customer portal and the webhook, and prints the other values.
 STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
 STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY", default=env("STRIPE_PUBLISH_KEY", default=""))
 STRIPE_PRICE_ID = env("STRIPE_PRICE_ID", default="")
 STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
 STRIPE_PORTAL_CONFIG = env("STRIPE_PORTAL_CONFIG", default="")
-GROWTH_PRICE_USD = env.int("GROWTH_PRICE_USD", default=99)
+GROWTH_PRICE_USD = env.int("GROWTH_PRICE_USD", default=79)
 # Off: the Instagram growth form only takes requests (team email via Resend, English
 # auto-reply to the customer). On: the form goes to Stripe Checkout.
 GROWTH_PAYMENTS = env.bool("GROWTH_PAYMENTS", default=False)

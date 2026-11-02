@@ -215,7 +215,7 @@
 
   /* ---------- Language menu + review button ---------- */
   document.addEventListener("click", function (e) {
-    document.querySelectorAll(".lang-menu[open]").forEach(function (m) { if (!m.contains(e.target)) m.removeAttribute("open"); });
+    document.querySelectorAll(".lang-menu[open], .nav-drop[open]").forEach(function (m) { if (!m.contains(e.target)) m.removeAttribute("open"); });
     var t = e.target.closest("[data-track]");
     if (!t) return;
     var what = t.getAttribute("data-track");
@@ -259,15 +259,16 @@
     gform.addEventListener("focusin", function () {
       if (gStarted) return;
       gStarted = true;
-      track("form_start", { form_id: "instagram_growth", language: doc.lang });
+      track("form_start", { form_id: gform.dataset.formId, language: doc.lang });
     });
     gform.addEventListener("submit", function () {
       if (gform.dataset.payments !== "on") return;  // request mode: generate_lead fires on the thank-you page
-      track("begin_checkout", { form_id: "instagram_growth", language: doc.lang, value: 99, currency: "USD",
-        items: [{ item_id: "organic_growth", item_name: "Organic Instagram Growth", price: 99, quantity: 1 }] });
+      var price = Number(gform.dataset.price || 0);
+      track("begin_checkout", { form_id: gform.dataset.formId, language: doc.lang, value: price, currency: "USD",
+        items: [{ item_id: gform.dataset.formId, item_name: gform.dataset.itemName, price: price, quantity: 1 }] });
     });
     if (gform.dataset.formErrors) {
-      track("lead_form_error", { form_id: "instagram_growth", error_fields: gform.dataset.formErrors.slice(0, 100) });
+      track("lead_form_error", { form_id: gform.dataset.formId, error_fields: gform.dataset.formErrors.slice(0, 100) });
     }
   }
 

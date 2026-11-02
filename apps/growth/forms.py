@@ -6,9 +6,9 @@ HANDLE_RE = re.compile(r"^[A-Za-z0-9._]{1,30}$")
 
 
 def clean_handle(value):
-    """'@brand', 'instagram.com/brand/', 'https://www.instagram.com/brand?igsh=..' -> 'brand'."""
+    """'@brand', 'instagram.com/brand/', 'https://www.instagram.com/brand?igsh=..', 'tiktok.com/@brand' -> 'brand'."""
     value = (value or "").strip()
-    m = re.search(r"instagram\.com/([^/?#\s]+)", value)
+    m = re.search(r"(?:instagram\.com/|tiktok\.com/@?)([^/?#\s]+)", value)
     if m:
         value = m.group(1)
     return value.lstrip("@").strip().strip("/")

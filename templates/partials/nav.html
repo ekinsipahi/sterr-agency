@@ -10,7 +10,7 @@
       <a href="{{ u_sectors }}" {% if u_sectors in request.path %}aria-current="page"{% endif %}>Sektörler</a>
       <a href="{{ u_works }}" {% if u_works in request.path %}aria-current="page"{% endif %}>Çalışmalar</a>
       <a href="{{ u_packages }}" {% if request.path == u_packages %}aria-current="page"{% endif %}>Paketler</a>
-      <a href="{{ growth_url }}"{% if growth_url in request.path %} aria-current="page"{% endif %}>{{ growth_nav }}</a>
+      <details class="nav-drop"><summary{% if followers_active %} aria-current="page"{% endif %}>{{ followers_nav }}</summary><div class="nav-drop__menu">{% for label, url in followers_menu %}<a href="{{ url }}">{{ label }}</a>{% endfor %}</div></details>
       <a href="{{ dental_url }}">Diş Turizmi</a>
       <a href="{{ u_about }}"{% if request.path == u_about %} aria-current="page"{% endif %}>Hakkımızda</a>
     </nav>

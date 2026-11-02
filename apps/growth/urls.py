@@ -13,6 +13,7 @@ urlpatterns = [
     path("growth/account/<str:token>/", views.account, name="account"),
     path("growth/stripe/webhook/", views.webhook, name="webhook"),
 ] + [
-    path(route, views.page, {"lang": code, "page": page}, name=f"{code}_{page.replace(':', '_')}")
-    for route, code, page in routes()
+    path(route, views.page, {"lang": code, "page": page, "platform": platform},
+         name=f"{platform}_{code}_{page.replace(':', '_')}")
+    for route, code, page, platform in routes()
 ]

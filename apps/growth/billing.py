@@ -33,7 +33,7 @@ def create_checkout(sub, success_url, cancel_url):
         "cancel_url": cancel_url,
         "locale": STRIPE_LOCALES.get(sub.lang, "auto"),
         "metadata": {"growth_id": str(sub.pk)},
-        "subscription_data": {"metadata": {"growth_id": str(sub.pk), "instagram": sub.instagram,
+        "subscription_data": {"metadata": {"growth_id": str(sub.pk), "platform": sub.platform, "handle": sub.instagram,
                                            "location": sub.location[:200], "lang": sub.lang}},
     })
     return session

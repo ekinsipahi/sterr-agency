@@ -2,7 +2,7 @@ from django.db import models
 
 
 class GrowthSubscription(models.Model):
-    """One $99/mo organic Instagram growth subscription. No user accounts: the
+    """One $79/mo organic Instagram or TikTok growth subscription. No user accounts: the
     customer is identified by email; Stripe holds the billing side."""
 
     STATUS = [
@@ -13,7 +13,10 @@ class GrowthSubscription(models.Model):
     ]
 
     email = models.EmailField("E-posta")
-    instagram = models.CharField("Instagram", max_length=30, help_text="@ olmadan")
+    PLATFORMS = [("instagram", "Instagram"), ("tiktok", "TikTok")]
+
+    platform = models.CharField("Platform", max_length=12, choices=PLATFORMS, default="instagram")
+    instagram = models.CharField("Kullanıcı adı", max_length=30, help_text="@ olmadan")
     location = models.CharField("Hedef konum", max_length=120)
     lang = models.CharField("Dil", max_length=5, default="en")
     status = models.CharField("Durum", max_length=12, choices=STATUS, default="pending")

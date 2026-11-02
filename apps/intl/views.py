@@ -11,8 +11,7 @@ from django.views.decorators.http import require_POST
 from apps.core.languages import LANG_BY_CODE
 from apps.core.models import Testimonial
 from apps.dental.languages import page_path as dental_path
-from apps.growth.content import CONTENT as GROWTH
-from apps.growth.content import page_path as growth_path
+from apps.growth.content import FOLLOWERS_NAV, followers_menu
 from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
@@ -59,7 +58,6 @@ def _base_context(code, key, form=None):
             "sectors": page_path(code, "sectors"),
             "guides": page_path(code, "guides"),
             "about": page_path(code, "about"),
-            "growth": growth_path(code, "main") if code in GROWTH else "",
             "dental": dental_path(code, "hub"),
             "clusters": [(data["clusters"][k], page_path(code, f"cluster:{k}")) for k in CLUSTER_KEYS],
             "sector_list": [(data["sectors"][k], page_path(code, f"sector:{k}")) for k in SECTOR_KEYS],
@@ -67,7 +65,8 @@ def _base_context(code, key, form=None):
         },
         "tiers": [(n, t, f, amount) for (n, t, f), amount in zip(ui["tiers"], price["tiers"])],
         "work": WORK,
-        "growth_nav": GROWTH[code]["nav"] if code in GROWTH else "",
+        "followers_nav": FOLLOWERS_NAV.get(code, ""),
+        "followers_menu": followers_menu(code),
         "testimonials": Testimonial.objects.filter(is_published=True)[:6],
     }
 

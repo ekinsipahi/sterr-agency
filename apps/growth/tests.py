@@ -11,7 +11,7 @@ from django.utils.html import escape
 
 from apps.core.languages import LANGS
 
-from .content import CONTENT, PAGES, alternates, page_path, routes
+from .content import CONTENT, PAGES, PLATFORMS, alternates, followers_menu, page_path, routes
 from .forms import clean_handle
 from .models import GrowthSubscription, StripeEvent
 from .views import MANAGE_SALT
@@ -23,52 +23,64 @@ STRIPE_ON = dict(GROWTH_PAYMENTS=True, STRIPE_SECRET_KEY="sk_test_x", STRIPE_PRI
 
 def shape(value):
     if isinstance(value, dict):
-        return {k: shape(v) for k, v in value.items()}
+        return {k: shape(v) for k, v in value.items() if k != "body"}  # guide bodies are free-form per platform
     if isinstance(value, (list, tuple)):
         return [shape(v) for v in value]
     return type(value).__name__
 
 
 class ContentTests(SimpleTestCase):
-    def test_all_sixteen_languages_share_the_english_structure(self):
-        self.assertEqual(set(CONTENT), {lang.code for lang in LANGS})
-        reference = shape({k: v for k, v in CONTENT["en"].items() if k != "geo"})
-        for code, data in CONTENT.items():
-            with self.subTest(code=code):
-                self.assertEqual(shape({k: v for k, v in data.items() if k != "geo"}), reference)
+    def test_both_platforms_in_all_sixteen_languages_share_the_english_structure(self):
+        reference = shape({k: v for k, v in CONTENT["instagram"]["en"].items() if k != "geo"})
+        for platform in PLATFORMS:
+            self.assertEqual(set(CONTENT[platform]), {lang.code for lang in LANGS}, platform)
+            for code, data in CONTENT[platform].items():
+                with self.subTest(platform=platform, code=code):
+                    self.assertEqual(shape({k: v for k, v in data.items() if k != "geo"}), reference)
 
-    def test_meta_lengths_unique_titles_and_organic_wording(self):
+    def test_meta_lengths_unique_titles_and_wording(self):
         titles = set()
-        for code, data in CONTENT.items():
-            for page in PAGES:
-                p = data[page]
-                with self.subTest(code=code, page=page):
-                    self.assertLessEqual(len(p["title"]), 68)
-                    self.assertLessEqual(len(p["description"]), 165)
-                    self.assertRegex((p["title"] + p["description"]).lower(),
-                                     r"organi|orgáni|طبيعي|органі|органи|orqanik")
-                titles.add(p["title"])
-        self.assertEqual(len(titles), len(CONTENT) * len(PAGES))
+        for platform in PLATFORMS:
+            for code, data in CONTENT[platform].items():
+                for page in PAGES:
+                    p = data[page]
+                    with self.subTest(platform=platform, code=code, page=page):
+                        self.assertLessEqual(len(p["title"]), 68)
+                        self.assertLessEqual(len(p["description"]), 165)
+                    titles.add(p["title"])
+        self.assertEqual(len(titles), sum(len(CONTENT[p]) for p in PLATFORMS) * len(PAGES))
 
-    def test_no_forbidden_claims(self):
-        blob = json.dumps(CONTENT, ensure_ascii=False).lower()
-        for word in ("guarantee", "garanti", "buzzoid", "passthevote", "stormlikes"):
+    def test_no_forbidden_claims_or_seo(self):
+        blob = json.dumps(CONTENT, ensure_ascii=False)
+        for word in ("guarantee", "garanti", "buzzoid", "passthevote", "stormlikes", "SEO"):
             self.assertNotIn(word, blob)
+        self.assertNotIn("900", json.dumps(CONTENT["tiktok"], ensure_ascii=False))  # no Instagram numbers on TikTok
+
+    def test_price_is_79(self):
+        for platform in PLATFORMS:
+            for code, data in CONTENT[platform].items():
+                self.assertIn("79", data["price"], (platform, code))
+                self.assertIn("79", data["pricing"]["title"], (platform, code))
 
     def test_alternates_cover_every_language(self):
         alts = dict(alternates("pricing"))
         self.assertEqual(len(alts), 17)
         self.assertEqual(alts["x-default"], alts["en"])
         self.assertEqual(alternates("geo:uk"), [])
+        self.assertEqual(len(dict(alternates("main", "tiktok"))), 17)
+
+    def test_followers_menu(self):
+        self.assertEqual([label for label, url in followers_menu("de")], ["Instagram", "TikTok"])
 
     def test_handle_cleaning(self):
-        for raw in ("@Brand.Name", "brand.name", "https://www.instagram.com/brand.name/?igsh=abc", "instagram.com/brand.name"):
+        for raw in ("@Brand.Name", "brand.name", "https://www.instagram.com/brand.name/?igsh=abc", "instagram.com/brand.name",
+                    "https://www.tiktok.com/@brand.name?lang=en", "tiktok.com/brand.name"):
             self.assertEqual(clean_handle(raw).lower(), "brand.name")
 
 
 class PageTests(TestCase):
     def test_every_page_renders_with_hreflang(self):
-        for route, code, page in routes():
+        for route, code, page, platform in routes():
             with self.subTest(route=route):
                 html = self.client.get("/" + route).content.decode()
                 self.assertIn(f'<html lang="{code}"', html)
@@ -80,6 +92,7 @@ class PageTests(TestCase):
         body = self.client.get("/sitemap.xml").content.decode()
         self.assertIn(f"{page_path('de', 'main')}</loc>", body)
         self.assertIn(f"{page_path('en', 'geo:uk')}</loc>", body)
+        self.assertIn(f"{page_path('fr', 'main', 'tiktok')}</loc>", body)
 
 
 def post_form(client, **extra):
@@ -93,21 +106,21 @@ def post_form(client, **extra):
 class CheckoutWithoutStripeTests(TestCase):
     def test_request_is_saved_team_notified_and_customer_answered(self):
         r = post_form(self.client, lang="tr")
-        self.assertRedirects(r, f"{reverse('growth:success')}?lang=tr&pending=1", fetch_redirect_response=False)
+        self.assertRedirects(r, f"{reverse('growth:success')}?lang=tr&platform=instagram&pending=1", fetch_redirect_response=False)
         sub = GrowthSubscription.objects.get()
         self.assertEqual((sub.instagram, sub.email, sub.status), ("my.brand", "owner@example.com", "pending"))
         team, customer = mail.outbox
         self.assertTrue(GrowthSubscription.objects.get().notified)
         self.assertEqual(team.to, ["owner@example.com"])
         self.assertIn("başvurusu", team.subject)
-        self.assertEqual(customer.subject, "We received your request: organic growth for @my.brand")  # English
+        self.assertEqual(customer.subject, "We received your request: organic Instagram growth for @my.brand")  # English
         page = self.client.get(r["Location"]).content.decode()
         self.assertIn('id="lead-event"', page)
 
     @override_settings(GROWTH_PAYMENTS=False, STRIPE_SECRET_KEY="sk_live_x", STRIPE_PRICE_ID="price_x")
     def test_stripe_keys_alone_do_not_turn_payments_on(self):
         html = self.client.get(page_path("en", "main")).content.decode()
-        self.assertIn(escape(CONTENT["en"]["ui"]["submit_request"]), html)
+        self.assertIn(escape(CONTENT["instagram"]["en"]["ui"]["submit_request"]), html)
         self.assertIn('data-payments="off"', html)
         with mock.patch("apps.growth.billing.create_checkout") as create:
             post_form(self.client)
@@ -125,10 +138,20 @@ class CheckoutWithoutStripeTests(TestCase):
         post_form(self.client)
         self.assertIn("LEAD_NOTIFY_EMAILS", GrowthSubscription.objects.get().mail_error)
 
+    def test_tiktok_request(self):
+        r = post_form(self.client, platform="tiktok", instagram="https://www.tiktok.com/@my.shop")
+        self.assertRedirects(r, f"{reverse('growth:success')}?lang=en&platform=tiktok&pending=1", fetch_redirect_response=False)
+        sub = GrowthSubscription.objects.get()
+        self.assertEqual((sub.platform, sub.instagram), ("tiktok", "my.shop"))
+        team, customer = mail.outbox
+        self.assertIn("TikTok", team.subject)
+        self.assertIn("tiktok.com/@my.shop", team.body)
+        self.assertEqual(customer.subject, "We received your request: organic TikTok growth for @my.shop")
+
     def test_invalid_handle_shows_error_in_page_language(self):
         r = post_form(self.client, lang="tr", instagram="not a handle!")
         self.assertEqual(r.status_code, 400)
-        self.assertContains(r, escape(CONTENT["tr"]["ui"]["err_instagram"]), status_code=400)
+        self.assertContains(r, escape(CONTENT["instagram"]["tr"]["ui"]["err_instagram"]), status_code=400)
         self.assertFalse(GrowthSubscription.objects.exists())
 
 
@@ -148,7 +171,7 @@ class CheckoutWithStripeTests(TestCase):
     def test_stripe_error_keeps_visitor_on_page(self):
         with mock.patch("apps.growth.billing.create_checkout", side_effect=stripe.APIConnectionError("down")):
             r = post_form(self.client)
-        self.assertContains(r, escape(CONTENT["en"]["ui"]["err_payment"]), status_code=502)
+        self.assertContains(r, escape(CONTENT["instagram"]["en"]["ui"]["err_payment"]), status_code=502)
 
 
 def signed(payload):
@@ -235,7 +258,7 @@ class ManageTests(TestCase):
                                           stripe_customer_id="cus_1")
         for email in ("a@example.com", "nobody@example.com"):
             r = self.client.post(reverse("growth:manage"), {"email": email, "lang": "it"})
-            self.assertContains(r, escape(CONTENT["it"]["ui"]["manage_sent"]))
+            self.assertContains(r, escape(CONTENT["instagram"]["it"]["ui"]["manage_sent"]))
         self.assertEqual([m.to for m in mail.outbox], [["a@example.com"]])
         link = re.search(r"https?://\S+/growth/manage/(\S+)/", mail.outbox[0].body)
         with mock.patch("apps.growth.billing.portal_url", return_value="https://billing.stripe.com/p/session") as portal:

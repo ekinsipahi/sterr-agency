@@ -136,10 +136,10 @@ GA4'te `generate_lead` olayını `form_id` ile filtreleyerek hasta ve B2B talepl
 
 ## Organik Instagram büyütme (16 dil)
 
-- Sayfalarda `content_group=instagram_growth`, `page_type=growth_main / growth_pricing / growth_guide_buy / growth_guide_speed / growth_geo / growth_success`, `language=<dil>`.
-- `form_start` (`form_id=instagram_growth`), formu yarıda bırakınca `form_abandon`.
-- **`begin_checkout`**: Form gönderilip Stripe'a geçerken (`value=99`, `currency=USD`, `items`).
-- **`purchase`**: Stripe'tan dönüşte ödeme tamamlandıysa, bir kez (`transaction_id` = Checkout oturumu, `value=99`, `currency=USD`). E-posta SHA-256 ile `user_data` olarak gider.
+- Sayfalarda `content_group=instagram_growth` / `tiktok_growth`, `page_type=growth_main / growth_pricing / growth_guide_buy / growth_guide_speed / growth_geo / growth_success`, `language=<dil>`.
+- `form_start` (`form_id=instagram_growth` / `tiktok_growth`), formu yarıda bırakınca `form_abandon`.
+- **`begin_checkout`**: Form gönderilip Stripe'a geçerken (`value=79`, `currency=USD`, `items`).
+- **`purchase`**: Stripe'tan dönüşte ödeme tamamlandıysa, bir kez (`transaction_id` = Checkout oturumu, `value=79`, `currency=USD`). E-posta SHA-256 ile `user_data` olarak gider.
 - GA4'te `purchase` olayını anahtar etkinlik yapın. Google Ads'e de dönüşüm olarak aktarılabilir.
 
 ## Uluslararası ajans sayfaları (15 dil)

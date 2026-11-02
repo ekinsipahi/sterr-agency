@@ -7,10 +7,11 @@
       <p class="growth-price mt-m"><span class="growth-price__amount">{{ g.price }}</span><span class="growth-price__per">{{ gu.per_month }}</span></p>
       <ul class="check mt-m">{% for t in gu.trust %}<li>{% include "partials/icons/check.svg" %}<span>{{ t }}</span></li>{% endfor %}</ul>
     </div>
-    <form class="form-card reveal" method="post" action="{% url 'growth:checkout' %}" novalidate data-growth-form data-form-id="instagram_growth" data-payments="{% if payments %}on{% else %}off{% endif %}"{% if form.errors %} data-form-errors="{{ form.errors.keys|join:',' }}"{% endif %}>
+    <form class="form-card reveal" method="post" action="{% url 'growth:checkout' %}" novalidate data-growth-form data-form-id="{{ platform }}_growth" data-item-name="Organic {{ platform_name }} Growth" data-price="{{ price_usd }}" data-payments="{% if payments %}on{% else %}off{% endif %}"{% if form.errors %} data-form-errors="{{ form.errors.keys|join:',' }}"{% endif %}>
       {% csrf_token %}
       <input type="hidden" name="lang" value="{{ code }}">
       <input type="hidden" name="page" value="{{ page }}">
+      <input type="hidden" name="platform" value="{{ platform }}">
       <input type="hidden" name="source_page" value="">
       <input type="hidden" name="utm_source"><input type="hidden" name="utm_medium"><input type="hidden" name="utm_campaign"><input type="hidden" name="gclid">
       <div class="hp" aria-hidden="true">{{ form.fax }}</div>

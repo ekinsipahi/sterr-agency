@@ -15,7 +15,7 @@ from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
 from . import billing
-from .content import CONTENT, PAGES, alternates, lang_links, page_path
+from .content import CONTENT, PAGES, PLATFORM_NAMES, PLATFORMS, alternates, lang_links, page_path
 from .forms import GrowthForm
 from .models import GrowthSubscription, StripeEvent
 from .notifications import acknowledge_request, confirm_cancellation, notify_team, send_manage_link, welcome_customer
@@ -39,13 +39,17 @@ def account_link(sub, action):
     return settings.SITE_URL + reverse("growth:account", args=[token])
 
 
-def _valid_page(code, page):
+def _valid_page(code, page, platform):
     kind, _, geo = page.partition(":")
-    return kind in PAGES or (kind == "geo" and geo in CONTENT[code].get("geo", {}))
+    return kind in PAGES or (kind == "geo" and geo in CONTENT[platform][code].get("geo", {}))
 
 
-def _context(code, page, form=None):
-    g = CONTENT[code]
+def _platform(value):
+    return value if value in PLATFORMS else "instagram"
+
+
+def _context(code, page, platform="instagram", form=None):
+    g = CONTENT[platform][code]
     ui = g["ui"]
     kind, _, geo = page.partition(":")
     if code == "tr":
@@ -62,15 +66,16 @@ def _context(code, page, form=None):
         p = g[kind]
     ctx.update({
         "code": code, "page": page, "kind": kind, "g": g, "gu": ui, "p": p,
+        "platform": platform, "platform_name": PLATFORM_NAMES[platform], "followers_active": True,
         "faqs": p.get("faqs"),
         "form": form or GrowthForm(ui=ui, initial={"location": p.get("place", "")}),
         "current_lang": LANG_BY_CODE[code],
-        "lang_links": lang_links(page),
-        "alternates": alternates(page),
-        "canonical_url": settings.SITE_URL + page_path(code, page),
+        "lang_links": lang_links(page, platform),
+        "alternates": alternates(page, platform),
+        "canonical_url": settings.SITE_URL + page_path(code, page, platform),
         "key": f"growth_{kind}",
-        "gurls": {k: page_path(code, k) for k in PAGES},
-        "geo_links": [(v["place"], page_path(code, f"geo:{k}")) for k, v in g.get("geo", {}).items()],
+        "gurls": {k: page_path(code, k, platform) for k in PAGES},
+        "geo_links": [(v["place"], page_path(code, f"geo:{k}", platform)) for k, v in g.get("geo", {}).items()],
         "price_usd": settings.GROWTH_PRICE_USD,
         "payments": billing.enabled(),
         "nav_cta_href": "#start",
@@ -80,48 +85,49 @@ def _context(code, page, form=None):
     return ctx
 
 
-def page(request, lang, page):
-    ctx = _context(lang, page)
+def page(request, lang, page, platform="instagram"):
+    ctx = _context(lang, page, platform)
     ctx["canceled"] = request.GET.get("canceled") == "1"
     return render(request, TEMPLATES[ctx["kind"]], ctx)
 
 
 @require_POST
 def checkout(request):
+    platform = _platform(request.POST.get("platform"))
     code = request.POST.get("lang")
-    if code not in CONTENT:
+    if code not in CONTENT[platform]:
         raise Http404
     page_key = request.POST.get("page", "main")
-    if not _valid_page(code, page_key):
+    if not _valid_page(code, page_key, platform):
         page_key = "main"
-    ui = CONTENT[code]["ui"]
+    ui = CONTENT[platform][code]["ui"]
     form = GrowthForm(request.POST, ui=ui)
     if form.is_spam():
-        return redirect(f"{reverse('growth:success')}?lang={code}&pending=1")
+        return redirect(f"{reverse('growth:success')}?lang={code}&platform={platform}&pending=1")
     ip = _client_ip(request)
     rate_key = f"growth-rate:{ip}"
     if cache.get(rate_key, 0) >= RATE_LIMIT:
         form.add_error(None, ui["err_rate"])
     if form.errors or not form.is_valid():
-        ctx = _context(code, page_key, form=form)
+        ctx = _context(code, page_key, platform, form=form)
         return render(request, TEMPLATES[ctx["kind"]], ctx, status=400)
     cache.set(rate_key, cache.get(rate_key, 0) + 1, RATE_WINDOW)
 
     d = form.cleaned_data
     sub = GrowthSubscription.objects.create(
-        email=d["email"].lower(), instagram=d["instagram"], location=d["location"], lang=code, ip=ip,
+        email=d["email"].lower(), instagram=d["instagram"], platform=platform, location=d["location"], lang=code, ip=ip,
         source_page=request.POST.get("source_page", "")[:300],
         **{f: request.POST.get(f, "")[:150] for f in ("utm_source", "utm_medium", "utm_campaign", "gclid")},
     )
     if billing.enabled():
-        success_url = f"{settings.SITE_URL}{reverse('growth:success')}?lang={code}&session_id={{CHECKOUT_SESSION_ID}}"
-        cancel_url = f"{settings.SITE_URL}{page_path(code, page_key)}?canceled=1#start"
+        success_url = f"{settings.SITE_URL}{reverse('growth:success')}?lang={code}&platform={platform}&session_id={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{settings.SITE_URL}{page_path(code, page_key, platform)}?canceled=1#start"
         try:
             session = billing.create_checkout(sub, success_url, cancel_url)
         except Exception:
             logger.exception("Stripe checkout failed for growth #%s", sub.pk)
             form.add_error(None, ui["err_payment"])
-            ctx = _context(code, page_key, form=form)
+            ctx = _context(code, page_key, platform, form=form)
             return render(request, TEMPLATES[ctx["kind"]], ctx, status=502)
         sub.stripe_checkout_session_id = session.id
         sub.save(update_fields=["stripe_checkout_session_id"])
@@ -136,17 +142,18 @@ def checkout(request):
     sub.mail_error = "\n".join(f"{who}: {r.error}" for who, r in (("Ekip", team), ("Müşteri", customer)) if not r)
     sub.save(update_fields=["notified", "mail_error"])
     request.session["growth_lead"] = {
-        "lead_id": f"ig-{sub.pk}", "form_id": "instagram_growth", "language": code,
+        "lead_id": f"{platform[:2]}-{sub.pk}", "form_id": f"{platform}_growth", "language": code,
         "value": settings.GROWTH_PRICE_USD, "currency": "USD", "lead_location": sub.location[:40],
         "user_data": hashed_user_data(sub.email, ""),
     }
-    return redirect(f"{reverse('growth:success')}?lang={code}&pending=1")
+    return redirect(f"{reverse('growth:success')}?lang={code}&platform={platform}&pending=1")
 
 
 def success(request):
+    platform = _platform(request.GET.get("platform"))
     code = request.GET.get("lang")
-    code = code if code in CONTENT else "en"
-    ctx = _context(code, "main")
+    code = code if code in CONTENT[platform] else "en"
+    ctx = _context(code, "main", platform)
     ctx["robots"] = "noindex, nofollow"
     handle, purchase = "", None
     session_id = request.GET.get("session_id", "")
@@ -163,7 +170,7 @@ def success(request):
             if session_id not in seen:
                 purchase = {
                     "transaction_id": session.id, "value": settings.GROWTH_PRICE_USD, "currency": "USD",
-                    "items": [{"item_id": "organic_growth", "item_name": "Organic Instagram Growth",
+                    "items": [{"item_id": f"{platform}_growth", "item_name": f"Organic {PLATFORM_NAMES[platform]} Growth",
                                "price": settings.GROWTH_PRICE_USD, "quantity": 1}],
                     "language": code,
                     "user_data": hashed_user_data(sub.email, "") if sub else {},
@@ -177,7 +184,7 @@ def success(request):
 
 def manage(request):
     code = request.GET.get("lang") or request.POST.get("lang")
-    code = code if code in CONTENT else "en"
+    code = code if code in CONTENT["instagram"] else "en"
     ctx = _context(code, "main")
     ctx["robots"] = "noindex, nofollow"
     status = "expired" if request.GET.get("expired") else ""
@@ -200,7 +207,7 @@ def portal(request, token):
         data = signing.loads(token, salt=MANAGE_SALT, max_age=MANAGE_MAX_AGE)
     except signing.BadSignature:
         return redirect(f"{reverse('growth:manage')}?expired=1")
-    code = data.get("l") if data.get("l") in CONTENT else "en"
+    code = data.get("l") if data.get("l") in CONTENT["instagram"] else "en"
     if not billing.enabled():
         return redirect(f"{reverse('growth:manage')}?lang={code}&expired=1")
     return redirect(billing.portal_url(data["c"], settings.SITE_URL + page_path(code, "main")))
@@ -211,7 +218,7 @@ def account(request, token):
         data = signing.loads(token, salt=ACCOUNT_SALT)
     except signing.BadSignature:
         return redirect(f"{reverse('growth:manage')}?expired=1")
-    code = data.get("l") if data.get("l") in CONTENT else "en"
+    code = data.get("l") if data.get("l") in CONTENT["instagram"] else "en"
     if not billing.enabled() or not data.get("c"):
         return redirect(f"{reverse('growth:manage')}?lang={code}&expired=1")
     cancel = data.get("s") if data.get("a") == "cancel" else None

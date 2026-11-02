@@ -1,7 +1,7 @@
 {% extends base_template %}
 {% block html_lang %}{{ code }}{% endblock %}
 {% block html_dir %}{% if current_lang.rtl %} dir="rtl"{% endif %}{% endblock %}
-{% block ga_page %}{"content_group": "instagram_growth", "page_type": "growth_{{ kind }}", "language": "{{ code }}"}{% endblock %}
+{% block ga_page %}{"content_group": "{{ platform }}_growth", "page_type": "growth_{{ kind }}", "language": "{{ code }}"}{% endblock %}
 {% block meta %}{% include "partials/meta.html" with title=p.title description=p.description robots=robots %}{% endblock %}
 {% block schema %}{% include "growth/_schema.html" %}{% endblock %}
 {% block content %}
