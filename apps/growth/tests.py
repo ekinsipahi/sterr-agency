@@ -115,6 +115,15 @@ class PageTests(TestCase):
         self.assertRegex(html, r'value="5k"[^>]*checked')
 
 
+class FreshCache:
+    """The IP rate limit lives in the cache; every test starts with a clean one."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        super().setUp()
+
+
 def order_data(**extra):
     data = {"lang": "en", "page": "main", "platform": "instagram", "package": "3k", "handle": "@My.Brand",
             "location": "Berlin, Germany", "email": "Buyer@Example.com", "password": "s3cret-pass", "consent": "on"}
@@ -123,7 +132,7 @@ def order_data(**extra):
 
 
 @override_settings(**STRIPE_OFF)
-class RequestModeTests(TestCase):
+class RequestModeTests(FreshCache, TestCase):
     def test_order_creates_account_and_request(self):
         r = self.client.post(reverse("growth:order"), order_data())
         order = FollowerOrder.objects.get()
@@ -167,7 +176,7 @@ class RequestModeTests(TestCase):
 
 
 @override_settings(**STRIPE_ON)
-class CheckoutTests(TestCase):
+class CheckoutTests(FreshCache, TestCase):
     session = SimpleNamespace(id="cs_test_1", url="https://checkout.stripe.com/c/pay/cs_test_1")
 
     def test_unverified_email_gets_a_link_that_goes_straight_to_payment(self):
@@ -222,6 +231,34 @@ class CheckoutTests(TestCase):
         order.refresh_from_db()
         self.assertEqual((order.status, order.stripe_payment_intent_id), ("paid", "pi_1"))
         self.assertEqual([m.subject for m in mail.outbox].count("Payment received: 1,000 real Instagram followers for @brand"), 1)
+
+
+@override_settings(**STRIPE_ON)
+class StripePriceTests(TestCase):
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.order = FollowerOrder.objects.create(email="a@example.com", handle="brand", location="Rome", platform="tiktok",
+                                                  package="3k", followers=3000, amount="79.99")
+
+    def checkout_line(self, prices):
+        client = mock.Mock()
+        client.v1.prices.list.return_value = SimpleNamespace(data=prices)
+        client.v1.checkout.sessions.create.return_value = SimpleNamespace(id="cs", url="u")
+        with mock.patch("apps.growth.billing._client", return_value=client):
+            from . import billing
+            billing.create_checkout(self.order, "https://s/ok", "https://s/cancel")
+        self.assertEqual(client.v1.prices.list.call_args.kwargs["params"]["lookup_keys"], ["sterr_tiktok_3k_usd"])
+        return client.v1.checkout.sessions.create.call_args.kwargs["params"]
+
+    def test_uses_the_package_price_from_setup_stripe(self):
+        params = self.checkout_line([SimpleNamespace(id="price_3k", unit_amount=7999)])
+        self.assertEqual(params["line_items"], [{"quantity": 1, "price": "price_3k"}])
+        self.assertEqual(params["metadata"]["order_id"], str(self.order.pk))
+
+    def test_falls_back_to_inline_price_when_missing_or_outdated(self):
+        params = self.checkout_line([SimpleNamespace(id="price_old", unit_amount=9900)])
+        self.assertEqual(params["line_items"][0]["price_data"]["unit_amount"], 7999)
 
 
 def signed(payload):
@@ -354,7 +391,7 @@ class AccountTests(TestCase):
 
 
 @override_settings(GOOGLE_OAUTH_CLIENT_ID="cid.apps.googleusercontent.com", GOOGLE_OAUTH_CLIENT_SECRET="GOCSPX-x", **MAIL)
-class GoogleSignInTests(TestCase):
+class GoogleSignInTests(FreshCache, TestCase):
     def start(self, next_url="/en/tiktok-followers/#start"):
         r = self.client.get(reverse("growth:google") + "?lang=de&next=" + next_url.replace("#", "%23"))
         self.assertTrue(r["Location"].startswith("https://accounts.google.com/o/oauth2/v2/auth?"))
@@ -394,3 +431,55 @@ class GoogleSignInTests(TestCase):
     def test_button_shows_on_login_and_order_form(self):
         self.assertContains(self.client.get(reverse("growth:login") + "?lang=en"), "Continue with Google")
         self.assertContains(self.client.get(page_path("en", "main")), "Continue with Google")
+
+
+@override_settings(GOOGLE_OAUTH_CLIENT_ID="cid.apps.googleusercontent.com", GOOGLE_OAUTH_CLIENT_SECRET="GOCSPX-x")
+class GoogleOrderTests(FreshCache, TestCase):
+    """Order details first, then "Continue with Google" instead of email + password."""
+
+    def google_order(self, **extra):
+        data = order_data(via="google", platform="tiktok", package="5k", **extra)
+        del data["email"], data["password"]
+        r = self.client.post(reverse("growth:order"), data)
+        self.assertTrue(r["Location"].startswith(reverse("growth:google") + "?lang=en&order=1&next="))
+        self.client.get(r["Location"])
+        state = self.client.session["google_oauth"]["state"]
+        token = mock.Mock(json=mock.Mock(return_value={"access_token": "at"}))
+        userinfo = mock.Mock(json=mock.Mock(return_value={"email": "fan@gmail.com", "email_verified": True}))
+        with mock.patch("apps.growth.accounts.requests.post", return_value=token), \
+             mock.patch("apps.growth.accounts.requests.get", return_value=userinfo):
+            return self.client.get(reverse("growth:google_complete") + f"?state={state}&code=abc")
+
+    @override_settings(**STRIPE_OFF)
+    def test_request_mode_places_the_filled_in_order(self):
+        r = self.google_order()
+        order = FollowerOrder.objects.get()
+        self.assertEqual((order.email, order.platform, order.handle, order.followers, order.status),
+                         ("fan@gmail.com", "tiktok", "my.brand", 5000, "requested"))
+        self.assertIn(f"order={order.pk}", r["Location"])
+        self.assertNotIn("google_order", self.client.session)
+
+    @override_settings(**STRIPE_ON)
+    def test_payments_on_go_straight_to_stripe(self):
+        session = SimpleNamespace(id="cs_g", url="https://checkout.stripe.com/c/pay/cs_g")
+        with mock.patch("apps.growth.billing.create_checkout", return_value=session) as create:
+            r = self.google_order()
+        self.assertEqual((r.status_code, r["Location"]), (303, session.url))  # Google verified the email: no extra step
+        self.assertEqual(create.call_args.args[0].followers, 5000)
+
+    @override_settings(**STRIPE_OFF)
+    def test_details_are_still_required(self):
+        data = order_data(via="google", handle="")
+        del data["email"], data["password"]
+        r = self.client.post(reverse("growth:order"), data)
+        self.assertEqual(r.status_code, 400)
+        self.assertContains(r, 'name="email"', status_code=400)  # the email/password option is still there
+        self.assertNotIn("google_order", self.client.session)
+
+    @override_settings(**STRIPE_OFF)
+    def test_plain_sign_in_does_not_place_an_abandoned_order(self):
+        data = order_data(via="google")
+        del data["email"], data["password"]
+        self.client.post(reverse("growth:order"), data)  # went to Google, never came back
+        self.client.get(reverse("growth:google") + "?lang=en")  # later: plain sign-in
+        self.assertNotIn("google_order", self.client.session)

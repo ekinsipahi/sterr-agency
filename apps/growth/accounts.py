@@ -26,7 +26,7 @@ from .forms import LoginForm, NewPasswordForm, ResetRequestForm, SignupForm
 from .models import Customer, FollowerOrder
 from .notifications import send_password_reset, send_verification
 from .packages import count
-from .views import VERIFY_MAX_AGE, VERIFY_SALT, shell, start_checkout, verify_link
+from .views import VERIFY_MAX_AGE, VERIFY_SALT, google_enabled, place_order, shell, start_checkout, verify_link
 
 logger = logging.getLogger(__name__)
 TRIES, TRIES_WINDOW = 10, 60 * 60
@@ -278,10 +278,6 @@ GOOGLE_TOKEN = "https://oauth2.googleapis.com/token"
 GOOGLE_USERINFO = "https://openidconnect.googleapis.com/v1/userinfo"
 
 
-def google_enabled():
-    return bool(settings.GOOGLE_OAUTH_CLIENT_ID and settings.GOOGLE_OAUTH_CLIENT_SECRET)
-
-
 def _google_redirect_uri(request):
     return request.build_absolute_uri(reverse("growth:google_complete"))
 
@@ -290,6 +286,8 @@ def google_start(request):
     code = _lang(request)
     if not google_enabled():
         return redirect(f"{reverse('growth:login')}?lang={code}")
+    if request.GET.get("order") != "1":  # a plain sign-in never places an order left from an abandoned attempt
+        request.session.pop("google_order", None)
     state = secrets.token_urlsafe(24)
     request.session["google_oauth"] = {"state": state, "next": _next(request, code), "lang": code}
     params = {"client_id": settings.GOOGLE_OAUTH_CLIENT_ID, "redirect_uri": _google_redirect_uri(request),
@@ -301,6 +299,9 @@ def google_complete(request):
     flow = request.session.pop("google_oauth", None) or {}
     code = flow.get("lang") if flow.get("lang") in UI else _lang(request)
     failed = f"{reverse('growth:login')}?lang={code}&google=failed"
+    if request.GET.get("error") and flow.get("next"):  # canceled on Google's screen: back to the form
+        request.session.pop("google_order", None)
+        return redirect(flow["next"])
     if not flow or request.GET.get("state") != flow.get("state") or not request.GET.get("code"):
         return redirect(failed)
     try:
@@ -329,4 +330,8 @@ def google_complete(request):
         customer.email_verified = True
         customer.save(update_fields=["email_verified"])
     login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+    pending = request.session.pop("google_order", None)
+    if pending:  # filled in on the order form before "Continue with Google": place it now
+        response = place_order(request, user, pending)
+        return response or redirect(f"{reverse('growth:account')}?lang={code}&error=payment")
     return redirect(flow.get("next") or f"{reverse('growth:account')}?lang={code}")

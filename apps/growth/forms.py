@@ -39,10 +39,12 @@ class _UIForm(forms.Form):
             self.fields["email"].error_messages["invalid"] = self.ui.get("err_email", "Enter a valid email.")
 
     def clean_email(self):
-        return self.cleaned_data["email"].strip().lower()
+        return (self.cleaned_data["email"] or "").strip().lower()
 
 
 class OrderForm(_UIForm):
+    """Package, account handle and target location; email + password unless signed in."""
+
     package = forms.ChoiceField(choices=PACKAGE_CHOICES, initial=DEFAULT_PACKAGE, widget=forms.RadioSelect)
     handle = forms.CharField(max_length=80)
     location = forms.CharField(max_length=120)
@@ -54,11 +56,14 @@ class OrderForm(_UIForm):
     labels = {"handle": "f_handle", "location": "f_location", "email": "f_email", "password": "f_password", "consent": "f_consent"}
     placeholders = {"handle": "f_handle_ph", "location": "f_location_ph", "email": "f_email_ph"}
 
-    def __init__(self, *args, user=None, **kwargs):
+    def __init__(self, *args, user=None, account_fields=True, **kwargs):
         super().__init__(*args, **kwargs)
         if user is not None and user.is_authenticated:
             # Signed in: the order goes to this account, no email or password asked.
             del self.fields["email"], self.fields["password"]
+        elif not account_fields:
+            # "Continue with Google": the account comes from Google, the fields stay on the page.
+            self.fields["email"].required = self.fields["password"].required = False
         self.fields["handle"].widget.attrs.update({"autocomplete": "off", "autocapitalize": "none", "spellcheck": "false"})
         self.fields["fax"].widget.attrs.update({"tabindex": "-1", "autocomplete": "off"})
         self.fields["package"].error_messages["invalid_choice"] = self.ui.get("err_package", "Choose a package.")
@@ -74,6 +79,8 @@ class OrderForm(_UIForm):
 
     def clean_password(self):
         password = self.cleaned_data["password"]
+        if not password and not self.fields["password"].required:
+            return password
         if len(password) < PASSWORD_MIN:
             raise forms.ValidationError(self.ui.get("err_password", "Use at least 8 characters."))
         return password

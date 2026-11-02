@@ -33,17 +33,20 @@
           <div class="hp" aria-hidden="true">{{ form.fax }}</div>
           {% if canceled %}<div class="form-alert">{{ gu.canceled }}</div>{% endif %}
           {% if form.non_field_errors %}<div class="form-alert">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+          {# Enter in any field submits the normal order, not "Continue with Google" #}
+          <button class="sr-only" type="submit" tabindex="-1" aria-hidden="true"></button>
           <div class="field">{{ form.handle.label_tag }}{{ form.handle }}{{ form.handle.errors }}</div>
           <div class="field">{{ form.location.label_tag }}{{ form.location }}{{ form.location.errors }}</div>
+          <label class="consent">{{ form.consent }}<span>{{ form.consent.label }} <a href="{% url 'core:terms' %}" hreflang="tr" target="_blank" rel="noopener" aria-label="Terms">↗</a></span></label>
+          {{ form.consent.errors }}
           {% if form.email %}
-          {% include "growth/_google.html" with google_next=request.path|add:"#start" %}
+          {% if google %}<button class="btn btn--ghost btn--lg google-btn mt-s" type="submit" name="via" value="google">{% include "growth/_google_icon.svg" %}{{ gu.google_btn }}</button>
+          <div class="or-line"><span>{{ gu.or }}</span></div>{% endif %}
           <div class="field">{{ form.email.label_tag }}{{ form.email }}{{ form.email.errors }}</div>
           <div class="field">{{ form.password.label_tag }}{{ form.password }}<small class="field__help">{{ gu.f_password_help }}</small>{{ form.password.errors }}</div>
           {% else %}
           <p class="muted signed-in">{{ signed_in }} · <a href="{{ account_url }}">{{ account_nav }}</a></p>
           {% endif %}
-          <label class="consent">{{ form.consent }}<span>{{ form.consent.label }} <a href="{% url 'core:terms' %}" hreflang="tr" target="_blank" rel="noopener" aria-label="Terms">↗</a></span></label>
-          {{ form.consent.errors }}
           <button class="btn btn--signal btn--lg mt-s" type="submit" style="width:100%">{% if payments %}{{ gu.submit }}{% else %}{{ gu.submit_request }}{% endif %} · <span data-order-amount>{% for pk in packages %}{% if pk.key == selected_package %}{{ pk.amount }}{% endif %}{% endfor %}</span></button>
           <p class="muted mt-s" style="font-size:13.5px">{% if payments %}{{ gu.secure_note }}{% else %}{{ gu.request_note }}{% endif %}</p>
           {% if not user.is_authenticated %}<p class="muted" style="font-size:13.5px">{{ gu.have_account }} <a href="{% url 'growth:login' %}?lang={{ code }}&amp;next={{ request.path|urlencode }}%23start">{{ gu.login_title }}</a></p>{% endif %}

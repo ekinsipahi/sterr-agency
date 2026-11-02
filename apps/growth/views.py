@@ -1,4 +1,5 @@
 import logging
+from urllib.parse import quote
 
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login
@@ -96,7 +97,7 @@ def _context(request, code, page, platform="instagram", form=None):
         "nav_cta_href": "#start",
         "nav_cta_label": gu["nav_cta"],
         "account_url": f"{reverse('growth:account')}?lang={code}",
-        "google": bool(settings.GOOGLE_OAUTH_CLIENT_ID and settings.GOOGLE_OAUTH_CLIENT_SECRET),
+        "google": google_enabled(),
         "canceled": request.GET.get("canceled") == "1",
     })
     return ctx
@@ -145,6 +146,10 @@ def see_other(url):
     return response
 
 
+ORDER_FIELDS = ("package", "handle", "location")
+SOURCE_FIELDS = ("source_page", "utm_source", "utm_medium", "utm_campaign", "gclid")
+
+
 @require_POST
 def order(request):
     platform = _platform(request.POST.get("platform"))
@@ -155,7 +160,9 @@ def order(request):
     if not _valid_page(code, page_key, platform):
         page_key = "main"
     gu = ui_for(code, platform)
-    form = OrderForm(request.POST, ui=gu, user=request.user)
+    # "Continue with Google": the order details are checked now, the account comes from Google.
+    via_google = request.POST.get("via") == "google" and not request.user.is_authenticated and google_enabled()
+    form = OrderForm(request.POST, ui=gu, user=request.user, account_fields=not via_google)
     if form.is_spam():
         return redirect(f"{reverse('growth:success')}?lang={code}&platform={platform}")
     ip = _client_ip(request)
@@ -164,7 +171,7 @@ def order(request):
         form.add_error(None, gu["err_rate"])
 
     user, signed_up = request.user, False
-    if not form.errors and form.is_valid() and not user.is_authenticated:
+    if not form.errors and form.is_valid() and not user.is_authenticated and not via_google:
         email, password = form.cleaned_data["email"], form.cleaned_data["password"]
         User = get_user_model()
         if User.objects.filter(username=email).exists():
@@ -178,19 +185,35 @@ def order(request):
     if form.errors or not form.is_valid():
         return render(request, "growth/page.html", _context(request, code, page_key, platform, form=form), status=400)
     cache.set(rate_key, cache.get(rate_key, 0) + 1, RATE_WINDOW)
+
+    pending = {"platform": platform, "lang": code, "page": page_key, "ip": ip,
+               **{f: form.cleaned_data[f] for f in ORDER_FIELDS},
+               **{f: request.POST.get(f, "")[:300 if f == "source_page" else 150] for f in SOURCE_FIELDS}}
+    if via_google:
+        request.session["google_order"] = pending
+        back = f"{page_path(code, page_key, platform)}#start"
+        return redirect(f"{reverse('growth:google')}?lang={code}&order=1&next={quote(back)}")
     if not request.user.is_authenticated:
         login(request, user, backend="django.contrib.auth.backends.ModelBackend")
     if signed_up:
         request.session["growth_signup"] = {"method": "email", "language": code}
-    customer, _ = Customer.objects.get_or_create(user=user, defaults={"lang": code})
+    response = place_order(request, user, pending)
+    if response is None:  # Stripe failed: show the form again with the error
+        form.add_error(None, gu["err_payment"])
+        return render(request, "growth/page.html", _context(request, code, page_key, platform, form=form), status=502)
+    return response
 
-    d = form.cleaned_data
-    package = PACKAGE_BY_KEY[d["package"]]
+
+def place_order(request, user, pending):
+    """Create the order for a signed-in user and send it on: Stripe Checkout, the email
+    confirmation step, or (payments off) a request. None when Stripe can't be reached."""
+    code, platform = pending["lang"], pending["platform"]
+    customer, _ = Customer.objects.get_or_create(user=user, defaults={"lang": code})
+    package = PACKAGE_BY_KEY[pending["package"]]
     order = FollowerOrder.objects.create(
-        user=user, email=user.email, platform=platform, handle=d["handle"], location=d["location"],
-        package=package["key"], followers=package["followers"], amount=package["price"], lang=code, ip=ip,
-        source_page=request.POST.get("source_page", "")[:300],
-        **{f: request.POST.get(f, "")[:150] for f in ("utm_source", "utm_medium", "utm_campaign", "gclid")},
+        user=user, email=user.email, platform=platform, handle=pending["handle"], location=pending["location"],
+        package=package["key"], followers=package["followers"], amount=package["price"], lang=code, ip=pending.get("ip"),
+        **{f: pending.get(f, "") for f in SOURCE_FIELDS},
     )
     if billing.enabled():
         if settings.GROWTH_VERIFY_EMAIL and not customer.email_verified:
@@ -198,11 +221,10 @@ def order(request):
             send_verification(user.email, verify_link(user, order), order)
             return redirect(f"{reverse('growth:account')}?lang={code}&verify=sent")
         try:
-            return see_other(start_checkout(order, f"{page_path(code, page_key, platform)}?canceled=1#start"))
+            return see_other(start_checkout(order, f"{page_path(code, pending['page'], platform)}?canceled=1#start"))
         except Exception:
             logger.exception("Stripe checkout failed for order #%s", order.pk)
-            form.add_error(None, gu["err_payment"])
-            return render(request, "growth/page.html", _context(request, code, page_key, platform, form=form), status=502)
+            return None
 
     # Payments off: a request. Team email via Resend, English auto-reply to the customer.
     order.status = "requested"
@@ -217,6 +239,10 @@ def order(request):
         "user_data": hashed_user_data(order.email, ""),
     }
     return redirect(f"{reverse('growth:success')}?lang={code}&platform={platform}&order={order.pk}")
+
+
+def google_enabled():
+    return bool(settings.GOOGLE_OAUTH_CLIENT_ID and settings.GOOGLE_OAUTH_CLIENT_SECRET)
 
 
 def mark_paid(order_id, payment_intent=""):
