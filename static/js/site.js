@@ -246,7 +246,7 @@
     }
   }
 
-  /* ---------- Organic Instagram growth form (16 languages) ---------- */
+  /* ---------- Follower package order form (Instagram / TikTok, 16 languages) ---------- */
   var gform = document.querySelector("[data-growth-form]");
   if (gform) {
     ["utm_source", "utm_medium", "utm_campaign", "gclid"].forEach(function (k) {
@@ -255,21 +255,46 @@
     });
     var gsrc = gform.querySelector('[name="source_page"]');
     if (gsrc && !gsrc.value) gsrc.value = location.pathname + (stored.landing && stored.landing !== location.pathname ? " ← " + stored.landing : "");
+    var gAmount = gform.querySelector("[data-order-amount]");
+    var gPick = function () { return gform.querySelector('input[name="package"]:checked'); };
+    var gItem = function (pick) {
+      return { item_id: gform.dataset.formId.replace("_followers", "") + "_" + pick.value,
+               item_name: pick.dataset.followers + " " + gform.dataset.platform + " followers",
+               price: Number(pick.dataset.price), quantity: 1 };
+    };
+    gform.addEventListener("change", function (e) {
+      if (e.target.name !== "package") return;
+      if (gAmount) gAmount.textContent = e.target.dataset.amount;
+      track("select_item", { item_list_id: gform.dataset.formId, items: [gItem(e.target)] });
+    });
+    document.querySelectorAll("[data-pick]").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        var radio = gform.querySelector('input[name="package"][value="' + chip.dataset.pick + '"]');
+        if (radio && !radio.checked) {
+          radio.checked = true;
+          radio.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      });
+    });
     var gStarted = false;
-    gform.addEventListener("focusin", function () {
-      if (gStarted) return;
+    gform.addEventListener("focusin", function (e) {
+      if (gStarted || e.target.name === "package") return;
       gStarted = true;
       track("form_start", { form_id: gform.dataset.formId, language: doc.lang });
     });
     gform.addEventListener("submit", function () {
-      if (gform.dataset.payments !== "on") return;  // request mode: generate_lead fires on the thank-you page
-      var price = Number(gform.dataset.price || 0);
-      track("begin_checkout", { form_id: gform.dataset.formId, language: doc.lang, value: price, currency: "USD",
-        items: [{ item_id: gform.dataset.formId, item_name: gform.dataset.itemName, price: price, quantity: 1 }] });
+      var pick = gPick();
+      if (!pick || gform.dataset.payments !== "on") return;  // request mode: generate_lead fires on the thank-you page
+      track("begin_checkout", { form_id: gform.dataset.formId, language: doc.lang, value: Number(pick.dataset.price),
+        currency: "USD", items: [gItem(pick)] });
     });
     if (gform.dataset.formErrors) {
       track("lead_form_error", { form_id: gform.dataset.formId, error_fields: gform.dataset.formErrors.slice(0, 100) });
     }
+  }
+  var signupData = document.getElementById("signup-event");
+  if (signupData) {
+    try { track("sign_up", JSON.parse(signupData.textContent)); } catch (err) { /* ignore */ }
   }
 
   /* ---------- Multi-step application form (funnel) ---------- */

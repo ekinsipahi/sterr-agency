@@ -49,5 +49,5 @@ class ProgrammaticSeoTests(TestCase):
         self.assertEqual(resp.status_code, 404)
 
     def test_sitemap_lists_all_city_pages(self):
-        body = self.client.get("/sitemap.xml").content.decode()
+        body = self.client.get("/sitemaps/pages.xml").content.decode()
         self.assertEqual(len(re.findall(r"<loc>[^<]*/dijital-pazarlama-ajansi/", body)), 82)  # hub + 81

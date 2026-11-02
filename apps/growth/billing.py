@@ -1,14 +1,12 @@
-"""Stripe calls for the growth subscription. Payments run only with GROWTH_PAYMENTS
-on and STRIPE_SECRET_KEY + STRIPE_PRICE_ID set; otherwise the form just takes
+"""Stripe Checkout for one-time follower packages. Payments run only with
+GROWTH_PAYMENTS on and STRIPE_SECRET_KEY set; otherwise orders are taken as
 requests and the team follows up by email."""
 import json
-import logging
-from datetime import datetime, timezone
 
 import stripe
 from django.conf import settings
 
-logger = logging.getLogger(__name__)
+from .packages import PACKAGE_BY_KEY, cents
 
 # Checkout UI languages Stripe supports; others fall back to the browser language.
 STRIPE_LOCALES = {"en": "en", "tr": "tr", "de": "de", "nl": "nl", "fr": "fr", "it": "it", "es": "es", "pl": "pl",
@@ -16,48 +14,35 @@ STRIPE_LOCALES = {"en": "en", "tr": "tr", "de": "de", "nl": "nl", "fr": "fr", "i
 
 
 def enabled():
-    return bool(settings.GROWTH_PAYMENTS and settings.STRIPE_SECRET_KEY and settings.STRIPE_PRICE_ID)
+    return bool(settings.GROWTH_PAYMENTS and settings.STRIPE_SECRET_KEY)
 
 
 def _client():
     return stripe.StripeClient(settings.STRIPE_SECRET_KEY)
 
 
-def create_checkout(sub, success_url, cancel_url):
-    session = _client().v1.checkout.sessions.create(params={
-        "mode": "subscription",
-        "line_items": [{"price": settings.STRIPE_PRICE_ID, "quantity": 1}],
-        "customer_email": sub.email,
-        "client_reference_id": str(sub.pk),
+def create_checkout(order, success_url, cancel_url):
+    package = PACKAGE_BY_KEY[order.package]
+    low, high = package["days"]
+    name = f"{order.followers:,} real {order.platform_name} followers"
+    description = f"For @{order.handle} ({order.location[:80]}). Delivered gradually in {low}-{high} days."
+    metadata = {"order_id": str(order.pk), "platform": order.platform, "handle": order.handle, "package": order.package}
+    return _client().v1.checkout.sessions.create(params={
+        "mode": "payment",
+        "line_items": [{"quantity": 1, "price_data": {"currency": "usd", "unit_amount": cents(package),
+                                                      "product_data": {"name": name, "description": description}}}],
+        "customer_email": order.email,
+        "client_reference_id": str(order.pk),
         "success_url": success_url,
         "cancel_url": cancel_url,
-        "locale": STRIPE_LOCALES.get(sub.lang, "auto"),
-        "metadata": {"growth_id": str(sub.pk)},
-        "subscription_data": {"metadata": {"growth_id": str(sub.pk), "platform": sub.platform, "handle": sub.instagram,
-                                           "location": sub.location[:200], "lang": sub.lang}},
+        "locale": STRIPE_LOCALES.get(order.lang, "auto"),
+        "metadata": metadata,
+        "payment_intent_data": {"metadata": metadata, "description": f"{name} for @{order.handle}"},
     })
-    return session
 
 
 def retrieve_checkout(session_id):
     return _client().v1.checkout.sessions.retrieve(session_id)
-
-
-def portal_url(customer_id, return_url, cancel_subscription=None):
-    """Customer portal session. With `cancel_subscription` it opens straight on the
-    cancellation screen; if Stripe refuses that (e.g. already set to cancel), the
-    normal portal opens instead."""
-    params = {"customer": customer_id, "return_url": return_url}
-    if settings.STRIPE_PORTAL_CONFIG:
-        params["configuration"] = settings.STRIPE_PORTAL_CONFIG
-    if cancel_subscription:
-        flow = {"type": "subscription_cancel", "subscription_cancel": {"subscription": cancel_subscription},
-                "after_completion": {"type": "redirect", "redirect": {"return_url": return_url}}}
-        try:
-            return _client().v1.billing_portal.sessions.create(params={**params, "flow_data": flow}).url
-        except stripe.InvalidRequestError:
-            logger.info("Cancel flow refused for %s; opening the portal instead", cancel_subscription)
-    return _client().v1.billing_portal.sessions.create(params=params).url
 
 
 def parse_event(payload: bytes, signature: str):
@@ -65,19 +50,3 @@ def parse_event(payload: bytes, signature: str):
     stripe.WebhookSignature.verify_header(payload.decode("utf-8"), signature, settings.STRIPE_WEBHOOK_SECRET,
                                           tolerance=300)
     return json.loads(payload)
-
-
-def period_end(subscription: dict):
-    """current_period_end lives on the subscription items in newer API versions."""
-    ts = subscription.get("current_period_end")
-    if not ts:
-        items = (subscription.get("items") or {}).get("data") or []
-        ts = items[0].get("current_period_end") if items else None
-    return datetime.fromtimestamp(ts, tz=timezone.utc) if ts else None
-
-
-def invoice_subscription_id(invoice: dict):
-    sub = invoice.get("subscription")
-    if not sub:
-        sub = (((invoice.get("parent") or {}).get("subscription_details") or {}).get("subscription"))
-    return sub if isinstance(sub, str) else (sub or {}).get("id")

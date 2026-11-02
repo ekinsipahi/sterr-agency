@@ -64,7 +64,7 @@ class PageTests(TestCase):
         self.assertEqual(self.client.get("/dental-tourism/de/partners/").status_code, 404)  # German slug is "partner"
 
     def test_sitemap_lists_dental_pages_with_alternates(self):
-        body = self.client.get("/sitemap.xml").content.decode()
+        body = self.client.get("/sitemaps/dental-tourism.xml").content.decode()
         for lang in LANGS:
             self.assertIn(f"{page_path(lang.code, 'partners')}</loc>", body)
         self.assertIn('hreflang="x-default"', body)

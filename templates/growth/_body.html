@@ -1,0 +1,13 @@
+<section class="section{% if is_guide %}--tight{% else %} section--line{% endif %}">
+  <div class="container">
+    <article class="prose reveal">
+      {% for block in p.body %}{% with t=block.0 %}
+      {% if t == "h2" %}<h2>{{ block.1 }}</h2>
+      {% elif t == "p" %}<p>{{ block.1 }}</p>
+      {% elif t == "ul" %}<ul>{% for i in block.1 %}<li>{{ i }}</li>{% endfor %}</ul>
+      {% elif t == "callout" %}<div class="callout">{{ block.1 }} <a href="#start">{{ gu.cta }} →</a></div>
+      {% endif %}{% endwith %}{% endfor %}
+      {% if is_guide and faqs %}<h2>{{ gu.faq_title }}</h2>{% for q, a in faqs %}<h3>{{ q }}</h3><p>{{ a }}</p>{% endfor %}{% endif %}
+    </article>
+  </div>
+</section>

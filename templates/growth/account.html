@@ -1,0 +1,102 @@
+{% extends base_template %}
+{% block html_lang %}{{ code }}{% endblock %}
+{% block html_dir %}{% if current_lang.rtl %} dir="rtl"{% endif %}{% endblock %}
+{% block ga_page %}{"content_group": "followers_account", "page_type": "account_{{ mode }}", "language": "{{ code }}"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=gu.acc_title description=gu.login_lead robots="noindex, nofollow" %}{% endblock %}
+{% block alternates %}{% endblock %}
+{% block content %}
+{% if mode == "dashboard" %}
+<section class="page-hero page-hero--compact">
+  <div class="container acc-head">
+    <div>
+      <p class="eyebrow reveal">{{ user.email }}</p>
+      <h1 class="h1 reveal">{{ gu.acc_title }}</h1>
+    </div>
+    <div class="btn-row reveal">
+      {% for o in order_links %}<a class="btn btn--signal" href="{{ o.url }}">{{ gu.acc_new }} · {{ o.name }}</a>{% endfor %}
+      <form method="post" action="{% url 'growth:logout' %}">{% csrf_token %}<input type="hidden" name="lang" value="{{ code }}"><button class="btn btn--ghost" type="submit">{{ gu.sign_out }}</button></form>
+    </div>
+  </div>
+</section>
+<section class="section--tight">
+  <div class="container">
+    {% if flags.verify == "sent" %}<div class="form-alert form-alert--ok reveal">{{ gu.verify_sent }}</div>{% endif %}
+    {% if flags.verify == "invalid" %}<div class="form-alert reveal">{{ gu.verify_invalid }}</div>{% endif %}
+    {% if flags.verified %}<div class="form-alert form-alert--ok reveal">{{ gu.verify_done }}</div>{% endif %}
+    {% if flags.reset %}<div class="form-alert form-alert--ok reveal">{{ gu.reset_done }}</div>{% endif %}
+    {% if flags.error == "payment" %}<div class="form-alert reveal">{{ gu.acc_payment_error }}</div>{% endif %}
+    {% if needs_verify and payments and flags.verify != "sent" %}
+    <div class="form-alert reveal">{{ gu.acc_unverified }}
+      <form method="post" action="{% url 'growth:verify_again' %}" style="display:inline">{% csrf_token %}<input type="hidden" name="lang" value="{{ code }}"><button class="link-btn" type="submit">{{ gu.acc_resend }}</button></form>
+    </div>
+    {% endif %}
+
+    {% if summary %}<div class="stats reveal">{% for value, label in summary %}<div class="stat"><div class="stat__value">{{ value }}</div><div class="stat__label">{{ label }}</div></div>{% endfor %}</div>{% endif %}
+    <h2 class="h3 mt-m reveal">{{ gu.acc_orders }}</h2>
+    {% if not orders %}<p class="muted reveal">{{ gu.acc_empty }}</p>{% endif %}
+    <div class="orders">
+      {% for item in orders %}{% with o=item.o %}
+      <article class="order-card reveal order-card--{{ o.status }}">
+        <header class="order-card__head">
+          <div>
+            <p class="order-card__title">{{ item.count }} {{ o.platform_name }} {{ gu.followers }} <span class="muted">· @{{ o.handle }}</span></p>
+            <p class="muted order-card__sub">{{ item.created }} · {{ o.location }} · {{ item.amount }}</p>
+          </div>
+          <span class="status status--{{ o.status }}">{{ item.status }}</span>
+        </header>
+        {% if o.status == "paid" or o.status == "completed" %}
+        <div class="progress-bar" role="progressbar" aria-valuenow="{{ o.percent }}" aria-valuemin="0" aria-valuemax="100"><span style="width:{{ o.percent }}%"></span></div>
+        <div class="order-card__stats">
+          <span><b>{{ o.percent }}%</b> · {{ item.delivered }}</span>
+          {% if item.now %}<span>{{ item.now }}</span>{% endif %}
+          {% if item.eta %}<span>{{ item.eta }}</span>{% endif %}
+        </div>
+        {% if item.chart %}
+        <figure class="order-chart">
+          <figcaption class="muted">{{ gu.acc_chart }}</figcaption>
+          <svg viewBox="0 0 320 72" preserveAspectRatio="none" aria-hidden="true"><polyline points="{{ item.chart }}" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>
+        </figure>
+        {% endif %}
+        {% if item.updated %}<p class="muted order-card__sub">{{ item.updated }}</p>{% endif %}
+        {% elif item.eta %}<p class="muted order-card__sub">{{ item.eta }}</p>{% endif %}
+        {% if item.can_pay %}
+        <form method="post" action="{% url 'growth:pay' o.pk %}">{% csrf_token %}<input type="hidden" name="lang" value="{{ code }}"><button class="btn btn--signal btn--sm" type="submit">{{ gu.acc_pay }} · {{ item.amount }}</button></form>
+        {% endif %}
+      </article>
+      {% endwith %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% else %}
+<section class="page-hero">
+  <div class="container split">
+    <div class="reveal">
+      <p class="eyebrow">{{ gu.eyebrow }}</p>
+      <h1 class="h1">{% if mode == "login" %}{{ gu.login_title }}{% elif mode == "signup" %}{{ gu.signup_title }}{% else %}{{ gu.reset_title }}{% endif %}</h1>
+      <p class="lede">{% if mode == "login" %}{{ gu.login_lead }}{% elif mode == "signup" %}{{ gu.signup_lead }}{% else %}{{ gu.reset_lead }}{% endif %}</p>
+    </div>
+    <form class="form-card reveal" method="post" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="lang" value="{{ code }}">
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      {% if invalid %}<div class="form-alert">{{ gu.reset_invalid }}</div>{% endif %}
+      {% if sent %}<div class="form-alert form-alert--ok">{{ gu.reset_sent }}</div>{% endif %}
+      {% if form.non_field_errors %}<div class="form-alert">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+      {% for field in form %}{% if field.name == "consent" %}
+      <label class="consent">{{ field }}<span>{{ field.label }} <a href="{% url 'core:terms' %}" hreflang="tr" target="_blank" rel="noopener" aria-label="Terms">↗</a></span></label>{{ field.errors }}
+      {% else %}
+      <div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>
+      {% endif %}{% endfor %}
+      <button class="btn btn--signal btn--lg mt-s" type="submit" style="width:100%">{% if mode == "login" %}{{ gu.login_submit }}{% elif mode == "signup" %}{{ gu.signup_submit }}{% elif mode == "reset_confirm" %}{{ gu.reset_save }}{% else %}{{ gu.reset_submit }}{% endif %}</button>
+      {% if mode == "login" %}
+      <p class="muted mt-s" style="font-size:14px"><a href="{% url 'growth:reset' %}?lang={{ code }}">{{ gu.forgot }}</a></p>
+      <p class="muted" style="font-size:14px">{{ gu.no_account }} <a href="{% url 'growth:signup' %}?lang={{ code }}{% if next %}&amp;next={{ next|urlencode }}{% endif %}">{{ gu.signup_submit }}</a></p>
+      {% elif mode == "signup" %}
+      <p class="muted mt-s" style="font-size:14px">{{ gu.have_account }} <a href="{% url 'growth:login' %}?lang={{ code }}{% if next %}&amp;next={{ next|urlencode }}{% endif %}">{{ gu.login_submit }}</a></p>
+      {% endif %}
+    </form>
+  </div>
+</section>
+{% endif %}
+{% if signup_event %}{{ signup_event|json_script:"signup-event" }}{% endif %}
+{% endblock %}

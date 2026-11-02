@@ -1,5 +1,7 @@
 # Organik Instagram Büyüme — Anahtar Kelime ve Sayfa Planı
 
+> **Eski plan (aylık abonelik, Kasım 2026 öncesi).** Güncel yapı: [FOLLOWERS_KEYWORDS.md](FOLLOWERS_KEYWORDS.md).
+
 > Kaynak: Ekim 2026 keyword export'u (İngilizce, "buy instagram followers" ailesi, 437 keyword). Hacim yalnızca ilk sayfada vardı; diğerleri hacimsiz geldi.
 > Diğer 15 dildeki ana aramalar (ör. "instagram takipçi satın al", "Instagram Follower kaufen") araçla doğrulanmadı, çeviri değil, her dilin kendi kalıbı. Yayından sonra Search Console ile kontrol edilmeli.
 

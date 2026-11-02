@@ -1,47 +1,49 @@
-"""Organic follower growth pages (Instagram and TikTok) in 16 languages.
+"""Real-follower package pages (Instagram and TikTok) in 16 languages.
 
-Page keys: main · pricing · guide_buy · guide_speed, plus geo:<key> (Instagram, English only).
-Turkish lives at the site root, the other languages under /<code>/.
-TikTok locales hold only what differs from the Instagram content of the same language;
-everything else (form, payment, cancellation texts) is inherited.
+    apps/growth/i18n/<code>.py               UI: forms, packages, account, shared blocks ({platform} placeholders)
+    apps/growth/pages/<platform>/<code>.py   DATA: slugs and the copy of every page in PAGES (+ geo:<key>)
+    apps/growth/pages/creators/<code>.py     DATA: the "influencer agency for creators" hub (CREATOR_PAGES)
+
+Turkish lives at the site root, the other languages under /<code>/. The main page is the
+hub: it links to every other page of its platform, and they all link back.
 """
 from importlib import import_module
 
 from apps.core.languages import DEFAULT, LANGS
 
-PLATFORMS = ("instagram", "tiktok")
-PLATFORM_NAMES = {"instagram": "Instagram", "tiktok": "TikTok"}
-PROFILE_URL = {"instagram": "https://www.instagram.com/{}/", "tiktok": "https://www.tiktok.com/@{}"}
-PAGES = ("main", "pricing", "guide_buy", "guide_speed")
+from .constants import ACCOUNT_NAV, CREATOR_PAGES, FOLLOWERS_NAV, GUIDES, PACKAGE_PAGES, PAGES, PLATFORM_NAMES, PLATFORMS, PROFILE_URL  # noqa: F401
 
-# Navbar dropdown label for both platforms.
-FOLLOWERS_NAV = {
-    "en": "Followers", "tr": "Takipçi", "de": "Follower", "nl": "Volgers", "fr": "Abonnés", "it": "Follower",
-    "es": "Seguidores", "pl": "Obserwujący", "ru": "Подписчики", "uk": "Підписники", "ar": "متابعين",
-    "sv": "Följare", "da": "Følgere", "no": "Følgere", "ro": "Urmăritori", "az": "İzləyici",
-}
-
-
-def _merge(base, over):
-    out = dict(base)
-    for key, value in over.items():
-        out[key] = {**base[key], **value} if isinstance(value, dict) and isinstance(base.get(key), dict) else value
-    return out
-
-
+UI = {}
 CONTENT = {platform: {} for platform in PLATFORMS}
+CREATORS = {}
 for _lang in LANGS:
     try:
-        _ig = import_module(f"apps.growth.locales.{_lang.code}").DATA
+        UI[_lang.code] = import_module(f"apps.growth.i18n.{_lang.code}").UI
     except ModuleNotFoundError:
         continue
-    CONTENT["instagram"][_lang.code] = _ig
+    for _platform in PLATFORMS:
+        try:
+            CONTENT[_platform][_lang.code] = import_module(f"apps.growth.pages.{_platform}.{_lang.code}").DATA
+        except ModuleNotFoundError:
+            pass
     try:
-        _tt = import_module(f"apps.growth.tiktok.{_lang.code}").DATA
+        CREATORS[_lang.code] = import_module(f"apps.growth.pages.creators.{_lang.code}").DATA
     except ModuleNotFoundError:
-        continue
-    _base = {k: v for k, v in _ig.items() if k != "geo"}
-    CONTENT["tiktok"][_lang.code] = _merge(_base, _tt)
+        pass
+
+
+def ui_for(code, platform):
+    """UI strings with {platform} filled in."""
+    name = PLATFORM_NAMES[platform]
+
+    def fill(value):
+        if isinstance(value, str):
+            return value.replace("{platform}", name)
+        if isinstance(value, (list, tuple)):
+            return type(value)(fill(v) for v in value)
+        return value
+
+    return {k: fill(v) for k, v in UI[code].items()}
 
 
 def page_path(code, page, platform="instagram"):
@@ -72,7 +74,7 @@ def alternates(page, platform="instagram"):
     if page.startswith("geo:"):
         return []
     alts = [(lang.code, page_path(lang.code, page, platform)) for lang in LANGS if lang.code in CONTENT[platform]]
-    return alts + [("x-default", page_path(DEFAULT, page, platform))]
+    return alts + [("x-default", page_path(DEFAULT, page, platform))] if DEFAULT in CONTENT[platform] else alts
 
 
 def lang_links(page, platform="instagram"):
@@ -80,6 +82,31 @@ def lang_links(page, platform="instagram"):
     return [(lang, page_path(lang.code, target, platform)) for lang in LANGS if lang.code in CONTENT[platform]]
 
 
+def creator_path(code, page):
+    data = CREATORS[code]
+    prefix = "" if code == "tr" else f"/{code}"
+    if page == "main":
+        return f"{prefix}/{data['base']}/"
+    return f"{prefix}/{data['base']}/{data['subs'][page]}/"
+
+
+def creator_routes():
+    """(path without leading slash, lang, page) for the creators hub."""
+    return [(creator_path(code, page)[1:], code, page) for code in CREATORS for page in CREATOR_PAGES]
+
+
+def creator_alternates(page):
+    alts = [(lang.code, creator_path(lang.code, page)) for lang in LANGS if lang.code in CREATORS]
+    return alts + [("x-default", creator_path(DEFAULT, page))] if DEFAULT in CREATORS else alts
+
+
 def followers_menu(code):
-    """[(label, url)] for the navbar 'Followers' dropdown."""
-    return [(PLATFORM_NAMES[p], page_path(code, "main", p)) for p in PLATFORMS if code in CONTENT[p]]
+    """[(label, url)] for the navbar 'Followers' dropdown: both platforms, creators, then the account."""
+    from django.urls import reverse
+
+    items = [(PLATFORM_NAMES[p], page_path(code, "main", p)) for p in PLATFORMS if code in CONTENT[p]]
+    if code in CREATORS:
+        items.append((CREATORS[code]["nav"], creator_path(code, "main")))
+    if items:
+        items.append((ACCOUNT_NAV.get(code, ACCOUNT_NAV["en"]), f"{reverse('growth:account')}?lang={code}"))
+    return items

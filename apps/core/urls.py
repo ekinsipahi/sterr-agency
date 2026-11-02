@@ -16,6 +16,7 @@ urlpatterns = [
     path("cerez-politikasi/", views.legal, {"template": "cookies"}, name="cookies"),
     path("robots.txt", views.robots_txt, name="robots"),
     path("sitemap.xml", views.sitemap_xml, name="sitemap"),
+    path("sitemaps/<slug:name>.xml", views.sitemap_section, name="sitemap_section"),
     path("favicon.ico", views.favicon_ico, name="favicon"),
     path("yorum/", views.review_redirect, name="review"),
 ]

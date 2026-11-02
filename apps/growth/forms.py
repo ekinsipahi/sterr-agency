@@ -2,7 +2,10 @@ import re
 
 from django import forms
 
+from .packages import CHOICES as PACKAGE_CHOICES, DEFAULT_PACKAGE
+
 HANDLE_RE = re.compile(r"^[A-Za-z0-9._]{1,30}$")
+PASSWORD_MIN = 8
 
 
 def clean_handle(value):
@@ -14,34 +17,101 @@ def clean_handle(value):
     return value.lstrip("@").strip().strip("/")
 
 
-class GrowthForm(forms.Form):
-    instagram = forms.CharField(max_length=80)
-    location = forms.CharField(max_length=120)
-    email = forms.EmailField(max_length=254)
-    consent = forms.BooleanField()
-    fax = forms.CharField(required=False)  # honeypot
+class _UIForm(forms.Form):
+    """Labels, placeholders and errors come from the page language's UI strings."""
+
+    labels = {}
+    placeholders = {}
 
     def __init__(self, *args, ui=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.ui = ui or {}
-        attrs = {
-            "instagram": {"placeholder": self.ui.get("f_instagram_ph", ""), "autocomplete": "off", "autocapitalize": "none", "spellcheck": "false"},
-            "location": {"placeholder": self.ui.get("f_location_ph", "")},
-            "email": {"placeholder": self.ui.get("f_email_ph", ""), "autocomplete": "email"},
-            "fax": {"tabindex": "-1", "autocomplete": "off"},
-        }
-        for name, extra in attrs.items():
-            self.fields[name].widget.attrs.update(extra)
-        self.fields["instagram"].label = self.ui.get("f_instagram")
-        self.fields["location"].label = self.ui.get("f_location")
-        self.fields["email"].label = self.ui.get("f_email")
-        self.fields["consent"].label = self.ui.get("f_consent")
+        for name, key in self.labels.items():
+            if name in self.fields:
+                self.fields[name].label = self.ui.get(key)
+        for name, key in self.placeholders.items():
+            if name in self.fields:
+                self.fields[name].widget.attrs["placeholder"] = self.ui.get(key, "")
+        for field in self.fields.values():
+            field.error_messages["required"] = self.ui.get("err_required", field.error_messages["required"])
+        if "email" in self.fields:
+            self.fields["email"].widget.attrs["autocomplete"] = "email"
+            self.fields["email"].error_messages["invalid"] = self.ui.get("err_email", "Enter a valid email.")
+
+    def clean_email(self):
+        return self.cleaned_data["email"].strip().lower()
+
+
+class OrderForm(_UIForm):
+    package = forms.ChoiceField(choices=PACKAGE_CHOICES, initial=DEFAULT_PACKAGE, widget=forms.RadioSelect)
+    handle = forms.CharField(max_length=80)
+    location = forms.CharField(max_length=120)
+    email = forms.EmailField(max_length=150)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"autocomplete": "current-password"}), strip=False)
+    consent = forms.BooleanField()
+    fax = forms.CharField(required=False)  # honeypot
+
+    labels = {"handle": "f_handle", "location": "f_location", "email": "f_email", "password": "f_password", "consent": "f_consent"}
+    placeholders = {"handle": "f_handle_ph", "location": "f_location_ph", "email": "f_email_ph"}
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user is not None and user.is_authenticated:
+            # Signed in: the order goes to this account, no email or password asked.
+            del self.fields["email"], self.fields["password"]
+        self.fields["handle"].widget.attrs.update({"autocomplete": "off", "autocapitalize": "none", "spellcheck": "false"})
+        self.fields["fax"].widget.attrs.update({"tabindex": "-1", "autocomplete": "off"})
+        self.fields["package"].error_messages["invalid_choice"] = self.ui.get("err_package", "Choose a package.")
 
     def is_spam(self):
         return bool(self.data.get("fax"))
 
-    def clean_instagram(self):
-        handle = clean_handle(self.cleaned_data["instagram"])
+    def clean_handle(self):
+        handle = clean_handle(self.cleaned_data["handle"])
         if not HANDLE_RE.match(handle):
-            raise forms.ValidationError(self.ui.get("err_instagram", "Invalid username."))
+            raise forms.ValidationError(self.ui.get("err_handle", "Invalid username."))
         return handle.lower()
+
+    def clean_password(self):
+        password = self.cleaned_data["password"]
+        if len(password) < PASSWORD_MIN:
+            raise forms.ValidationError(self.ui.get("err_password", "Use at least 8 characters."))
+        return password
+
+
+class LoginForm(_UIForm):
+    email = forms.EmailField(max_length=150)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"autocomplete": "current-password"}), strip=False)
+    labels = {"email": "f_email", "password": "f_password"}
+    placeholders = {"email": "f_email_ph"}
+
+
+class SignupForm(_UIForm):
+    email = forms.EmailField(max_length=150)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}), strip=False)
+    consent = forms.BooleanField()
+    labels = {"email": "f_email", "password": "f_password", "consent": "f_consent"}
+    placeholders = {"email": "f_email_ph"}
+
+    def clean_password(self):
+        password = self.cleaned_data["password"]
+        if len(password) < PASSWORD_MIN:
+            raise forms.ValidationError(self.ui.get("err_password", "Use at least 8 characters."))
+        return password
+
+
+class ResetRequestForm(_UIForm):
+    email = forms.EmailField(max_length=150)
+    labels = {"email": "f_email"}
+    placeholders = {"email": "f_email_ph"}
+
+
+class NewPasswordForm(_UIForm):
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}), strip=False)
+    labels = {"password": "new_password"}
+
+    def clean_password(self):
+        password = self.cleaned_data["password"]
+        if len(password) < PASSWORD_MIN:
+            raise forms.ValidationError(self.ui.get("err_password", "Use at least 8 characters."))
+        return password

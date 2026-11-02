@@ -76,6 +76,7 @@ def robots_txt(request):
         "Disallow: /dental-tourism/thank-you/",
         "Disallow: /intl/",
         "Disallow: /growth/",
+        "Disallow: /account/",
         "",
         f"Sitemap: {settings.SITE_URL}/sitemap.xml",
     ]
@@ -117,11 +118,14 @@ def intl_sitemap_urls():
 
 
 def growth_sitemap_urls():
-    """(path, priority, alternates) for the Instagram and TikTok follower pages in every language."""
+    """(path, priority, alternates, section) for the follower pages and the creators hub in every language."""
     from apps.growth.content import alternates as growth_alternates, routes as growth_routes
-    prio = {"main": "0.9", "pricing": "0.8", "geo": "0.7", "guide_buy": "0.6", "guide_speed": "0.6"}
-    return [("/" + route, prio[page.partition(":")[0]], growth_alternates(page, platform))
+    prio = {"main": "0.9", "real": "0.8", "pricing": "0.8", "agency": "0.7", "geo": "0.7"}
+    from apps.growth.content import creator_alternates, creator_routes
+    rows = [("/" + route, prio.get(page.partition(":")[0], "0.6"), growth_alternates(page, platform), platform)
             for route, code, page, platform in growth_routes()]
+    return rows + [("/" + route, "0.8" if page == "main" else "0.6", creator_alternates(page), "creators")
+                   for route, code, page in creator_routes()]
 
 
 def _url(site, path, prio, alts=None):
@@ -129,15 +133,37 @@ def _url(site, path, prio, alts=None):
     return f"<url><loc>{site}{path}</loc><priority>{prio}</priority>{links}</url>"
 
 
+def _sections():
+    """Sitemap sections, one file each, so Search Console reports them separately."""
+    tr_alts = {intl_path("tr", key): intl_alternates(key) for key in INTL_PAGE_KEYS}
+    growth = growth_sitemap_urls()
+    return {
+        "pages": lambda: [(path, prio, tr_alts.get(path)) for path, prio in sitemap_urls()],
+        "agency": intl_sitemap_urls,
+        "dental-tourism": dental_sitemap_urls,
+        "instagram-followers": lambda: [row for row in growth if row[3] == "instagram"],
+        "tiktok-followers": lambda: [row for row in growth if row[3] == "tiktok"],
+        "creators": lambda: [row for row in growth if row[3] == "creators"],
+    }
+
+
 @cache_page(60 * 60)
 def sitemap_xml(request):
+    """Sitemap index pointing at one sitemap per section."""
     site = settings.SITE_URL
-    # Turkish pages that have equivalents in the other 15 languages carry the hreflang set too.
-    tr_alts = {intl_path("tr", key): intl_alternates(key) for key in INTL_PAGE_KEYS}
-    body = "".join(_url(site, path, prio, tr_alts.get(path)) for path, prio in sitemap_urls())
-    body += "".join(_url(site, *row) for row in intl_sitemap_urls())
-    body += "".join(_url(site, *row) for row in dental_sitemap_urls())
-    body += "".join(_url(site, *row) for row in growth_sitemap_urls())
+    items = "".join(f"<sitemap><loc>{site}{reverse('core:sitemap_section', args=[name])}</loc></sitemap>" for name in _sections())
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>'
+           f'<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{items}</sitemapindex>')
+    return HttpResponse(xml, content_type="application/xml")
+
+
+@cache_page(60 * 60)
+def sitemap_section(request, name):
+    rows = _sections().get(name)
+    if rows is None:
+        raise Http404
+    site = settings.SITE_URL
+    body = "".join(_url(site, row[0], row[1], row[2]) for row in rows())
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
            f"{body}</urlset>")

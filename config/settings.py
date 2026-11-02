@@ -80,7 +80,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 # "Session pooler" connection string (Render has no IPv6, so not the direct one).
 DATABASES = {"default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")}
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)
-DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+if DATABASES["default"]["ENGINE"].endswith("postgresql"):
+    # Same as dentaltourism.tr: SSL to Supabase, no extra "SELECT 1" round trip per request.
+    DATABASES["default"]["CONN_HEALTH_CHECKS"] = False
+    DATABASES["default"].setdefault("OPTIONS", {})["sslmode"] = env("DB_SSLMODE", default="require")
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -146,18 +149,20 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Sterr Agency <noreply@st
 # Who gets the "yeni lead geldi" email. Comma-separated for multiple recipients.
 LEAD_NOTIFY_EMAILS = env.list("LEAD_NOTIFY_EMAILS", default=[])
 
-# --- Stripe (organic Instagram growth subscription) -------------------------------
-# Run `python manage.py setup_stripe` once with STRIPE_SECRET_KEY set; it creates the
-# $79/month price, the customer portal and the webhook, and prints the other values.
+# --- Stripe (one-time Instagram / TikTok follower packages) ------------------------
+# Prices live in apps/growth/packages.py (Checkout uses inline prices, no Stripe Price
+# objects). `python manage.py setup_stripe` creates/updates the webhook endpoint.
 STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
 STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY", default=env("STRIPE_PUBLISH_KEY", default=""))
-STRIPE_PRICE_ID = env("STRIPE_PRICE_ID", default="")
 STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
-STRIPE_PORTAL_CONFIG = env("STRIPE_PORTAL_CONFIG", default="")
-GROWTH_PRICE_USD = env.int("GROWTH_PRICE_USD", default=79)
-# Off: the Instagram growth form only takes requests (team email via Resend, English
-# auto-reply to the customer). On: the form goes to Stripe Checkout.
+# Off: orders are taken as requests (team email via Resend, English auto-reply).
+# On: the order form goes to Stripe Checkout.
 GROWTH_PAYMENTS = env.bool("GROWTH_PAYMENTS", default=False)
+# A confirmed email before the first payment (keeps card-testing scripts out).
+GROWTH_VERIFY_EMAIL = env.bool("GROWTH_VERIFY_EMAIL", default=True)
+LOGIN_URL = "growth:login"
+# Bearer token for the delivery system's API (/growth/api/...). Unset = API off.
+GROWTH_API_TOKEN = env("GROWTH_API_TOKEN", default="")
 
 # --- Contact ----------------------------------------------------------------
 WHATSAPP_NUMBER = env("WHATSAPP_NUMBER", default="905414487561")

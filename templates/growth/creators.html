@@ -1,0 +1,61 @@
+{% extends base_template %}
+{% block html_lang %}{{ code }}{% endblock %}
+{% block html_dir %}{% if current_lang.rtl %} dir="rtl"{% endif %}{% endblock %}
+{% block ga_page %}{"content_group": "creators", "page_type": "creators_{{ kind }}", "language": "{{ code }}"}{% endblock %}
+{% block meta %}{% include "partials/meta.html" with title=p.title description=p.description robots=robots %}{% endblock %}
+{% block schema %}{% load l10n %}{% localize off %}<script type="application/ld+json">{% if is_guide %}{"@context":"https://schema.org","@type":"Article","headline":"{{ p.h1.0|escapejs }}{{ p.h1.1|escapejs }}","description":"{{ p.description|escapejs }}","inLanguage":"{{ code }}","author":{"@id":"{{ SITE_URL }}/#org"},"publisher":{"@id":"{{ SITE_URL }}/#org"},"mainEntityOfPage":"{{ canonical_url }}"}{% else %}{"@context":"https://schema.org","@type":"Service","name":"{{ p.h1.0|escapejs }}","serviceType":"Influencer growth agency","description":"{{ p.description|escapejs }}","inLanguage":"{{ code }}","provider":{"@id":"{{ SITE_URL }}/#org"},"areaServed":"Worldwide","url":"{{ canonical_url }}"}{% endif %}</script>{% endlocalize %}
+{% if faqs %}{% include "partials/faq_schema.html" %}{% endif %}{% endblock %}
+{% block content %}
+<section class="{% if is_guide %}page-hero{% else %}hero{% endif %}">
+  <div class="container">
+    <p class="eyebrow reveal">{{ g.nav }}{% if is_guide %} · {{ p.minutes }} {{ gu.minutes }}{% endif %}</p>
+    <h1 class="{% if is_guide %}h1{% else %}display hero__title{% endif %} reveal"{% if is_guide %} style="max-width:1000px"{% endif %}>{{ p.h1.0 }}<span class="serif">{{ p.h1.1 }}</span></h1>
+    <p class="lede reveal">{{ p.lede }}</p>
+    <div class="btn-row mt-m reveal">{% for o in platform_links %}<a class="btn {% if forloop.first %}btn--signal{% else %}btn--ghost{% endif %} btn--lg" href="{{ o.url }}#start">{{ o.label }} {% include "partials/icons/arrow.svg" %}</a>{% endfor %}</div>
+  </div>
+</section>
+
+{% if p.platforms %}
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><h2 class="h2">{{ gu.platforms_title.0 }}<span class="serif">{{ gu.platforms_title.1 }}</span></h2></div>
+    <div class="grid grid-2">{% for name, text in p.platforms %}<div class="card reveal"><span class="card__num">{{ name }}</span><p>{{ text }}</p></div>{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section section--line">
+  <div class="container">
+    <article class="prose reveal">
+      {% for block in p.body %}{% with t=block.0 %}
+      {% if t == "h2" %}<h2>{{ block.1 }}</h2>
+      {% elif t == "p" %}<p>{{ block.1 }}</p>
+      {% elif t == "ul" %}<ul>{% for i in block.1 %}<li>{{ i }}</li>{% endfor %}</ul>
+      {% elif t == "callout" %}<div class="callout">{{ block.1 }}{% for o in platform_links %} <a href="{{ o.url }}#start">{{ o.label }} →</a>{% endfor %}</div>
+      {% endif %}{% endwith %}{% endfor %}
+      {% if is_guide and faqs %}<h2>{{ gu.faq_title }}</h2>{% for q, a in faqs %}<h3>{{ q }}</h3><p>{{ a }}</p>{% endfor %}{% endif %}
+    </article>
+  </div>
+</section>
+
+{% for title, text in blocks %}
+<section class="section section--line">
+  <div class="container split">
+    <div class="reveal"><h2 class="h2">{{ title.0 }}<span class="serif">{{ title.1 }}</span></h2></div>
+    <p class="lede reveal">{{ text }}</p>
+  </div>
+</section>
+{% endfor %}
+
+{% if not is_guide %}{% include "growth/_faq.html" %}{% endif %}
+
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><h2 class="h2">{{ gu.creators_more.0 }}<span class="serif">{{ gu.creators_more.1 }}</span></h2></div>
+    <div class="grid grid-3 hub">
+      {% for item in hub %}<a class="card reveal" href="{{ item.url }}"><h3 class="h3">{{ item.p.h1.0 }}{{ item.p.h1.1 }}</h3><p>{{ item.p.lede|truncatewords:16 }}</p><span class="card__foot link-arrow">{{ gu.read_more }} {% include "partials/icons/arrow.svg" %}</span></a>{% endfor %}
+      {% for o in platform_links %}<a class="card reveal" href="{{ o.agency_url }}"><span class="card__num">{{ o.name }}</span><h3 class="h3">{{ o.agency.h1.0 }}{{ o.agency.h1.1 }}</h3><p>{{ o.agency.lede|truncatewords:16 }}</p><span class="card__foot link-arrow">{{ gu.read_more }} {% include "partials/icons/arrow.svg" %}</span></a>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

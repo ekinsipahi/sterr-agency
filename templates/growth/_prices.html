@@ -1,0 +1,4 @@
+<div class="price-strip mt-m reveal">
+  {% for pk in packages %}<a class="price-chip{% if pk.popular %} price-chip--popular{% endif %}" href="#start" data-pick="{{ pk.key }}"><b>{{ pk.count }}</b><span class="price-chip__unit">{{ platform_name }} {{ gu.followers }}</span><span class="price-chip__price">{{ pk.amount }}</span><span class="price-chip__days">{{ pk.delivery }}</span></a>{% endfor %}
+</div>
+<p class="muted price-strip__note reveal">{{ gu.policy }}</p>

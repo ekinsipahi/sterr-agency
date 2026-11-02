@@ -60,22 +60,42 @@ GA4, GTM, Meta Pixel, Consent Mode v2 ve lead yaşam döngüsü olayları: [`ANA
 .venv/bin/python manage.py test apps
 ```
 
-## Organik Instagram ve TikTok büyütme (aylık 79$)
+## Instagram ve TikTok takipçi paketleri (tek seferlik)
 
-İki platform aynı sistemi kullanır. TikTok metinleri `apps/growth/tiktok/<dil>.py` içinde, Instagram metinlerinin üzerine yazılan farklar olarak durur (TikTok'ta aylık takipçi sayısı iddiası yok). Navbar'daki **Takipçi** menüsü (`FOLLOWERS_NAV`) iki platformu her dilde listeler; kayıtlar `GrowthSubscription.platform` alanıyla ayrılır.
+Gerçek kişilerden takipçi paketleri, iki platformda aynı fiyatlarla (`apps/growth/packages.py`):
 
-16 dilde satış sayfası, fiyat sayfası ve iki rehber: `/instagram-takipci/`, `/en/instagram-followers/`, `/de/instagram-follower/`… (tam liste: [`keywords/INSTAGRAM_GROWTH.md`](keywords/INSTAGRAM_GROWTH.md)). İçerik `apps/growth/locales/<dil>.py` dosyalarında.
+| Paket | Fiyat | 1000 başına | Teslim |
+|---|---|---|---|
+| 1.000 | 34.99$ | 34.99$ | 7–14 gün |
+| 2.000 | 59.99$ | 30.00$ | 14–24 gün |
+| 3.000 (en popüler) | 79.99$ | 26.66$ | 24–36 gün |
+| 5.000 | 124.99$ | 25.00$ | 30–60 gün |
+| 10.000 | 229.99$ | 23.00$ | 60–120 gün |
 
-- **Akış:** Ziyaretçi Instagram kullanıcı adı, hedef konum ve e-posta girer, Stripe Checkout'a yönlenir. Hesap/şifre yok.
-- **Admin → Instagram abonelikleri:** durum (ödeme bekleniyor / aktif / ödeme başarısız / iptal), dönem bitişi, Stripe kimlikleri.
-- **E-postalar:** Ekibe (Türkçe) yeni abonelik, iptal talebi, sona erme ve başarısız ödemede; müşteriye kendi dilinde hoş geldin ve abonelik yönetimi linki.
-- **İptal:** `/growth/manage/` sayfasında müşteri e-postasını girer, bir saat geçerli güvenli link gelir, Stripe müşteri portalı açılır. İptal dönem sonunda geçerli olur, başlamış ay iade edilmez.
-- **Şu an başvuru modunda (`GROWTH_PAYMENTS=False`):** Form ödeme almaz; başvuru kaydedilir, ekibe Resend ile "Yeni Instagram büyütme başvurusu" e-postası, müşteriye İngilizce "talebinizi aldık" cevabı gider. Stripe'ı açmak için Render'da `GROWTH_PAYMENTS=True` yapın; Stripe key'leri tek başına ödemeyi açmaz.
+**Sayfalar (her platform × 16 dil, ana sayfa hub'dır, hepsi birbirine bağlı):** ana sayfa, real/active, ucuz (pricing), 5 paket sayfası, growth agency, non-drop, instant vs kademeli, satın alma rehberi, legit. Ayrıca platformdan bağımsız **"Influencer agency for creators"** hub'ı ve 4 creator rehberi. Navbar'daki **Takipçi** menüsünde: Instagram, TikTok, creator sayfası, Hesabım.
+
+**İçerik dosyaları:**
+- `apps/growth/i18n/<dil>.py`: arayüz metinleri (form, paketler, hesap, ortak bloklar; `{platform}` yer tutucusu)
+- `apps/growth/pages/instagram|tiktok|creators/<dil>.py`: slug'lar, sayfa metinleri ve her sayfanın `keywords` listesi
+- Bir dili kontrol etmek: `python manage.py check_growth_copy de` (yapı, meta uzunlukları, yasak kelimeler, keyword'lerin sayfada geçmesi). Testler 16 dilin hepsini bu kontrolden geçirir.
+- Keyword planı: [`keywords/FOLLOWERS_KEYWORDS.md`](keywords/FOLLOWERS_KEYWORDS.md)
+
+**Hesaplar ve siparişler:**
+- Sipariş formunda e-posta + şifre: hesap yoksa açılır, varsa şifreyle giriş yapılır. `/account/` paneli siparişleri, durumu, ilerleme çubuğunu, teslim grafiğini ve tahmini bitiş aralığını gösterir. Şifre sıfırlama e-postayla.
+- `GROWTH_VERIFY_EMAIL=True` (varsayılan): ilk ödemeden önce e-posta onayı istenir (kart deneyen botlara karşı). Onay linki doğrudan Stripe ödemesine götürür.
+- Admin → **Takipçi siparişleri**: durum, teslim aralığı, "Tamamlandı olarak işaretle" (müşteriye e-posta gider). **Müşteri hesapları**, **Teslimat verileri**.
+- Veriler Supabase Postgres'te (`DATABASE_URL`, session pooler); Render'da disk kalıcı değil.
+
+**Teslimat uygulaması için API** (`GROWTH_API_TOKEN`, `Authorization: Bearer <token>`):
+- `GET /growth/api/orders/?status=paid`: teslim edilecek siparişler (id, platform, kullanıcı adı, konum, paket, teslim edilen).
+- `POST /growth/api/progress/`: `{"order_id": 12, "delivered": 840, "followers": 5120, "start_followers": 4300, "at": "2026-11-02T10:00:00Z"}` ya da `{"updates": [...]}`. Panel grafiği bu verilerle çizilir; `delivered` paket sayısına ulaşınca sipariş tamamlanır ve müşteriye e-posta gider.
+
+**Ödeme modu:** `GROWTH_PAYMENTS=False` iken sipariş "başvuru" olarak kaydedilir; ekibe Resend ile Türkçe bildirim, müşteriye İngilizce "talebinizi aldık" gider. `True` yapınca Stripe Checkout (tek seferlik, satır içi fiyat; Stripe'ta ürün/fiyat oluşturmak gerekmez). Müşteri e-postaları her zaman İngilizcedir.
 
 **Stripe kurulumu (bir kez):**
-1. Stripe → Developers → API keys: `STRIPE_SECRET_KEY` ve `STRIPE_PUBLISHABLE_KEY` değerlerini `.env`'e ve Render → Environment'a ekleyin.
-2. `python manage.py setup_stripe` çalıştırın. 79$'lık aylık fiyatı, iptali dönem sonuna ayarlı müşteri portalını ve `https://sterragency.com/growth/stripe/webhook/` webhook'unu oluşturur; `STRIPE_PRICE_ID`, `STRIPE_PORTAL_CONFIG`, `STRIPE_WEBHOOK_SECRET` değerlerini yazdırır. Bunları da ekleyin.
-3. Stripe → Settings → Payment methods: kart, Apple Pay ve Google Pay açık olsun.
+1. `STRIPE_SECRET_KEY` ve `STRIPE_PUBLISHABLE_KEY` → `.env` ve Render → Environment.
+2. `python manage.py setup_stripe`: `https://sterragency.com/growth/stripe/webhook/` webhook'unu oluşturur ya da mevcut olanın olaylarını günceller (`checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`). Yeni oluşturursa `STRIPE_WEBHOOK_SECRET` yazdırır.
+3. Stripe → Settings → Payment methods: kart, Apple Pay, Google Pay açık olsun.
 
 ## Yayına alma (Render)
 

@@ -1,0 +1,53 @@
+<section class="section section--line" id="start">
+  <div class="container">
+    <div class="section-head reveal"><p class="eyebrow">{{ gu.eyebrow }}</p><h2 class="h2">{{ gu.packages_title.0 }}<span class="serif">{{ gu.packages_title.1 }}</span></h2><p class="lede">{{ gu.packages_lead }}</p></div>
+    <form class="order reveal" method="post" action="{% url 'growth:order' %}" novalidate data-growth-form data-form-id="{{ platform }}_followers" data-platform="{{ platform_name }}" data-payments="{% if payments %}on{% else %}off{% endif %}"{% if form.errors %} data-form-errors="{{ form.errors.keys|join:',' }}"{% endif %}>
+      {% csrf_token %}
+      <input type="hidden" name="lang" value="{{ code }}">
+      <input type="hidden" name="page" value="{{ page }}">
+      <input type="hidden" name="platform" value="{{ platform }}">
+      <input type="hidden" name="source_page" value="">
+      <input type="hidden" name="utm_source"><input type="hidden" name="utm_medium"><input type="hidden" name="utm_campaign"><input type="hidden" name="gclid">
+      <fieldset class="pkgs">
+        <legend class="sr-only">{{ gu.packages_title.0 }}</legend>
+        {% for pk in packages %}
+        <label class="pkg{% if pk.popular %} pkg--popular{% endif %}">
+          <input type="radio" name="package" value="{{ pk.key }}" data-price="{{ pk.value }}" data-amount="{{ pk.amount }}" data-followers="{{ pk.followers }}"{% if pk.key == selected_package %} checked{% endif %}>
+          {% if pk.popular %}<span class="pkg__badge">{{ gu.popular }}</span>{% endif %}
+          <span class="pkg__count">{{ pk.count }}</span>
+          <span class="pkg__unit">{{ platform_name }} {{ gu.followers }}</span>
+          <span class="pkg__price">{{ pk.amount }} <small>{{ gu.one_time }}</small></span>
+          <span class="pkg__meta">{{ pk.per_1k }} {{ gu.per_1k }}</span>
+          <span class="pkg__days">{% include "partials/icons/check.svg" %}{{ pk.delivery }}</span>
+        </label>
+        {% endfor %}
+      </fieldset>
+      {% if form.package.errors %}<div class="form-alert">{{ form.package.errors|join:" " }}</div>{% endif %}
+      <div class="order__grid">
+        <div class="order__aside">
+          <h3 class="h3">{{ gu.form_title }}</h3>
+          <ul class="check mt-s">{% for t in gu.trust %}<li>{% include "partials/icons/check.svg" %}<span>{{ t }}</span></li>{% endfor %}</ul>
+          <p class="muted mt-s" style="font-size:14px">{{ gu.policy }}</p>
+        </div>
+        <div class="form-card">
+          <div class="hp" aria-hidden="true">{{ form.fax }}</div>
+          {% if canceled %}<div class="form-alert">{{ gu.canceled }}</div>{% endif %}
+          {% if form.non_field_errors %}<div class="form-alert">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+          <div class="field">{{ form.handle.label_tag }}{{ form.handle }}{{ form.handle.errors }}</div>
+          <div class="field">{{ form.location.label_tag }}{{ form.location }}{{ form.location.errors }}</div>
+          {% if form.email %}
+          <div class="field">{{ form.email.label_tag }}{{ form.email }}{{ form.email.errors }}</div>
+          <div class="field">{{ form.password.label_tag }}{{ form.password }}<small class="field__help">{{ gu.f_password_help }}</small>{{ form.password.errors }}</div>
+          {% else %}
+          <p class="muted signed-in">{{ signed_in }} · <a href="{{ account_url }}">{{ account_nav }}</a></p>
+          {% endif %}
+          <label class="consent">{{ form.consent }}<span>{{ form.consent.label }} <a href="{% url 'core:terms' %}" hreflang="tr" target="_blank" rel="noopener" aria-label="Terms">↗</a></span></label>
+          {{ form.consent.errors }}
+          <button class="btn btn--signal btn--lg mt-s" type="submit" style="width:100%">{% if payments %}{{ gu.submit }}{% else %}{{ gu.submit_request }}{% endif %} · <span data-order-amount>{% for pk in packages %}{% if pk.key == selected_package %}{{ pk.amount }}{% endif %}{% endfor %}</span></button>
+          <p class="muted mt-s" style="font-size:13.5px">{% if payments %}{{ gu.secure_note }}{% else %}{{ gu.request_note }}{% endif %}</p>
+          {% if not user.is_authenticated %}<p class="muted" style="font-size:13.5px">{{ gu.have_account }} <a href="{% url 'growth:login' %}?lang={{ code }}&amp;next={{ request.path|urlencode }}%23start">{{ gu.login_title }}</a></p>{% endif %}
+        </div>
+      </div>
+    </form>
+  </div>
+</section>

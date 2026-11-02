@@ -104,7 +104,7 @@ class PageTests(TestCase):
         self.assertIn(f'href="{page_path("de", "guide:sosyal-medya-ajans-sozlesmesi")}" hreflang="de"', html)
 
     def test_sitemap_has_intl_pages(self):
-        body = self.client.get("/sitemap.xml").content.decode()
+        body = self.client.get("/sitemaps/agency.xml").content.decode()
         self.assertIn(f"{page_path('ar', 'guide:sosyal-medya-ajans-sozlesmesi')}</loc>", body)
 
 

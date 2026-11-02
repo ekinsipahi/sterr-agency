@@ -1,12 +1,14 @@
 import logging
 
 from django.conf import settings
+from django.contrib.auth import authenticate, get_user_model, login
 from django.core import signing
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
@@ -15,28 +17,35 @@ from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
 from . import billing
-from .content import CONTENT, PAGES, PLATFORM_NAMES, PLATFORMS, alternates, lang_links, page_path
-from .forms import GrowthForm
-from .models import GrowthSubscription, StripeEvent
-from .notifications import acknowledge_request, confirm_cancellation, notify_team, send_manage_link, welcome_customer
+from .content import ACCOUNT_NAV, CONTENT, CREATOR_PAGES, CREATORS, GUIDES, UI, PAGES, PLATFORM_NAMES, PLATFORMS, alternates, creator_alternates, creator_path, lang_links, page_path, ui_for
+from .forms import OrderForm
+from .models import Customer, FollowerOrder, StripeEvent
+from .notifications import acknowledge_request, confirm_payment, notify_team, send_verification
+from .packages import DEFAULT_PACKAGE, PACKAGE_BY_KEY, count, for_page
 
 logger = logging.getLogger(__name__)
 
-TEMPLATES = {"main": "growth/main.html", "geo": "growth/main.html", "pricing": "growth/pricing.html",
-             "guide_buy": "growth/guide.html", "guide_speed": "growth/guide.html"}
 RATE_LIMIT, RATE_WINDOW = 8, 60 * 60
-MANAGE_SALT = "growth-manage"
-MANAGE_MAX_AGE = 60 * 60
-# Links inside our emails (cancel / manage). Signed, tied to one Stripe customer and
-# subscription, no expiry: they must keep working for the life of the subscription.
-ACCOUNT_SALT = "growth-account"
+VERIFY_SALT = "growth-verify"
+VERIFY_MAX_AGE = 7 * 24 * 60 * 60
 
 
-def account_link(sub, action):
-    """Direct link to the Stripe portal for this subscription; action 'cancel' opens the cancel screen."""
-    token = signing.dumps({"c": sub.stripe_customer_id, "s": sub.stripe_subscription_id, "l": sub.lang, "a": action},
-                          salt=ACCOUNT_SALT, compress=True)
-    return settings.SITE_URL + reverse("growth:account", args=[token])
+def shell(code):
+    """The site chrome for a language: Turkish root site or the 15-language agency shell."""
+    if code == "tr":
+        ctx = {"base_template": "base.html"}
+    else:
+        from apps.intl.views import _base_context  # nav, footer, consent
+
+        ctx = _base_context(code, "home")
+        ctx["base_template"] = "intl/base.html"
+    ctx.update(code=code, current_lang=LANG_BY_CODE[code])
+    return ctx
+
+
+def verify_link(user, order=None):
+    token = signing.dumps({"u": user.pk, "e": user.email, "o": order.pk if order else None}, salt=VERIFY_SALT)
+    return settings.SITE_URL + reverse("growth:verify", args=[token])
 
 
 def _valid_page(code, page, platform):
@@ -48,51 +57,95 @@ def _platform(value):
     return value if value in PLATFORMS else "instagram"
 
 
-def _context(code, page, platform="instagram", form=None):
-    g = CONTENT[platform][code]
-    ui = g["ui"]
+def _context(request, code, page, platform="instagram", form=None):
+    data = CONTENT[platform][code]
+    gu = ui_for(code, platform)
     kind, _, geo = page.partition(":")
-    if code == "tr":
-        ctx = {"base_template": "base.html"}
-    else:
-        from apps.intl.views import _base_context  # the 15-language agency shell: nav, footer, consent
-        ctx = _base_context(code, "home")
-        ctx["base_template"] = "intl/base.html"
-    if kind in ("main", "geo"):
-        p = dict(g["main"])
-        if kind == "geo":
-            p.update(g["geo"][geo])
-    else:
-        p = g[kind]
+    p = dict(data["main"])
+    if kind == "geo":
+        p.update(data["geo"][geo])
+    elif kind != "main":
+        p = data[kind]
+    pack = kind[5:] if kind.startswith("pack_") else None
+    selected = (form.data.get("package") if form is not None and form.is_bound else None) or pack or DEFAULT_PACKAGE
+    other = [q for q in PLATFORMS if q != platform and code in CONTENT[q]]
+    ctx = shell(code)
     ctx.update({
-        "code": code, "page": page, "kind": kind, "g": g, "gu": ui, "p": p,
+        "page": page, "kind": kind, "g": data, "gu": gu, "p": p,
         "platform": platform, "platform_name": PLATFORM_NAMES[platform], "followers_active": True,
         "faqs": p.get("faqs"),
-        "form": form or GrowthForm(ui=ui, initial={"location": p.get("place", "")}),
-        "current_lang": LANG_BY_CODE[code],
+        "packages": [{**pk, "delivery": gu["delivery"].replace("{min}", str(pk["days"][0])).replace("{max}", str(pk["days"][1]))}
+                     for pk in for_page(code)],
+        "selected_package": selected if selected in PACKAGE_BY_KEY else DEFAULT_PACKAGE,
+        "page_package": next((pk for pk in for_page(code) if pk["key"] == pack), None),
+        "form": form or OrderForm(ui=gu, user=request.user, initial={"location": p.get("place", "")}),
         "lang_links": lang_links(page, platform),
         "alternates": alternates(page, platform),
         "canonical_url": settings.SITE_URL + page_path(code, page, platform),
-        "key": f"growth_{kind}",
-        "gurls": {k: page_path(code, k, platform) for k in PAGES},
-        "geo_links": [(v["place"], page_path(code, f"geo:{k}", platform)) for k, v in g.get("geo", {}).items()],
-        "price_usd": settings.GROWTH_PRICE_USD,
+        "hub": [{"key": k, "url": page_path(code, k, platform), "p": data[k]} for k in PAGES if k != kind],
+        "other_platform": [{"name": PLATFORM_NAMES[q], "url": page_path(code, "main", q), "p": CONTENT[q][code]["main"],
+                            "label": ui_for(code, q)["other_platform"]} for q in other],
+        "creators_link": {"url": creator_path(code, "main"), "p": CREATORS[code]["main"], "label": CREATORS[code]["nav"]} if code in CREATORS else None,
+        "blocks": [(gu["engagement_title"], gu["engagement_text"]), (gu["instant_title"], gu["instant_text"]),
+                   (gu["bots_title"], gu["bots_text"])],
+        "signed_in": gu["signed_in_as"].replace("{email}", request.user.email) if request.user.is_authenticated else "",
+        "account_nav": ACCOUNT_NAV.get(code, ACCOUNT_NAV["en"]),
+        "geo_links": [(v["place"], page_path(code, f"geo:{k}", platform)) for k, v in data.get("geo", {}).items()],
+        "is_guide": kind in GUIDES,
         "payments": billing.enabled(),
         "nav_cta_href": "#start",
-        "nav_cta_label": ui["cta"],
-        "canceled": False,
+        "nav_cta_label": gu["nav_cta"],
+        "account_url": f"{reverse('growth:account')}?lang={code}",
+        "canceled": request.GET.get("canceled") == "1",
     })
     return ctx
 
 
 def page(request, lang, page, platform="instagram"):
-    ctx = _context(lang, page, platform)
-    ctx["canceled"] = request.GET.get("canceled") == "1"
-    return render(request, TEMPLATES[ctx["kind"]], ctx)
+    return render(request, "growth/page.html", _context(request, lang, page, platform))
+
+
+def creators(request, lang, page):
+    """The 'influencer agency for creators' hub and its guides."""
+    data = CREATORS[lang]
+    p = data[page]
+    gu = ui_for(lang, "instagram")
+    ctx = shell(lang)
+    ctx.update({
+        "page": page, "kind": page, "p": p, "g": data, "gu": gu, "faqs": p.get("faqs"), "is_guide": page != "main",
+        "followers_active": True,
+        "lang_links": [(lang_obj, creator_path(lang_obj.code, page)) for lang_obj in LANG_BY_CODE.values() if lang_obj.code in CREATORS],
+        "alternates": creator_alternates(page),
+        "canonical_url": settings.SITE_URL + creator_path(lang, page),
+        "platform_links": [{"name": PLATFORM_NAMES[q], "label": ui_for(lang, q)["see_packages"], "url": page_path(lang, "main", q),
+                            "agency_url": page_path(lang, "agency", q), "agency": CONTENT[q][lang]["agency"]}
+                           for q in PLATFORMS if lang in CONTENT[q]],
+        "hub": [{"url": creator_path(lang, k), "p": data[k]} for k in CREATOR_PAGES if k != page],
+        "blocks": [(gu["bots_title"], UI[lang]["bots_text"].replace("{platform}", "Instagram / TikTok"))],
+        "nav_cta_href": page_path(lang, "main", "instagram") + "#start" if lang in CONTENT["instagram"] else "#",
+        "nav_cta_label": gu["nav_cta"],
+    })
+    return render(request, "growth/creators.html", ctx)
+
+
+def start_checkout(order, cancel_path):
+    """Create the Stripe Checkout session for a pending order and return its URL."""
+    query = f"?lang={order.lang}&platform={order.platform}&order={order.pk}"
+    success_url = f"{settings.SITE_URL}{reverse('growth:success')}{query}&session_id={{CHECKOUT_SESSION_ID}}"
+    session = billing.create_checkout(order, success_url, settings.SITE_URL + cancel_path)
+    order.stripe_checkout_session_id = session.id
+    order.save(update_fields=["stripe_checkout_session_id", "updated_at"])
+    return session.url
+
+
+def see_other(url):
+    response = redirect(url)
+    response.status_code = 303
+    return response
 
 
 @require_POST
-def checkout(request):
+def order(request):
     platform = _platform(request.POST.get("platform"))
     code = request.POST.get("lang")
     if code not in CONTENT[platform]:
@@ -100,213 +153,162 @@ def checkout(request):
     page_key = request.POST.get("page", "main")
     if not _valid_page(code, page_key, platform):
         page_key = "main"
-    ui = CONTENT[platform][code]["ui"]
-    form = GrowthForm(request.POST, ui=ui)
+    gu = ui_for(code, platform)
+    form = OrderForm(request.POST, ui=gu, user=request.user)
     if form.is_spam():
-        return redirect(f"{reverse('growth:success')}?lang={code}&platform={platform}&pending=1")
+        return redirect(f"{reverse('growth:success')}?lang={code}&platform={platform}")
     ip = _client_ip(request)
     rate_key = f"growth-rate:{ip}"
     if cache.get(rate_key, 0) >= RATE_LIMIT:
-        form.add_error(None, ui["err_rate"])
+        form.add_error(None, gu["err_rate"])
+
+    user, signed_up = request.user, False
+    if not form.errors and form.is_valid() and not user.is_authenticated:
+        email, password = form.cleaned_data["email"], form.cleaned_data["password"]
+        User = get_user_model()
+        if User.objects.filter(username=email).exists():
+            user = authenticate(request, username=email, password=password)
+            if user is None:
+                form.add_error("password", gu["err_login"])
+        else:
+            user = User.objects.create_user(username=email, email=email, password=password)
+            Customer.objects.create(user=user, lang=code)
+            signed_up = True
     if form.errors or not form.is_valid():
-        ctx = _context(code, page_key, platform, form=form)
-        return render(request, TEMPLATES[ctx["kind"]], ctx, status=400)
+        return render(request, "growth/page.html", _context(request, code, page_key, platform, form=form), status=400)
     cache.set(rate_key, cache.get(rate_key, 0) + 1, RATE_WINDOW)
+    if not request.user.is_authenticated:
+        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+    if signed_up:
+        request.session["growth_signup"] = {"method": "email", "language": code}
+    customer, _ = Customer.objects.get_or_create(user=user, defaults={"lang": code})
 
     d = form.cleaned_data
-    sub = GrowthSubscription.objects.create(
-        email=d["email"].lower(), instagram=d["instagram"], platform=platform, location=d["location"], lang=code, ip=ip,
+    package = PACKAGE_BY_KEY[d["package"]]
+    order = FollowerOrder.objects.create(
+        user=user, email=user.email, platform=platform, handle=d["handle"], location=d["location"],
+        package=package["key"], followers=package["followers"], amount=package["price"], lang=code, ip=ip,
         source_page=request.POST.get("source_page", "")[:300],
         **{f: request.POST.get(f, "")[:150] for f in ("utm_source", "utm_medium", "utm_campaign", "gclid")},
     )
     if billing.enabled():
-        success_url = f"{settings.SITE_URL}{reverse('growth:success')}?lang={code}&platform={platform}&session_id={{CHECKOUT_SESSION_ID}}"
-        cancel_url = f"{settings.SITE_URL}{page_path(code, page_key, platform)}?canceled=1#start"
+        if settings.GROWTH_VERIFY_EMAIL and not customer.email_verified:
+            # A confirmed email before the first payment keeps card-testing scripts out.
+            send_verification(user.email, verify_link(user, order), order)
+            return redirect(f"{reverse('growth:account')}?lang={code}&verify=sent")
         try:
-            session = billing.create_checkout(sub, success_url, cancel_url)
+            return see_other(start_checkout(order, f"{page_path(code, page_key, platform)}?canceled=1#start"))
         except Exception:
-            logger.exception("Stripe checkout failed for growth #%s", sub.pk)
-            form.add_error(None, ui["err_payment"])
-            ctx = _context(code, page_key, platform, form=form)
-            return render(request, TEMPLATES[ctx["kind"]], ctx, status=502)
-        sub.stripe_checkout_session_id = session.id
-        sub.save(update_fields=["stripe_checkout_session_id"])
-        response = redirect(session.url)
-        response.status_code = 303
-        return response
+            logger.exception("Stripe checkout failed for order #%s", order.pk)
+            form.add_error(None, gu["err_payment"])
+            return render(request, "growth/page.html", _context(request, code, page_key, platform, form=form), status=502)
 
     # Payments off: a request. Team email via Resend, English auto-reply to the customer.
-    team = notify_team(sub, "request")
-    customer = acknowledge_request(sub)
-    sub.notified = bool(team)
-    sub.mail_error = "\n".join(f"{who}: {r.error}" for who, r in (("Ekip", team), ("Müşteri", customer)) if not r)
-    sub.save(update_fields=["notified", "mail_error"])
+    order.status = "requested"
+    team = notify_team(order, "request")
+    customer_mail = acknowledge_request(order)
+    order.notified = bool(team)
+    order.mail_error = "\n".join(f"{who}: {r.error}" for who, r in (("Ekip", team), ("Müşteri", customer_mail)) if not r)
+    order.save(update_fields=["status", "notified", "mail_error", "updated_at"])
     request.session["growth_lead"] = {
-        "lead_id": f"{platform[:2]}-{sub.pk}", "form_id": f"{platform}_growth", "language": code,
-        "value": settings.GROWTH_PRICE_USD, "currency": "USD", "lead_location": sub.location[:40],
-        "user_data": hashed_user_data(sub.email, ""),
+        "lead_id": f"{platform[:2]}-{order.pk}", "form_id": f"{platform}_followers", "language": code,
+        "value": float(order.amount), "currency": "USD", "package": order.package, "lead_location": order.location[:40],
+        "user_data": hashed_user_data(order.email, ""),
     }
-    return redirect(f"{reverse('growth:success')}?lang={code}&platform={platform}&pending=1")
+    return redirect(f"{reverse('growth:success')}?lang={code}&platform={platform}&order={order.pk}")
+
+
+def mark_paid(order_id, payment_intent=""):
+    """Pending/requested -> paid, once; sends the receipt and the team note on that transition."""
+    with transaction.atomic():
+        order = FollowerOrder.objects.select_for_update().filter(pk=order_id).first()
+        if order is None or order.status not in ("pending", "requested"):
+            return order
+        order.status, order.paid_at = "paid", timezone.now()
+        order.stripe_payment_intent_id = payment_intent or order.stripe_payment_intent_id
+        order.save()
+    if order.user_id:
+        Customer.objects.filter(user_id=order.user_id).update(email_verified=True)  # paid through the emailed link
+    team, receipt = notify_team(order, "paid"), confirm_payment(order)
+    order.notified = bool(team)
+    order.mail_error = "\n".join(f"{who}: {r.error}" for who, r in (("Ekip", team), ("Müşteri", receipt)) if not r)
+    order.save(update_fields=["notified", "mail_error", "updated_at"])
+    return order
 
 
 def success(request):
     platform = _platform(request.GET.get("platform"))
     code = request.GET.get("lang")
     code = code if code in CONTENT[platform] else "en"
-    ctx = _context(code, "main", platform)
+    ctx = _context(request, code, "main", platform)
     ctx["robots"] = "noindex, nofollow"
-    handle, purchase = "", None
+    order, purchase = None, None
+    order_id = request.GET.get("order", "")
     session_id = request.GET.get("session_id", "")
-    if session_id and billing.enabled():
+    if order_id.isdigit() and request.user.is_authenticated:
+        order = FollowerOrder.objects.filter(pk=int(order_id), user=request.user).first()
+    if order is not None and session_id and billing.enabled() and session_id == order.stripe_checkout_session_id:
         try:
             session = billing.retrieve_checkout(session_id)
         except Exception:
             logger.exception("Could not retrieve checkout session")
             session = None
-        if session is not None and session.status == "complete":
-            sub = GrowthSubscription.objects.filter(pk=session.client_reference_id).first()
-            handle = sub.instagram if sub else ""
+        if session is not None and session.status == "complete" and session.payment_status == "paid":
+            order = mark_paid(order.pk, session.payment_intent or "")
             seen = request.session.get("growth_purchases", [])
             if session_id not in seen:
                 purchase = {
-                    "transaction_id": session.id, "value": settings.GROWTH_PRICE_USD, "currency": "USD",
-                    "items": [{"item_id": f"{platform}_growth", "item_name": f"Organic {PLATFORM_NAMES[platform]} Growth",
-                               "price": settings.GROWTH_PRICE_USD, "quantity": 1}],
-                    "language": code,
-                    "user_data": hashed_user_data(sub.email, "") if sub else {},
+                    "transaction_id": session.id, "value": float(order.amount), "currency": "USD", "language": code,
+                    "items": [{"item_id": f"{platform}_{order.package}", "item_name": f"{order.followers} {PLATFORM_NAMES[platform]} followers",
+                               "price": float(order.amount), "quantity": 1}],
+                    "user_data": hashed_user_data(order.email, ""),
                 }
                 request.session["growth_purchases"] = (seen + [session_id])[-10:]
-    ctx.update(handle=handle, pending=not handle, purchase_event=purchase,
-               lead_event=request.session.pop("growth_lead", None),
-               success_text=ctx["gu"]["success_text"].replace("{handle}", handle))
+    paid = order is not None and order.status in ("paid", "completed")
+    text = ""
+    if order is not None:
+        low, high = order.days
+        text = (ctx["gu"]["success_text"] if paid else ctx["gu"]["pending_text"])
+        text = text.replace("{followers}", count(order.followers, code))
+        text = text.replace("{handle}", order.handle).replace("{min}", str(low)).replace("{max}", str(high))
+    ctx.update(order=order, paid=paid, success_text=text, purchase_event=purchase,
+               lead_event=request.session.pop("growth_lead", None), signup_event=request.session.pop("growth_signup", None))
     return render(request, "growth/success.html", ctx)
-
-
-def manage(request):
-    code = request.GET.get("lang") or request.POST.get("lang")
-    code = code if code in CONTENT["instagram"] else "en"
-    ctx = _context(code, "main")
-    ctx["robots"] = "noindex, nofollow"
-    status = "expired" if request.GET.get("expired") else ""
-    if request.method == "POST":
-        email = (request.POST.get("email") or "").strip().lower()
-        ip_key = f"growth-manage:{_client_ip(request)}"
-        if cache.get(ip_key, 0) < 5 and "@" in email:
-            cache.set(ip_key, cache.get(ip_key, 0) + 1, RATE_WINDOW)
-            sub = GrowthSubscription.objects.filter(email__iexact=email).exclude(stripe_customer_id="").first()
-            if sub and billing.enabled():
-                token = signing.dumps({"c": sub.stripe_customer_id, "l": code}, salt=MANAGE_SALT)
-                send_manage_link(email, settings.SITE_URL + reverse("growth:portal", args=[token]))
-        status = "sent"  # same answer whether or not the email exists
-    ctx["manage_status"] = status
-    return render(request, "growth/manage.html", ctx)
-
-
-def portal(request, token):
-    try:
-        data = signing.loads(token, salt=MANAGE_SALT, max_age=MANAGE_MAX_AGE)
-    except signing.BadSignature:
-        return redirect(f"{reverse('growth:manage')}?expired=1")
-    code = data.get("l") if data.get("l") in CONTENT["instagram"] else "en"
-    if not billing.enabled():
-        return redirect(f"{reverse('growth:manage')}?lang={code}&expired=1")
-    return redirect(billing.portal_url(data["c"], settings.SITE_URL + page_path(code, "main")))
-
-
-def account(request, token):
-    try:
-        data = signing.loads(token, salt=ACCOUNT_SALT)
-    except signing.BadSignature:
-        return redirect(f"{reverse('growth:manage')}?expired=1")
-    code = data.get("l") if data.get("l") in CONTENT["instagram"] else "en"
-    if not billing.enabled() or not data.get("c"):
-        return redirect(f"{reverse('growth:manage')}?lang={code}&expired=1")
-    cancel = data.get("s") if data.get("a") == "cancel" else None
-    return redirect(billing.portal_url(data["c"], settings.SITE_URL + page_path(code, "main"), cancel_subscription=cancel))
 
 
 # --- Stripe webhooks --------------------------------------------------------------
 
-STATUS_MAP = {"active": "active", "trialing": "active", "past_due": "past_due", "unpaid": "past_due",
-              "canceled": "canceled", "incomplete_expired": "canceled", "incomplete": "pending", "paused": "past_due"}
+def _order_id(obj):
+    ref = obj.get("client_reference_id") or (obj.get("metadata") or {}).get("order_id")
+    return int(ref) if ref and str(ref).isdigit() else None
 
 
-def _find(growth_id=None, subscription_id=None, customer_id=None):
-    if growth_id and str(growth_id).isdigit():
-        sub = GrowthSubscription.objects.filter(pk=int(growth_id)).first()
-        if sub:
-            return sub
-    if subscription_id:
-        sub = GrowthSubscription.objects.filter(stripe_subscription_id=subscription_id).first()
-        if sub:
-            return sub
-    if customer_id:
-        return GrowthSubscription.objects.filter(stripe_customer_id=customer_id).order_by("-created_at").first()
-    return None
-
-
-def _on_checkout_completed(obj):
-    sub = _find(obj.get("client_reference_id") or (obj.get("metadata") or {}).get("growth_id"))
-    if sub is None:
-        logger.warning("Checkout %s without a matching growth subscription", obj.get("id"))
+def _on_checkout_paid(obj):
+    if obj.get("mode") != "payment" or obj.get("payment_status") != "paid":
         return
-    sub.stripe_customer_id = obj.get("customer") or sub.stripe_customer_id
-    sub.stripe_subscription_id = obj.get("subscription") or sub.stripe_subscription_id
-    if obj.get("payment_status") in ("paid", "no_payment_required"):
-        sub.status = "active"
-    sub.save()
-    if not sub.welcomed:
-        sub.welcomed = bool(welcome_customer(sub, account_link(sub, "cancel")))
-        sub.save(update_fields=["welcomed"])
-        notify_team(sub, "started")
-
-
-def _on_subscription_changed(obj):
-    sub = _find((obj.get("metadata") or {}).get("growth_id"), obj.get("id"), obj.get("customer"))
-    if sub is None:
+    order_id = _order_id(obj)
+    if order_id is None:
+        logger.warning("Checkout %s without an order id", obj.get("id"))
         return
-    was_canceling = sub.cancel_at_period_end
-    sub.stripe_subscription_id = obj.get("id") or sub.stripe_subscription_id
-    sub.stripe_customer_id = obj.get("customer") or sub.stripe_customer_id
-    sub.status = STATUS_MAP.get(obj.get("status"), sub.status)
-    sub.cancel_at_period_end = bool(obj.get("cancel_at_period_end") or obj.get("cancel_at"))
-    sub.current_period_end = billing.period_end(obj) or sub.current_period_end
-    sub.save()
-    if sub.cancel_at_period_end and not was_canceling and sub.status != "canceled":
-        notify_team(sub, "cancel_scheduled")
-        confirm_cancellation(sub, account_link(sub, "portal"))
+    mark_paid(order_id, obj.get("payment_intent") or "")
 
 
-def _on_subscription_deleted(obj):
-    sub = _find((obj.get("metadata") or {}).get("growth_id"), obj.get("id"), obj.get("customer"))
-    if sub is None:
+def _on_refund(obj):
+    intent = obj.get("payment_intent")
+    order = FollowerOrder.objects.filter(stripe_payment_intent_id=intent).first() if intent else None
+    if order is None and (obj.get("metadata") or {}).get("order_id", "").isdigit():
+        order = FollowerOrder.objects.filter(pk=int(obj["metadata"]["order_id"])).first()
+    if order is None or order.status == "refunded":
         return
-    sub.status = "canceled"
-    sub.save(update_fields=["status", "updated_at"])
-    notify_team(sub, "canceled")
-
-
-def _on_invoice(obj, paid):
-    sub = _find(None, billing.invoice_subscription_id(obj), obj.get("customer"))
-    if sub is None:
-        return
-    if paid:
-        if sub.status in ("pending", "past_due"):
-            sub.status = "active"
-            sub.save(update_fields=["status", "updated_at"])
-    else:
-        sub.status = "past_due"
-        sub.save(update_fields=["status", "updated_at"])
-        notify_team(sub, "payment_failed")
+    order.status = "refunded"
+    order.save(update_fields=["status", "updated_at"])
+    notify_team(order, "refunded")
 
 
 HANDLERS = {
-    "checkout.session.completed": _on_checkout_completed,
-    "customer.subscription.created": _on_subscription_changed,
-    "customer.subscription.updated": _on_subscription_changed,
-    "customer.subscription.deleted": _on_subscription_deleted,
-    "invoice.paid": lambda obj: _on_invoice(obj, paid=True),
-    "invoice.payment_failed": lambda obj: _on_invoice(obj, paid=False),
+    "checkout.session.completed": _on_checkout_paid,
+    "checkout.session.async_payment_succeeded": _on_checkout_paid,
+    "charge.refunded": _on_refund,
 }
 
 

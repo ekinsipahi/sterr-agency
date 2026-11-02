@@ -1,0 +1,11 @@
+<section class="section section--line">
+  <div class="container">
+    <div class="section-head reveal"><h2 class="h2">{{ gu.hub_title.0 }}<span class="serif">{{ gu.hub_title.1 }}</span></h2></div>
+    <div class="grid grid-3 hub">
+      {% for item in hub %}<a class="card reveal" href="{{ item.url }}"><h3 class="h3">{{ item.p.h1.0 }}{{ item.p.h1.1 }}</h3><p>{{ item.p.lede|truncatewords:16 }}</p><span class="card__foot link-arrow">{{ gu.read_more }} {% include "partials/icons/arrow.svg" %}</span></a>{% endfor %}
+      {% for o in other_platform %}<a class="card reveal" href="{{ o.url }}"><span class="card__num">{{ o.name }}</span><h3 class="h3">{{ o.p.h1.0 }}{{ o.p.h1.1 }}</h3><p>{{ o.p.lede|truncatewords:16 }}</p><span class="card__foot link-arrow">{{ o.label }} {% include "partials/icons/arrow.svg" %}</span></a>{% endfor %}
+      {% if creators_link %}<a class="card reveal" href="{{ creators_link.url }}"><span class="card__num">{{ creators_link.label }}</span><h3 class="h3">{{ creators_link.p.h1.0 }}{{ creators_link.p.h1.1 }}</h3><p>{{ creators_link.p.lede|truncatewords:16 }}</p><span class="card__foot link-arrow">{{ gu.read_more }} {% include "partials/icons/arrow.svg" %}</span></a>{% endif %}
+    </div>
+    {% if geo_links %}<div class="chips mt-m reveal">{% for place, url in geo_links %}<a class="chip" href="{{ url }}">{{ place }}</a>{% endfor %}</div>{% endif %}
+  </div>
+</section>
