@@ -36,6 +36,7 @@
           <div class="field">{{ form.handle.label_tag }}{{ form.handle }}{{ form.handle.errors }}</div>
           <div class="field">{{ form.location.label_tag }}{{ form.location }}{{ form.location.errors }}</div>
           {% if form.email %}
+          {% include "growth/_google.html" with google_next=request.path|add:"#start" %}
           <div class="field">{{ form.email.label_tag }}{{ form.email }}{{ form.email.errors }}</div>
           <div class="field">{{ form.password.label_tag }}{{ form.password }}<small class="field__help">{{ gu.f_password_help }}</small>{{ form.password.errors }}</div>
           {% else %}

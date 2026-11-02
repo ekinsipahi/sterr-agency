@@ -96,6 +96,7 @@ def _context(request, code, page, platform="instagram", form=None):
         "nav_cta_href": "#start",
         "nav_cta_label": gu["nav_cta"],
         "account_url": f"{reverse('growth:account')}?lang={code}",
+        "google": bool(settings.GOOGLE_OAUTH_CLIENT_ID and settings.GOOGLE_OAUTH_CLIENT_SECRET),
         "canceled": request.GET.get("canceled") == "1",
     })
     return ctx

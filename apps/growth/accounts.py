@@ -1,6 +1,10 @@
 """Customer accounts: email + password, the order list, email confirmation and password
 reset. Pages follow the visitor's language (?lang=, then the session); emails are English."""
 import logging
+import secrets
+from urllib.parse import urlencode
+
+import requests
 
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
@@ -55,6 +59,7 @@ def _ctx(request, code, mode, **extra):
         "lang_links": [], "alternates": [],
         "order_links": [{"name": PLATFORM_NAMES[p], "url": page_path(code, "main", p) + "#start"} for p in PLATFORMS if code in CONTENT[p]],
         "nav_cta_href": "#", "nav_cta_label": gu["nav_cta"],
+        "google": google_enabled(), "google_failed": request.GET.get("google") == "failed",
     })
     if ctx["order_links"]:
         ctx["nav_cta_href"] = ctx["order_links"][0]["url"]
@@ -264,3 +269,64 @@ def reset_confirm(request, uidb64, token):
         login(request, user, backend="django.contrib.auth.backends.ModelBackend")
         return redirect(f"{reverse('growth:account')}?lang={code}&reset=1")
     return render(request, "growth/account.html", _ctx(request, code, "reset_confirm", form=form))
+
+
+# --- Sign in with Google (OpenID Connect, authorization code flow) -----------------
+
+GOOGLE_AUTH = "https://accounts.google.com/o/oauth2/v2/auth"
+GOOGLE_TOKEN = "https://oauth2.googleapis.com/token"
+GOOGLE_USERINFO = "https://openidconnect.googleapis.com/v1/userinfo"
+
+
+def google_enabled():
+    return bool(settings.GOOGLE_OAUTH_CLIENT_ID and settings.GOOGLE_OAUTH_CLIENT_SECRET)
+
+
+def _google_redirect_uri(request):
+    return request.build_absolute_uri(reverse("growth:google_complete"))
+
+
+def google_start(request):
+    code = _lang(request)
+    if not google_enabled():
+        return redirect(f"{reverse('growth:login')}?lang={code}")
+    state = secrets.token_urlsafe(24)
+    request.session["google_oauth"] = {"state": state, "next": _next(request, code), "lang": code}
+    params = {"client_id": settings.GOOGLE_OAUTH_CLIENT_ID, "redirect_uri": _google_redirect_uri(request),
+              "response_type": "code", "scope": "openid email profile", "state": state, "prompt": "select_account"}
+    return redirect(f"{GOOGLE_AUTH}?{urlencode(params)}")
+
+
+def google_complete(request):
+    flow = request.session.pop("google_oauth", None) or {}
+    code = flow.get("lang") if flow.get("lang") in UI else _lang(request)
+    failed = f"{reverse('growth:login')}?lang={code}&google=failed"
+    if not flow or request.GET.get("state") != flow.get("state") or not request.GET.get("code"):
+        return redirect(failed)
+    try:
+        token = requests.post(GOOGLE_TOKEN, timeout=10, data={
+            "code": request.GET["code"], "client_id": settings.GOOGLE_OAUTH_CLIENT_ID,
+            "client_secret": settings.GOOGLE_OAUTH_CLIENT_SECRET, "redirect_uri": _google_redirect_uri(request),
+            "grant_type": "authorization_code"}).json()
+        info = requests.get(GOOGLE_USERINFO, timeout=10,
+                            headers={"Authorization": f"Bearer {token['access_token']}"}).json()
+    except (requests.RequestException, KeyError, ValueError):
+        logger.exception("Google sign-in failed")
+        return redirect(failed)
+    email = (info.get("email") or "").strip().lower()
+    if not email or not info.get("email_verified") or len(email) > 150:
+        return redirect(failed)
+    User = get_user_model()
+    user = User.objects.filter(username=email).first()
+    if user is None:
+        user = User.objects.create_user(username=email, email=email, password=None,
+                                        first_name=(info.get("given_name") or "")[:150], last_name=(info.get("family_name") or "")[:150])
+        request.session["growth_signup"] = {"method": "google", "language": code}
+    if not user.is_active:
+        return redirect(failed)
+    customer, _ = Customer.objects.get_or_create(user=user, defaults={"lang": code})
+    if not customer.email_verified:  # Google has verified the address
+        customer.email_verified = True
+        customer.save(update_fields=["email_verified"])
+    login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+    return redirect(flow.get("next") or f"{reverse('growth:account')}?lang={code}")

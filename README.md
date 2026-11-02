@@ -84,7 +84,8 @@ Gerçek kişilerden takipçi paketleri, iki platformda aynı fiyatlarla (`apps/g
 - Sipariş formunda e-posta + şifre: hesap yoksa açılır, varsa şifreyle giriş yapılır. `/account/` paneli siparişleri, durumu, ilerleme çubuğunu, teslim grafiğini ve tahmini bitiş aralığını gösterir. Şifre sıfırlama e-postayla.
 - `GROWTH_VERIFY_EMAIL=True` (varsayılan): ilk ödemeden önce e-posta onayı istenir (kart deneyen botlara karşı). Onay linki doğrudan Stripe ödemesine götürür.
 - Admin → **Takipçi siparişleri**: durum, teslim aralığı, "Tamamlandı olarak işaretle" (müşteriye e-posta gider). **Müşteri hesapları**, **Teslimat verileri**.
-- Veriler Supabase Postgres'te (`DATABASE_URL`, session pooler); Render'da disk kalıcı değil.
+- **Google ile giriş:** `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET` (Google Cloud → OAuth client, Web). Redirect URI: `https://sterragency.com/account/google/complete/`. Google'dan gelen e-posta onaylı sayılır; aynı e-postayla açılmış hesap varsa ona girer.
+- Veriler Supabase Postgres'te (`DATABASE_URL` ya da `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD`, session pooler); Render'da disk kalıcı değil. Testler her zaman SQLite'ta çalışır.
 
 **Teslimat uygulaması için API** (`GROWTH_API_TOKEN`, `Authorization: Bearer <token>`):
 - `GET /growth/api/orders/?status=paid`: teslim edilecek siparişler (id, platform, kullanıcı adı, konum, paket, teslim edilen).

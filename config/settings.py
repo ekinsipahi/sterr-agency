@@ -1,4 +1,5 @@
 """Sterr Agency — Django settings. Every secret/deploy value comes from .env."""
+import sys
 from pathlib import Path
 
 import environ
@@ -76,9 +77,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# Local: SQLite. Production (Render): DATABASE_URL to Postgres, e.g. Supabase's
-# "Session pooler" connection string (Render has no IPv6, so not the direct one).
-DATABASES = {"default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")}
+# Postgres on Supabase ("Session pooler", Render has no IPv6) from DATABASE_URL, or from
+# DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD as on dentaltourism.tr. Otherwise SQLite.
+# Tests always run on SQLite so they never create databases on Supabase.
+if "test" in sys.argv[1:2]:
+    DATABASES = {"default": env.db_url_config(f"sqlite:///{BASE_DIR / 'db.sqlite3'}")}
+elif env("DATABASE_URL", default=""):
+    DATABASES = {"default": env.db("DATABASE_URL")}
+elif env("DB_HOST", default=""):
+    DATABASES = {"default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env("DB_NAME", default="postgres"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT", default="5432"),
+    }}
+else:
+    DATABASES = {"default": env.db_url_config(f"sqlite:///{BASE_DIR / 'db.sqlite3'}")}
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)
 if DATABASES["default"]["ENGINE"].endswith("postgresql"):
     # Same as dentaltourism.tr: SSL to Supabase, no extra "SELECT 1" round trip per request.
@@ -161,6 +177,10 @@ GROWTH_PAYMENTS = env.bool("GROWTH_PAYMENTS", default=False)
 # A confirmed email before the first payment (keeps card-testing scripts out).
 GROWTH_VERIFY_EMAIL = env.bool("GROWTH_VERIFY_EMAIL", default=True)
 LOGIN_URL = "growth:login"
+# Sign in with Google (Google Cloud → OAuth client, Web application). Authorized redirect URI:
+# https://sterragency.com/account/google/complete/
+GOOGLE_OAUTH_CLIENT_ID = env("GOOGLE_OAUTH_CLIENT_ID", default="")
+GOOGLE_OAUTH_CLIENT_SECRET = env("GOOGLE_OAUTH_CLIENT_SECRET", default="")
 # Bearer token for the delivery system's API (/growth/api/...). Unset = API off.
 GROWTH_API_TOKEN = env("GROWTH_API_TOKEN", default="")
 

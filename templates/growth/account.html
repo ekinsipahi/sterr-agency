@@ -82,6 +82,8 @@
       {% if invalid %}<div class="form-alert">{{ gu.reset_invalid }}</div>{% endif %}
       {% if sent %}<div class="form-alert form-alert--ok">{{ gu.reset_sent }}</div>{% endif %}
       {% if form.non_field_errors %}<div class="form-alert">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+      {% if google_failed %}<div class="form-alert">{{ gu.google_failed }}</div>{% endif %}
+      {% if mode == "login" or mode == "signup" %}{% include "growth/_google.html" with google_next=next %}{% endif %}
       {% for field in form %}{% if field.name == "consent" %}
       <label class="consent">{{ field }}<span>{{ field.label }} <a href="{% url 'core:terms' %}" hreflang="tr" target="_blank" rel="noopener" aria-label="Terms">↗</a></span></label>{{ field.errors }}
       {% else %}

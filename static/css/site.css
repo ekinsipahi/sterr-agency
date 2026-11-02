@@ -564,3 +564,7 @@ html[lang="ru"] .nav-drop summary { padding: 8px 6px; font-size: 13.5px; }
 .price-strip__note { font-size: 13.5px; margin-top: 12px; max-width: 760px; }
 @media (max-width: 900px) { .price-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .price-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } .price-chip b { font-size: 19px; } }
+.google-btn { width: 100%; gap: 10px; }
+.google-btn svg { width: 20px; height: 20px; flex: none; }
+.or-line { display: flex; align-items: center; gap: 12px; color: var(--dim); font-size: 13px; margin: 18px 0; }
+.or-line::before, .or-line::after { content: ""; flex: 1; height: 1px; background: var(--line); }

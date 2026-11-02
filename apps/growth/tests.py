@@ -351,3 +351,46 @@ class AccountTests(TestCase):
         self.assertTrue(mail.outbox[0].subject.startswith("Confirm your email"))
         r = self.client.post(reverse("growth:signup") + "?lang=en", {"email": "new@example.com", "password": "pass-word-1", "consent": "on"})
         self.assertEqual(r.status_code, 400)
+
+
+@override_settings(GOOGLE_OAUTH_CLIENT_ID="cid.apps.googleusercontent.com", GOOGLE_OAUTH_CLIENT_SECRET="GOCSPX-x", **MAIL)
+class GoogleSignInTests(TestCase):
+    def start(self, next_url="/en/tiktok-followers/#start"):
+        r = self.client.get(reverse("growth:google") + "?lang=de&next=" + next_url.replace("#", "%23"))
+        self.assertTrue(r["Location"].startswith("https://accounts.google.com/o/oauth2/v2/auth?"))
+        self.assertIn("redirect_uri=http%3A%2F%2Ftestserver%2Faccount%2Fgoogle%2Fcomplete%2F", r["Location"])
+        return self.client.session["google_oauth"]["state"]
+
+    def complete(self, state, info):
+        token = mock.Mock(json=mock.Mock(return_value={"access_token": "at"}))
+        userinfo = mock.Mock(json=mock.Mock(return_value=info))
+        with mock.patch("apps.growth.accounts.requests.post", return_value=token), \
+             mock.patch("apps.growth.accounts.requests.get", return_value=userinfo):
+            return self.client.get(reverse("growth:google_complete") + f"?state={state}&code=abc")
+
+    def test_new_user_is_created_verified_and_sent_back(self):
+        state = self.start()
+        r = self.complete(state, {"email": "New@Gmail.com", "email_verified": True, "given_name": "Ada"})
+        self.assertEqual(r["Location"], "/en/tiktok-followers/#start")
+        user = get_user_model().objects.get(username="new@gmail.com")
+        self.assertFalse(user.has_usable_password())
+        self.assertTrue(user.customer.email_verified)
+        self.assertEqual(int(self.client.session["_auth_user_id"]), user.pk)
+
+    def test_existing_account_signs_in(self):
+        user = get_user_model().objects.create_user("me@gmail.com", "me@gmail.com", "pass-word-1")
+        self.complete(self.start(), {"email": "me@gmail.com", "email_verified": True})
+        self.assertEqual(int(self.client.session["_auth_user_id"]), user.pk)
+        self.assertTrue(get_user_model().objects.get().check_password("pass-word-1"))
+
+    def test_bad_state_or_unverified_email_fails(self):
+        self.start()
+        r = self.complete("wrong", {"email": "x@gmail.com", "email_verified": True})
+        self.assertIn("google=failed", r["Location"])
+        r = self.complete(self.start(), {"email": "x@gmail.com", "email_verified": False})
+        self.assertIn("google=failed", r["Location"])
+        self.assertFalse(get_user_model().objects.exists())
+
+    def test_button_shows_on_login_and_order_form(self):
+        self.assertContains(self.client.get(reverse("growth:login") + "?lang=en"), "Continue with Google")
+        self.assertContains(self.client.get(page_path("en", "main")), "Continue with Google")
