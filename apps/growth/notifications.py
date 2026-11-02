@@ -98,8 +98,9 @@ def _values(order):
 
 
 def notify_team(order, event):
-    """event: 'request' (payments off), 'paid', 'refunded'."""
-    titles = {"request": "Yeni {platform} takipçi başvurusu", "paid": "Yeni {platform} takipçi siparişi (ödendi)",
+    """event: 'pending' (order placed, on its way to payment), 'request' (payments off), 'paid', 'refunded'."""
+    titles = {"pending": "Yeni {platform} takipçi siparişi (ödeme bekleniyor)",
+              "request": "Yeni {platform} takipçi başvurusu", "paid": "Yeni {platform} takipçi siparişi (ödendi)",
               "refunded": "{platform} takipçi siparişi iade edildi"}
     title = titles[event].replace("{platform}", order.platform_name)
     start, end = order.delivery_window()
@@ -114,7 +115,8 @@ def notify_team(order, event):
         f"Kaynak: {order.source_page or '-'} {order.utm_source or ''}\n\n"
         f"Admin: {settings.SITE_URL}/admin/growth/followerorder/{order.pk}/change/\n"
     )
-    return _send(f"{title}: @{order.handle}", body, settings.LEAD_NOTIFY_EMAILS, reply_to=[order.email])
+    to = list(dict.fromkeys([*settings.LEAD_NOTIFY_EMAILS, *settings.GROWTH_NOTIFY_EMAILS]))
+    return _send(f"{title}: @{order.handle}", body, to, reply_to=[order.email])
 
 
 def acknowledge_request(order):

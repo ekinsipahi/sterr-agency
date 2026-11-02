@@ -164,6 +164,8 @@ else:
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Sterr Agency <noreply@sterragency.com>")
 # Who gets the "yeni lead geldi" email. Comma-separated for multiple recipients.
 LEAD_NOTIFY_EMAILS = env.list("LEAD_NOTIFY_EMAILS", default=[])
+# Follower orders always notify these as well (plus LEAD_NOTIFY_EMAILS).
+GROWTH_NOTIFY_EMAILS = env.list("GROWTH_NOTIFY_EMAILS", default=["ekinsipahi8@gmail.com"])
 
 # --- Stripe (one-time Instagram / TikTok follower packages) ------------------------
 # Prices live in apps/growth/packages.py (Checkout uses inline prices, no Stripe Price

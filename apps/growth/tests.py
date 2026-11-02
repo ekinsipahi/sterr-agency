@@ -20,7 +20,8 @@ from .packages import PACKAGES
 from .validate import check
 
 WEBHOOK_SECRET = "whsec_test"
-MAIL = dict(LEAD_NOTIFY_EMAILS=["owner@example.com"], EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+MAIL = dict(LEAD_NOTIFY_EMAILS=["owner@example.com"], GROWTH_NOTIFY_EMAILS=["ekinsipahi8@gmail.com"],
+            EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
 STRIPE_ON = dict(GROWTH_PAYMENTS=True, STRIPE_SECRET_KEY="sk_test_x", STRIPE_WEBHOOK_SECRET=WEBHOOK_SECRET, **MAIL)
 STRIPE_OFF = dict(GROWTH_PAYMENTS=False, STRIPE_SECRET_KEY="", **MAIL)
 CODES = {lang.code for lang in LANGS}
@@ -205,6 +206,9 @@ class CheckoutTests(FreshCache, TestCase):
         self.assertEqual((r.status_code, r["Location"]), (303, self.session.url))
         order = create.call_args.args[0]
         self.assertEqual((order.platform, order.followers), ("tiktok", 2000))
+        heads_up = [m for m in mail.outbox if "ödeme bekleniyor" in m.subject]
+        self.assertEqual(len(heads_up), 1)
+        self.assertIn("ekinsipahi8@gmail.com", heads_up[0].to)
 
     def test_stripe_down_shows_the_form_again(self):
         user = get_user_model().objects.create_user("me@example.com", "me@example.com", "pass-word-1")
@@ -289,6 +293,9 @@ class WebhookTests(TestCase):
         self.assertEqual((self.order.status, self.order.stripe_payment_intent_id), ("paid", "pi_9"))
         self.assertIsNotNone(self.order.paid_at)
         self.assertEqual(sum(m.subject.startswith("Payment received") for m in mail.outbox), 1)
+        team = [m for m in mail.outbox if "siparişi (ödendi)" in m.subject]
+        self.assertEqual(len(team), 1)
+        self.assertEqual(team[0].to, ["owner@example.com", "ekinsipahi8@gmail.com"])
         self.assertEqual(StripeEvent.objects.count(), 2)
 
     def test_unpaid_checkout_does_nothing(self):
