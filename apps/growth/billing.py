@@ -20,6 +20,12 @@ STRIPE_LOCALES = {"en": "en", "tr": "tr", "de": "de", "nl": "nl", "fr": "fr", "i
 PORTAL_TAG = "sterr-growth"  # metadata.app of the portal configuration setup_stripe creates
 
 
+def metadata(obj):
+    """An API object's metadata as a plain dict (StripeObject isn't a dict in stripe-python 15)."""
+    meta = getattr(obj, "metadata", None)
+    return meta.to_dict() if hasattr(meta, "to_dict") else dict(meta or {})
+
+
 def enabled():
     return bool(settings.GROWTH_PAYMENTS and settings.STRIPE_SECRET_KEY)
 
@@ -92,7 +98,7 @@ def portal_configuration():
         found = ""
         try:
             for conf in _client().v1.billing_portal.configurations.list(params={"active": True, "limit": 100}).data:
-                if (conf.metadata or {}).get("app") == PORTAL_TAG:
+                if metadata(conf).get("app") == PORTAL_TAG:
                     found = conf.id
                     break
         except stripe.StripeError:

@@ -304,6 +304,14 @@ class StripePriceTests(TestCase):
         self.assertEqual(params["line_items"], [{"quantity": 1, "price": "price_pro"}])
         self.assertEqual(params["subscription_data"]["metadata"]["subscription_id"], str(self.sub.pk))
 
+    def test_portal_configuration_from_real_stripe_objects(self):
+        confs = [stripe.StripeObject.construct_from({"id": "bpc_other", "metadata": {}}, "sk"),
+                 stripe.StripeObject.construct_from({"id": "bpc_ours", "metadata": {"app": billing.PORTAL_TAG}}, "sk")]
+        client = mock.Mock()
+        client.v1.billing_portal.configurations.list.return_value = SimpleNamespace(data=confs)
+        with mock.patch("apps.growth.billing._client", return_value=client):
+            self.assertEqual(billing.portal_configuration(), "bpc_ours")
+
     def test_falls_back_to_inline_monthly_price_when_missing_or_outdated(self):
         params = self.checkout_params([SimpleNamespace(id="price_old", unit_amount=9900)])
         data = params["line_items"][0]["price_data"]

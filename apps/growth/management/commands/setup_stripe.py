@@ -19,7 +19,7 @@ from django.core.management.base import BaseCommand, CommandError
 import stripe
 
 from apps.growth import plan
-from apps.growth.billing import PORTAL_TAG, lookup_key
+from apps.growth.billing import PORTAL_TAG, lookup_key, metadata
 from apps.growth.constants import PLATFORM_NAMES, PLATFORMS
 
 WEBHOOK_EVENTS = [
@@ -80,7 +80,7 @@ class Command(BaseCommand):
             "metadata": {"app": PORTAL_TAG},
         }
         found = [c for c in client.v1.billing_portal.configurations.list(params={"active": True, "limit": 100}).data
-                 if (c.metadata or {}).get("app") == PORTAL_TAG]
+                 if metadata(c).get("app") == PORTAL_TAG]
         if found:
             client.v1.billing_portal.configurations.update(found[0].id, params=portal)
             self.stdout.write(f"Portal configuration {found[0].id}: updated")
