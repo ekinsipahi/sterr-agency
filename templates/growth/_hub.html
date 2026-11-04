@@ -6,6 +6,9 @@
       {% for o in other_platform %}<a class="card reveal" href="{{ o.url }}"><span class="card__num">{{ o.name }}</span><h3 class="h3">{{ o.p.h1.0 }}{{ o.p.h1.1 }}</h3><p>{{ o.p.lede|truncatewords:16 }}</p><span class="card__foot link-arrow">{{ o.label }} {% include "partials/icons/arrow.svg" %}</span></a>{% endfor %}
       {% if creators_link %}<a class="card reveal" href="{{ creators_link.url }}"><span class="card__num">{{ creators_link.label }}</span><h3 class="h3">{{ creators_link.p.h1.0 }}{{ creators_link.p.h1.1 }}</h3><p>{{ creators_link.p.lede|truncatewords:16 }}</p><span class="card__foot link-arrow">{{ gu.read_more }} {% include "partials/icons/arrow.svg" %}</span></a>{% endif %}
     </div>
+    <div class="hub-groups mt-m reveal">
+      {% for label, items in hub_groups %}<div class="hub-group"><h3 class="hub-group__title">{{ label }}</h3><ul>{% for item in items %}<li>{% if item.here %}<span aria-current="page">{{ item.p.h1.0 }}{{ item.p.h1.1 }}</span>{% else %}<a href="{{ item.url }}">{{ item.p.h1.0 }}{{ item.p.h1.1 }}</a>{% endif %}</li>{% endfor %}</ul></div>{% endfor %}
+    </div>
     {% if geo_links %}<div class="chips mt-m reveal">{% for place, url in geo_links %}<a class="chip" href="{{ url }}">{{ place }}</a>{% endfor %}</div>{% endif %}
   </div>
 </section>

@@ -45,7 +45,7 @@ DATA = {
         "faqs": [
             ("Lavorate con piccoli creator?", "Sì. I piccoli creator sono proprio le persone per cui esistiamo: la crescita reale conta di più quando sei agli inizi."),
             ("Mi trovate collaborazioni con i brand?", "No, non facciamo da manager. Facciamo crescere il pubblico reale che fa venire ai brand la voglia di lavorare con te."),
-            ("Devo firmare un contratto?", "No. Ordini un pacchetto quando vuoi crescere, un pagamento alla volta."),
+            ("Devo firmare un contratto?", "No. Il pacchetto agenzia è mensile e puoi disdirlo quando vuoi dal tuo account."),
             ("Vi serve la mia password?", "Mai. Solo il tuo nome utente."),
         ],
     },
@@ -153,7 +153,7 @@ DATA = {
         "faqs": [
             ("1.000 follower sono troppo pochi per un'agenzia?", "Per un'agenzia di management di solito sì. Per la crescita è il momento perfetto per iniziare."),
             ("Un profilo piccolo può guadagnare con i brand?", "Sì, soprattutto con brand locali che apprezzano un pubblico reale e vicino."),
-            ("Quanto costa Sterr per un profilo piccolo?", "I pacchetti partono da 1.000 follower reali a $34.99, con pagamento unico."),
+            ("Quanto costa Sterr per un profilo piccolo?", "Il pacchetto agenzia costa $79.99 al mese: di solito 1.000–4.000 follower reali, con like e commenti dalle stesse persone."),
         ],
     },
 }

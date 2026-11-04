@@ -44,7 +44,7 @@ DATA = {
         "faqs": [
             ("Czy pracujecie z małymi twórcami?", "Tak. Mali twórcy to dokładnie ci, dla których jesteśmy: prawdziwy wzrost liczy się najbardziej na starcie."),
             ("Czy załatwiacie współprace z markami?", "Nie, nie działamy jako manager. Rozwijamy prawdziwą publiczność, dzięki której marki chcą z Tobą współpracować."),
-            ("Czy muszę podpisać umowę?", "Nie. Zamawiasz pakiet, kiedy chcesz wzrostu, za każdym razem jedna płatność."),
+            ("Czy muszę podpisać umowę?", "Nie. Pakiet agencyjny jest miesięczny i możesz go anulować w dowolnym momencie na swoim koncie."),
             ("Czy potrzebujecie mojego hasła?", "Nigdy. Tylko nazwy użytkownika."),
         ],
     },
@@ -152,7 +152,7 @@ DATA = {
         "faqs": [
             ("Czy 1000 obserwujących to za mało dla agencji?", "Dla agencji menedżerskiej zwykle tak. Na wzrost to idealny moment, żeby zacząć."),
             ("Czy małe konto może zarabiać na współpracach z markami?", "Tak, zwłaszcza z lokalnymi markami, które cenią prawdziwą publiczność z okolicy."),
-            ("Ile kosztuje Sterr przy małym koncie?", "Pakiety zaczynają się od 1000 prawdziwych obserwujących za $34.99, jednorazowo."),
+            ("Ile kosztuje Sterr przy małym koncie?", "Pakiet agencyjny kosztuje $79.99 miesięcznie: zwykle 1000–4000 prawdziwych obserwujących, a do tego polubienia i komentarze od tych samych ludzi."),
         ],
     },
 }

@@ -246,7 +246,7 @@
     }
   }
 
-  /* ---------- Follower package order form (Instagram / TikTok, 16 languages) ---------- */
+  /* ---------- Influencer package form (Instagram / TikTok, 16 languages) ---------- */
   var gform = document.querySelector("[data-growth-form]");
   if (gform) {
     ["utm_source", "utm_medium", "utm_campaign", "gclid"].forEach(function (k) {
@@ -256,20 +256,19 @@
     var gsrc = gform.querySelector('[name="source_page"]');
     if (gsrc && !gsrc.value) gsrc.value = location.pathname + (stored.landing && stored.landing !== location.pathname ? " ← " + stored.landing : "");
     var gAmount = gform.querySelector("[data-order-amount]");
-    var gPick = function () { return gform.querySelector('input[name="package"]:checked'); };
+    var gPick = function () { return gform.querySelector('input[name="plan"]:checked'); };
     var gItem = function (pick) {
       return { item_id: gform.dataset.formId.replace("_followers", "") + "_" + pick.value,
-               item_name: pick.dataset.followers + " " + gform.dataset.platform + " followers",
-               price: Number(pick.dataset.price), quantity: 1 };
+               item_name: gform.dataset.platform + " " + pick.dataset.name, price: Number(pick.dataset.price), quantity: 1 };
     };
     gform.addEventListener("change", function (e) {
-      if (e.target.name !== "package") return;
+      if (e.target.name !== "plan") return;
       if (gAmount) gAmount.textContent = e.target.dataset.amount;
       track("select_item", { item_list_id: gform.dataset.formId, items: [gItem(e.target)] });
     });
     document.querySelectorAll("[data-pick]").forEach(function (chip) {
       chip.addEventListener("click", function () {
-        var radio = gform.querySelector('input[name="package"][value="' + chip.dataset.pick + '"]');
+        var radio = gform.querySelector('input[name="plan"][value="' + chip.dataset.pick + '"]');
         if (radio && !radio.checked) {
           radio.checked = true;
           radio.dispatchEvent(new Event("change", { bubbles: true }));
@@ -278,7 +277,7 @@
     });
     var gStarted = false;
     gform.addEventListener("focusin", function (e) {
-      if (gStarted || e.target.name === "package") return;
+      if (gStarted || e.target.name === "plan") return;
       gStarted = true;
       track("form_start", { form_id: gform.dataset.formId, language: doc.lang });
     });

@@ -45,7 +45,7 @@ DATA = {
         "faqs": [
             ("Kiçik yaradıcılarla işləyirsiniz?", "Bəli. Biz məhz kiçik yaradıcılar üçün varıq: real böyümə ən çox yeni başlayanda önəmlidir."),
             ("Mənə brend sövdələşmələri tapırsınız?", "Xeyr, menecer kimi çalışmırıq. Brendlərin sizinlə işləmək istəməsini təmin edən real auditoriyanı böyüdürük."),
-            ("Müqavilə imzalamalıyam?", "Xeyr. Böyümə istədiyiniz zaman paket sifariş edirsiniz, hər dəfə bir ödəniş."),
+            ("Müqavilə imzalamalıyam?", "Xeyr. Agentlik paketi aylıqdır və onu istənilən vaxt hesabınızdan ləğv edə bilərsiniz."),
             ("Şifrəm lazımdır?", "Heç vaxt. Yalnız istifadəçi adınız."),
         ],
     },
@@ -153,7 +153,7 @@ DATA = {
         "faqs": [
             ("1.000 izləyici agentlik üçün azdırmı?", "İdarəetmə agentliyi üçün adətən bəli. Böyümə üçün isə başlamağın ən doğru vaxtıdır."),
             ("Kiçik influencer brendlərdən qazana bilərmi?", "Bəli, xüsusən real və yaxındakı auditoriyanı qiymətləndirən yerli brendlərdən."),
-            ("Sterr kiçik bloqer üçün nə qədərə başa gəlir?", "Paketlər 1.000 real izləyici üçün $34.99-dan başlayır, birdəfəlik."),
+            ("Sterr kiçik bloqer üçün nə qədərə başa gəlir?", "Agentlik paketi ayda $79.99-dır: adətən 1.000–4.000 real izləyici, eyni insanlardan bəyənmə və şərhlərlə."),
         ],
     },
 }

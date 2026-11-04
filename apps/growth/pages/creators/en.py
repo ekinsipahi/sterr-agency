@@ -45,7 +45,7 @@ DATA = {
         "faqs": [
             ("Do you work with small creators?", "Yes. Small creators are exactly who we're for: real growth matters most when you're starting out."),
             ("Do you get me brand deals?", "No, we don't act as your manager. We grow the real audience that makes brands want to work with you."),
-            ("Do I have to sign a contract?", "No. You order a package when you want growth, one payment at a time."),
+            ("Do I have to sign a contract?", "No. The agency package is monthly and you can cancel it any time from your account."),
             ("Do you need my password?", "Never. Only your username."),
         ],
     },
@@ -153,7 +153,7 @@ DATA = {
         "faqs": [
             ("Is 1,000 followers too small for an agency?", "For a management agency, usually yes. For growth, it's the perfect time to start."),
             ("Can a small influencer earn from brands?", "Yes, especially from local brands that value a real, nearby audience."),
-            ("What does Sterr cost for a small creator?", "Packages start at 1,000 real followers for $34.99, one-time."),
+            ("What does Sterr cost for a small creator?", "The agency package is $79.99 a month: typically 1,000–4,000 real followers, with likes and comments from the same people."),
         ],
     },
 }

@@ -1,8 +1,10 @@
-"""Stripe setup for the one-time follower packages. Safe to run again.
+"""Stripe setup for the monthly influencer packages. Safe to run again.
 
-- One product + one-time USD price per platform and package (10 in all), found again
-  by lookup key `sterr_<platform>_<package>_usd`. A changed amount in packages.py gets
+- One product + one monthly USD price per platform and package (6 in all), found again
+  by lookup key `sterr_<platform>_<package>_monthly_usd`. A changed amount in plan.py gets
   a new price; the lookup key moves to it (transfer_lookup_key).
+- The customer portal configuration (card, invoices, cancel at period end), tagged
+  metadata.app = sterr-growth so billing.portal_url finds it.
 - The webhook endpoint: created, or its events updated. A new endpoint's signing
   secret is written to .env (STRIPE_WEBHOOK_SECRET), never printed.
 
@@ -16,19 +18,22 @@ from django.core.management.base import BaseCommand, CommandError
 
 import stripe
 
-from apps.growth.billing import lookup_key
+from apps.growth import plan
+from apps.growth.billing import PORTAL_TAG, lookup_key
 from apps.growth.constants import PLATFORM_NAMES, PLATFORMS
-from apps.growth.packages import PACKAGES, cents
 
 WEBHOOK_EVENTS = [
     "checkout.session.completed",
     "checkout.session.async_payment_succeeded",
-    "charge.refunded",
+    "invoice.paid",
+    "invoice.payment_failed",
+    "customer.subscription.updated",
+    "customer.subscription.deleted",
 ]
 
 
 class Command(BaseCommand):
-    help = "Create the package products/prices and the webhook for follower orders in Stripe."
+    help = "Create the influencer package products/prices, the customer portal and the webhook in Stripe."
 
     def add_arguments(self, parser):
         parser.add_argument("--site-url", default=settings.SITE_URL, help="Public origin for the webhook URL.")
@@ -38,36 +43,60 @@ class Command(BaseCommand):
         if not settings.STRIPE_SECRET_KEY:
             raise CommandError("STRIPE_SECRET_KEY is not set.")
         client = stripe.StripeClient(settings.STRIPE_SECRET_KEY)
+        site = opts["site_url"].rstrip("/")
 
         for platform in PLATFORMS:
-            for package in PACKAGES:
+            for package in plan.PLANS:
                 key = lookup_key(platform, package["key"])
                 existing = client.v1.prices.list(params={"lookup_keys": [key], "active": True, "limit": 1}).data
-                if existing and existing[0].unit_amount == cents(package):
+                if existing and existing[0].unit_amount == plan.cents(package) and existing[0].recurring:
                     self.stdout.write(f"Price exists: {key} ({existing[0].id})")
                     continue
-                low, high = package["days"]
+                low, high = package["followers"]
                 product = client.v1.products.create(params={
-                    "name": f"{package['followers']:,} real {PLATFORM_NAMES[platform]} followers",
-                    "description": f"One-time package. Real people, delivered gradually in {low}-{high} days. No bots, no password.",
-                    "metadata": {"platform": platform, "package": package["key"]},
+                    "name": f"{plan.NAMES[package['key']]} · {PLATFORM_NAMES[platform]}",
+                    "description": (f"Monthly influencer package, spread over 30 days: real people who follow, like, watch "
+                                    f"and comment (typically {low:,}-{high:,} new followers a month). No bots, no password."),
+                    "metadata": {"platform": platform, "plan": package["key"]},
                 })
                 price = client.v1.prices.create(params={
-                    "product": product.id, "currency": "usd", "unit_amount": cents(package),
-                    "lookup_key": key, "transfer_lookup_key": True,
-                    "metadata": {"platform": platform, "package": package["key"]},
+                    "product": product.id, "currency": "usd", "unit_amount": plan.cents(package),
+                    "recurring": {"interval": "month"}, "lookup_key": key, "transfer_lookup_key": True,
+                    "metadata": {"platform": platform, "plan": package["key"]},
                 })
-                self.stdout.write(f"Created {key}: ${package['price']} ({price.id})")
+                self.stdout.write(f"Created {key}: ${package['price']} / month ({price.id})")
 
-        url = f"{opts['site_url'].rstrip('/')}/growth/stripe/webhook/"
+        portal = {
+            "business_profile": {"headline": "Sterr Agency: manage your influencer package",
+                                 "privacy_policy_url": f"{site}/gizlilik-politikasi/", "terms_of_service_url": f"{site}/kullanim-kosullari/"},
+            "features": {
+                "customer_update": {"enabled": True, "allowed_updates": ["email", "address"]},
+                "invoice_history": {"enabled": True},
+                "payment_method_update": {"enabled": True},
+                "subscription_cancel": {"enabled": True, "mode": "at_period_end",
+                                        "cancellation_reason": {"enabled": True, "options": [
+                                            "too_expensive", "unused", "switched_service", "other"]}},
+            },
+            "metadata": {"app": PORTAL_TAG},
+        }
+        found = [c for c in client.v1.billing_portal.configurations.list(params={"active": True, "limit": 100}).data
+                 if (c.metadata or {}).get("app") == PORTAL_TAG]
+        if found:
+            client.v1.billing_portal.configurations.update(found[0].id, params=portal)
+            self.stdout.write(f"Portal configuration {found[0].id}: updated")
+        else:
+            conf = client.v1.billing_portal.configurations.create(params=portal)
+            self.stdout.write(f"Created portal configuration {conf.id}")
+
+        url = f"{site}/growth/stripe/webhook/"
         endpoints = [w for w in client.v1.webhook_endpoints.list(params={"limit": 100}).data if w.url == url]
         if endpoints:
             client.v1.webhook_endpoints.update(endpoints[0].id, params={"enabled_events": WEBHOOK_EVENTS,
-                                                                        "description": "Sterr follower packages"})
+                                                                        "description": "Sterr influencer packages"})
             self.stdout.write(f"Webhook {endpoints[0].id}: events updated ({', '.join(WEBHOOK_EVENTS)})")
             return
         endpoint = client.v1.webhook_endpoints.create(params={"url": url, "enabled_events": WEBHOOK_EVENTS,
-                                                              "description": "Sterr follower packages"})
+                                                              "description": "Sterr influencer packages"})
         self._write_env(opts["env_file"], "STRIPE_WEBHOOK_SECRET", endpoint.secret)
         self.stdout.write(f"Created webhook {endpoint.id} → {url}; its secret is in {opts['env_file']} "
                           "(copy STRIPE_WEBHOOK_SECRET to Render → Environment)")

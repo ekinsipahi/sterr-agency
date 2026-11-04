@@ -11,7 +11,7 @@ from importlib import import_module
 
 from apps.core.languages import DEFAULT, LANGS
 
-from .constants import ACCOUNT_NAV, CREATOR_PAGES, FOLLOWERS_NAV, GUIDES, PACKAGE_PAGES, PAGES, PLATFORM_NAMES, PLATFORMS, PROFILE_URL  # noqa: F401
+from .constants import ACCOUNT_NAV, CREATOR_PAGES, FOLLOWERS_NAV, GROUPS, GUIDES, PACKAGE_PAGES, PAGE_PLAN, PAGES, PLATFORM_NAMES, PLATFORMS, PROFILE_URL  # noqa: F401
 
 UI = {}
 CONTENT = {platform: {} for platform in PLATFORMS}
@@ -43,7 +43,19 @@ def ui_for(code, platform):
             return type(value)(fill(v) for v in value)
         return value
 
-    return {k: fill(v) for k, v in UI[code].items()}
+    # English fills any key a language doesn't have yet (the copy check reports it).
+    return {k: fill(v) for k, v in {**UI["en"], **UI[code]}.items()}
+
+
+def has_page(code, page, platform="instagram"):
+    """Whether a language has this page (new pages go live per language as they're translated)."""
+    data = CONTENT[platform].get(code)
+    kind, _, geo = page.partition(":")
+    if data is None:
+        return False
+    if kind == "geo":
+        return geo in data.get("geo", {})
+    return kind == "main" or (kind in data.get("subs", {}) and kind in data)
 
 
 def page_path(code, page, platform="instagram"):
@@ -54,7 +66,10 @@ def page_path(code, page, platform="instagram"):
         return f"{prefix}/{data['base']}/"
     if kind == "geo":
         return f"{prefix}/{data['base']}/{geo}/"
-    return f"{prefix}/{data['base']}/{data['subs'][kind]}/"
+    sub = data["subs"][kind]
+    if sub.startswith("/"):  # a page of its own, outside the followers section
+        return f"{prefix}{sub}"
+    return f"{prefix}/{data['base']}/{sub}/"
 
 
 def routes():
@@ -63,7 +78,8 @@ def routes():
     for platform in PLATFORMS:
         for code, data in CONTENT[platform].items():
             for page in PAGES:
-                out.append((page_path(code, page, platform)[1:], code, page, platform))
+                if has_page(code, page, platform):
+                    out.append((page_path(code, page, platform)[1:], code, page, platform))
             for geo in data.get("geo", {}):
                 out.append((page_path(code, f"geo:{geo}", platform)[1:], code, f"geo:{geo}", platform))
     return out
@@ -73,13 +89,14 @@ def alternates(page, platform="instagram"):
     """hreflang set: core pages exist in every language; geo pages only in English."""
     if page.startswith("geo:"):
         return []
-    alts = [(lang.code, page_path(lang.code, page, platform)) for lang in LANGS if lang.code in CONTENT[platform]]
-    return alts + [("x-default", page_path(DEFAULT, page, platform))] if DEFAULT in CONTENT[platform] else alts
+    alts = [(lang.code, page_path(lang.code, page, platform)) for lang in LANGS if has_page(lang.code, page, platform)]
+    return alts + [("x-default", page_path(DEFAULT, page, platform))] if has_page(DEFAULT, page, platform) else alts
 
 
 def lang_links(page, platform="instagram"):
     target = "main" if page.startswith("geo:") else page
-    return [(lang, page_path(lang.code, target, platform)) for lang in LANGS if lang.code in CONTENT[platform]]
+    return [(lang, page_path(lang.code, target if has_page(lang.code, target, platform) else "main", platform))
+            for lang in LANGS if lang.code in CONTENT[platform]]
 
 
 def creator_path(code, page):
@@ -101,10 +118,18 @@ def creator_alternates(page):
 
 
 def followers_menu(code):
-    """[(label, url)] for the navbar 'Followers' dropdown: both platforms, creators, then the account."""
+    """[(label, url)] for the navbar 'Followers' dropdown: per platform followers, packages, likes,
+    views and comments; then creators and the account."""
     from django.urls import reverse
 
-    items = [(PLATFORM_NAMES[p], page_path(code, "main", p)) for p in PLATFORMS if code in CONTENT[p]]
+    items = []
+    for p in PLATFORMS:
+        if code in CONTENT[p]:
+            data = CONTENT[p][code]
+            items.append((data["nav"], page_path(code, "main", p)))
+            navs = data.get("navs", {})
+            items += [(navs[page], page_path(code, page, p)) for page in ("packages", "likes", "views", "comments")
+                      if page in navs and has_page(code, page, p)]
     if code in CREATORS:
         items.append((CREATORS[code]["nav"], creator_path(code, "main")))
     if items:

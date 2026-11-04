@@ -45,7 +45,7 @@ DATA = {
         "faqs": [
             ("Lucrați cu creatori mici?", "Da. Creatorii mici sunt exact cei pentru care existăm: creșterea reală contează cel mai mult la început."),
             ("Îmi aduceți colaborări cu branduri?", "Nu, nu acționăm ca manager. Creștem publicul real care face brandurile să vrea să lucreze cu tine."),
-            ("Trebuie să semnez un contract?", "Nu. Comanzi un pachet când vrei creștere, câte o plată pe rând."),
+            ("Trebuie să semnez un contract?", "Nu. Pachetul de agenție este lunar și îl poți anula oricând din contul tău."),
             ("Aveți nevoie de parola mea?", "Niciodată. Doar de numele de utilizator."),
         ],
     },
@@ -153,7 +153,7 @@ DATA = {
         "faqs": [
             ("Sunt 1.000 de urmăritori prea puțini pentru o agenție?", "Pentru o agenție de management, de obicei da. Pentru creștere, este momentul perfect să începi."),
             ("Poate un cont mic să câștige bani de la branduri?", "Da, mai ales de la brandurile locale care apreciază un public real, din apropiere."),
-            ("Cât costă Sterr pentru un cont mic?", "Pachetele încep de la 1.000 de urmăritori reali la $34.99, plată unică."),
+            ("Cât costă Sterr pentru un cont mic?", "Pachetul de agenție costă $79.99 pe lună: de obicei 1.000–4.000 de urmăritori reali, cu like-uri și comentarii de la aceiași oameni."),
         ],
     },
 }

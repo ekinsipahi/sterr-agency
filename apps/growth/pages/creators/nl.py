@@ -44,7 +44,7 @@ DATA = {
         "faqs": [
             ("Werkt u met kleine creators?", "Ja. Kleine creators zijn precies voor wie we er zijn: echte groei telt het meest als u net begint."),
             ("Regelt u merkdeals voor mij?", "Nee, we treden niet op als uw management. We bouwen het echte publiek op waardoor merken met u willen werken."),
-            ("Moet ik een contract tekenen?", "Nee. U bestelt een pakket wanneer u groei wilt, één betaling per keer."),
+            ("Moet ik een contract tekenen?", "Nee. Het bureaupakket is maandelijks en u kunt het altijd opzeggen in uw account."),
             ("Heeft u mijn wachtwoord nodig?", "Nooit. Alleen uw gebruikersnaam."),
         ],
     },
@@ -152,7 +152,7 @@ DATA = {
         "faqs": [
             ("Is 1.000 volgers te weinig voor een bureau?", "Voor een managementbureau meestal wel. Voor groei is het het perfecte moment om te beginnen."),
             ("Kan een kleine influencer verdienen aan merken?", "Ja, vooral aan lokale merken die een echt publiek in de buurt waarderen."),
-            ("Wat kost Sterr voor een kleine creator?", "Pakketten beginnen bij 1.000 echte volgers voor $34.99, eenmalig."),
+            ("Wat kost Sterr voor een kleine creator?", "Het bureaupakket kost $79.99 per maand: meestal 1.000–4.000 echte volgers, met likes en reacties van dezelfde mensen."),
         ],
     },
 }

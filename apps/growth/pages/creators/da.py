@@ -43,7 +43,7 @@ DATA = {
         "faqs": [
             ("Arbejder I med små skabere?", "Ja. Små skabere er præcis dem, vi er her for: ægte vækst betyder mest, når du er i gang med at starte."),
             ("Skaffer I mig brandaftaler?", "Nej, vi fungerer ikke som din manager. Vi bygger det ægte publikum, der får brands til at ville arbejde med dig."),
-            ("Skal jeg skrive under på en kontrakt?", "Nej. Du bestiller en pakke, når du vil vokse, én betaling ad gangen."),
+            ("Skal jeg skrive under på en kontrakt?", "Nej. Bureaupakken kører månedsvis, og du kan opsige den når som helst fra din konto."),
             ("Skal I bruge min adgangskode?", "Aldrig. Kun dit brugernavn."),
         ],
     },
@@ -151,7 +151,7 @@ DATA = {
         "faqs": [
             ("Er 1.000 følgere for lidt til et bureau?", "Til et managementbureau som regel ja. Til vækst er det det perfekte tidspunkt at starte."),
             ("Kan en lille influencer tjene penge på brands?", "Ja, især på lokale brands, der værdsætter et ægte publikum i nærheden."),
-            ("Hvad koster Sterr for en lille skaber?", "Pakkerne starter ved 1.000 ægte følgere for $34.99, som engangsbetaling."),
+            ("Hvad koster Sterr for en lille skaber?", "Bureaupakken koster $79.99 om måneden: typisk 1.000–4.000 ægte følgere, med likes og kommentarer fra de samme mennesker."),
         ],
     },
 }

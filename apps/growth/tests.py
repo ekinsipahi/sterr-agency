@@ -13,10 +13,11 @@ from django.utils import timezone
 
 from apps.core.languages import LANGS
 
+from . import billing
 from .content import CONTENT, CREATORS, PAGES, PLATFORMS, UI, alternates, followers_menu, page_path, routes
 from .forms import clean_handle
-from .models import Customer, FollowerOrder, OrderProgress, StripeEvent
-from .packages import PACKAGES
+from .models import AgencySubscription, Customer, StripeEvent, SubscriptionStat
+from .plan import PLANS
 from .validate import check
 
 WEBHOOK_SECRET = "whsec_test"
@@ -25,6 +26,13 @@ MAIL = dict(LEAD_NOTIFY_EMAILS=["owner@example.com"], GROWTH_NOTIFY_EMAILS=["eki
 STRIPE_ON = dict(GROWTH_PAYMENTS=True, STRIPE_SECRET_KEY="sk_test_x", STRIPE_WEBHOOK_SECRET=WEBHOOK_SECRET, **MAIL)
 STRIPE_OFF = dict(GROWTH_PAYMENTS=False, STRIPE_SECRET_KEY="", **MAIL)
 CODES = {lang.code for lang in LANGS}
+PERIOD_END = int((timezone.now() + timedelta(days=30)).timestamp())
+
+
+def stripe_sub(status="active", sub_id="sub_1", **extra):
+    """A Stripe subscription as webhooks deliver it (period end on the items, as in newer API versions)."""
+    return {"id": sub_id, "object": "subscription", "status": status, "customer": "cus_1", "cancel_at_period_end": False,
+            "items": {"data": [{"current_period_end": PERIOD_END}]}, "metadata": {}, **extra}
 
 
 class ContentTests(SimpleTestCase):
@@ -45,28 +53,39 @@ class ContentTests(SimpleTestCase):
             titles += [CREATORS[code][page]["title"] for page in CREATORS[code]["keywords"]]
             self.assertEqual(len(titles), len(set(titles)), code)
 
-    def test_packages_ladder(self):
-        self.assertEqual([p["followers"] for p in PACKAGES], [1000, 2000, 3000, 5000, 10000])
-        per_1k = [p["price"] * 1000 / p["followers"] for p in PACKAGES]
-        self.assertEqual(per_1k, sorted(per_1k, reverse=True))  # bigger package, lower price per 1,000
-        self.assertEqual([p["days"] for p in PACKAGES], [(7, 14), (14, 24), (24, 36), (30, 60), (60, 120)])
+    def test_influencer_packages(self):
+        self.assertEqual([p["key"] for p in PLANS], ["starter", "rising", "pro"])
+        self.assertEqual([str(p["price"]) for p in PLANS], ["79.99", "149.99", "279.99"])
+        self.assertEqual(PLANS[0]["followers"], (1000, 4000))
+        for p in PLANS:  # 2–3 likes per new follower, about one comment per 10
+            self.assertEqual(p["likes"], (p["followers"][0] * 2, p["followers"][1] * 3))
+            self.assertEqual(p["comments"], (p["followers"][0] // 10, p["followers"][1] // 10))
 
     def test_alternates_and_routes(self):
-        alts = dict(alternates("pricing", "tiktok"))
+        alts = dict(alternates("likes", "tiktok"))
         self.assertEqual(len(alts), len(CONTENT["tiktok"]) + 1)
         self.assertEqual(alts["x-default"], alts["en"])
+        self.assertEqual(alts["en"], "/en/tiktok-likes-packages/")
         self.assertEqual(alternates("geo:uk"), [])
         paths = [r[0] for r in routes()]
         self.assertEqual(len(paths), len(set(paths)))
 
-    def test_followers_menu_has_both_platforms_and_the_account(self):
+    def test_followers_menu_has_every_section_and_the_account(self):
         labels = [label for label, url in followers_menu("en")]
-        self.assertEqual(labels, ["Instagram", "TikTok", "For creators", "My account"])
+        self.assertEqual(labels, ["Instagram Followers", "Instagram Packages", "Instagram Likes", "Instagram Views", "Instagram Comments",
+                                  "TikTok Followers", "TikTok Packages", "TikTok Likes", "TikTok Views", "TikTok Comments",
+                                  "For creators", "My account"])
 
     def test_handle_cleaning(self):
         for raw in ("@Brand.Name", "brand.name", "https://www.instagram.com/brand.name/?igsh=abc", "instagram.com/brand.name",
                     "https://www.tiktok.com/@brand.name?lang=en", "tiktok.com/brand.name"):
             self.assertEqual(clean_handle(raw).lower(), "brand.name")
+
+    def test_period_end_in_old_and_new_api_shapes(self):
+        self.assertEqual(billing.period_end({"current_period_end": PERIOD_END}).timestamp(), PERIOD_END)
+        self.assertEqual(billing.period_end(stripe_sub()).timestamp(), PERIOD_END)
+        self.assertEqual(billing.invoice_subscription({"subscription": "sub_1"}), "sub_1")
+        self.assertEqual(billing.invoice_subscription({"parent": {"subscription_details": {"subscription": "sub_2"}}}), "sub_2")
 
 
 class PageTests(TestCase):
@@ -76,15 +95,16 @@ class PageTests(TestCase):
                 r = self.client.get("/" + route)
                 self.assertEqual(r.status_code, 200)
                 html = r.content.decode()
-                self.assertIn('name="package"', html)
+                self.assertIn('name="plan"', html)
                 self.assertNotRegex(html, r"\bSEO\b")
                 if page != "main":
                     self.assertIn(f'href="{page_path(code, "main", platform)}"', html)
 
     def test_main_page_links_to_every_page(self):
-        html = self.client.get(page_path("en", "main", "tiktok")).content.decode()
-        for page in PAGES[1:]:
-            self.assertIn(f'href="{page_path("en", page, "tiktok")}"', html)
+        for platform in PLATFORMS:
+            html = self.client.get(page_path("en", "main", platform)).content.decode()
+            for page in PAGES[1:]:
+                self.assertIn(f'href="{page_path("en", page, platform)}"', html)
 
     def test_creators_hub_renders_and_links_both_platforms(self):
         from .content import CREATOR_PAGES, creator_path, creator_routes
@@ -102,18 +122,26 @@ class PageTests(TestCase):
         body = self.client.get("/sitemaps/tiktok-followers.xml").content.decode()
         self.assertEqual(body.count("<url>"), len(CODES) * len(PAGES))
         self.assertIn(page_path("tr", "pack_3k", "tiktok"), body)
+        self.assertIn(page_path("de", "views_reels", "tiktok"), body)
         self.assertIn('hreflang="x-default"', body)
         self.assertFalse(any("instagram" in loc for loc in re.findall(r"<loc>([^<]+)</loc>", body)))
         self.assertIn("Disallow: /account/", self.client.get("/robots.txt").content.decode())
 
-    def test_hero_shows_every_price(self):
-        html = self.client.get(page_path("de", "guide_buy", "tiktok")).content.decode()
-        for amount in ("$34.99", "$59.99", "$79.99", "$124.99", "$229.99"):
-            self.assertIn(amount, html.split('id="start"')[0])
+    def test_hero_shows_every_package_price(self):
+        for page in ("guide_buy", "likes", "comments_custom"):
+            html = self.client.get(page_path("de", page, "tiktok")).content.decode()
+            for amount in ("$79.99", "$149.99", "$279.99"):
+                self.assertIn(amount, html.split('id="start"')[0])
 
-    def test_package_page_preselects_its_package(self):
-        html = self.client.get(page_path("en", "pack_5k")).content.decode()
-        self.assertRegex(html, r'value="5k"[^>]*checked')
+    def test_pages_preselect_a_package(self):
+        self.assertRegex(self.client.get(page_path("en", "pack_10k")).content.decode(), r'value="pro"[^>]*checked')
+        self.assertRegex(self.client.get(page_path("en", "pack_1k")).content.decode(), r'value="starter"[^>]*checked')
+        self.assertRegex(self.client.get(page_path("en", "likes")).content.decode(), r'value="rising"[^>]*checked')
+
+    def test_service_pages_have_their_own_paths(self):
+        self.assertEqual(page_path("en", "likes_monthly"), "/en/monthly-instagram-likes/")
+        self.assertEqual(page_path("tr", "views_reels"), "/" + CONTENT["instagram"]["tr"]["subs"]["views_reels"].lstrip("/"))
+        self.assertEqual(self.client.get("/en/instagram-reels-views/").status_code, 200)
 
 
 class FreshCache:
@@ -126,7 +154,7 @@ class FreshCache:
 
 
 def order_data(**extra):
-    data = {"lang": "en", "page": "main", "platform": "instagram", "package": "3k", "handle": "@My.Brand",
+    data = {"lang": "en", "page": "main", "platform": "instagram", "plan": "rising", "handle": "@My.Brand",
             "location": "Berlin, Germany", "email": "Buyer@Example.com", "password": "s3cret-pass", "consent": "on"}
     data.update(extra)
     return data
@@ -136,27 +164,28 @@ def order_data(**extra):
 class RequestModeTests(FreshCache, TestCase):
     def test_order_creates_account_and_request(self):
         r = self.client.post(reverse("growth:order"), order_data())
-        order = FollowerOrder.objects.get()
-        self.assertRedirects(r, f"{reverse('growth:success')}?lang=en&platform=instagram&order={order.pk}", fetch_redirect_response=False)
-        self.assertEqual((order.status, order.handle, order.followers, str(order.amount)), ("requested", "my.brand", 3000, "79.99"))
+        sub = AgencySubscription.objects.get()
+        self.assertRedirects(r, f"{reverse('growth:success')}?lang=en&platform=instagram&sub={sub.pk}", fetch_redirect_response=False)
+        self.assertEqual((sub.status, sub.handle, sub.plan, str(sub.amount)), ("requested", "my.brand", "rising", "149.99"))
         user = get_user_model().objects.get(username="buyer@example.com")
-        self.assertEqual(order.user, user)
+        self.assertEqual(sub.user, user)
         self.assertTrue(Customer.objects.filter(user=user, lang="en").exists())
-        self.assertTrue(order.notified)
+        self.assertTrue(sub.notified)
         subjects = [m.subject for m in mail.outbox]
-        self.assertIn("We received your order request: 3,000 real Instagram followers for @my.brand", subjects)
+        self.assertIn("We received your request: Rising Influencer for @my.brand on Instagram", subjects)
         page = self.client.get(r["Location"]).content.decode()
         self.assertIn("lead-event", page)
         self.assertIn("signup-event", page)
+        self.assertIn("Rising Influencer", page)
 
     def test_existing_email_needs_the_right_password(self):
         get_user_model().objects.create_user("buyer@example.com", "buyer@example.com", "the-real-one")
         r = self.client.post(reverse("growth:order"), order_data())
         self.assertEqual(r.status_code, 400)
-        self.assertFalse(FollowerOrder.objects.exists())
-        r = self.client.post(reverse("growth:order"), order_data(password="the-real-one", platform="tiktok", package="1k"))
+        self.assertFalse(AgencySubscription.objects.exists())
+        r = self.client.post(reverse("growth:order"), order_data(password="the-real-one", platform="tiktok", plan="starter"))
         self.assertEqual(r.status_code, 302)
-        self.assertEqual(FollowerOrder.objects.get().platform, "tiktok")
+        self.assertEqual(AgencySubscription.objects.get().platform, "tiktok")
 
     def test_signed_in_order_needs_no_email_or_password(self):
         user = get_user_model().objects.create_user("me@example.com", "me@example.com", "pass-word-1")
@@ -164,75 +193,92 @@ class RequestModeTests(FreshCache, TestCase):
         data = order_data()
         del data["email"], data["password"]
         self.assertEqual(self.client.post(reverse("growth:order"), data).status_code, 302)
-        self.assertEqual(FollowerOrder.objects.get().email, "me@example.com")
+        self.assertEqual(AgencySubscription.objects.get().email, "me@example.com")
 
-    def test_invalid_package_and_short_password(self):
-        r = self.client.post(reverse("growth:order"), order_data(package="50k", password="short"))
+    def test_invalid_plan_and_short_password(self):
+        r = self.client.post(reverse("growth:order"), order_data(plan="mega", password="short"))
         self.assertEqual(r.status_code, 400)
         self.assertFalse(get_user_model().objects.exists())
 
     def test_honeypot(self):
         self.client.post(reverse("growth:order"), order_data(fax="bot"))
-        self.assertFalse(FollowerOrder.objects.exists())
+        self.assertFalse(AgencySubscription.objects.exists())
 
 
 @override_settings(**STRIPE_ON)
 class CheckoutTests(FreshCache, TestCase):
     session = SimpleNamespace(id="cs_test_1", url="https://checkout.stripe.com/c/pay/cs_test_1")
 
+    def signed_in(self):
+        user = get_user_model().objects.create_user("me@example.com", "me@example.com", "pass-word-1")
+        Customer.objects.create(user=user, email_verified=True)
+        self.client.force_login(user)
+        return user
+
     def test_unverified_email_gets_a_link_that_goes_straight_to_payment(self):
-        r = self.client.post(reverse("growth:order"), order_data(package="10k"))
+        r = self.client.post(reverse("growth:order"), order_data(plan="pro"))
         self.assertEqual(r["Location"], f"{reverse('growth:account')}?lang=en&verify=sent")
-        order = FollowerOrder.objects.get()
-        self.assertEqual(order.status, "pending")
+        sub = AgencySubscription.objects.get()
+        self.assertEqual((sub.status, sub.plan), ("pending", "pro"))
         link = re.search(r"https?://[^/\s]+(/account/verify/\S+/)", mail.outbox[-1].body).group(1)
         self.client.logout()
         with mock.patch("apps.growth.billing.create_checkout", return_value=self.session) as create:
             r = self.client.get(link)
         self.assertEqual((r.status_code, r["Location"]), (303, self.session.url))
-        self.assertEqual(create.call_args.args[0].pk, order.pk)
+        self.assertEqual(create.call_args.args[0].pk, sub.pk)
         self.assertTrue(Customer.objects.get().email_verified)
-        order.refresh_from_db()
-        self.assertEqual(order.stripe_checkout_session_id, "cs_test_1")
+        sub.refresh_from_db()
+        self.assertEqual(sub.stripe_checkout_session_id, "cs_test_1")
 
-    def test_verified_customer_goes_straight_to_stripe(self):
-        user = get_user_model().objects.create_user("me@example.com", "me@example.com", "pass-word-1")
-        Customer.objects.create(user=user, email_verified=True)
-        self.client.force_login(user)
-        data = order_data(platform="tiktok", package="2k")
+    def test_verified_customer_goes_straight_to_stripe_and_retries_reuse_the_unpaid_one(self):
+        self.signed_in()
+        data = order_data(platform="tiktok", plan="starter")
         del data["email"], data["password"]
         with mock.patch("apps.growth.billing.create_checkout", return_value=self.session) as create:
             r = self.client.post(reverse("growth:order"), data)
+            self.client.post(reverse("growth:order"), {**data, "plan": "pro", "location": "Paris"})
         self.assertEqual((r.status_code, r["Location"]), (303, self.session.url))
-        order = create.call_args.args[0]
-        self.assertEqual((order.platform, order.followers), ("tiktok", 2000))
+        sub = AgencySubscription.objects.get()
+        self.assertEqual((sub.platform, sub.plan, str(sub.amount), sub.location), ("tiktok", "pro", "279.99", "Paris"))
+        self.assertEqual(create.call_count, 2)
         self.assertFalse([m for m in mail.outbox if "owner@example.com" in m.to])  # unpaid: no team email
 
     def test_stripe_down_shows_the_form_again(self):
-        user = get_user_model().objects.create_user("me@example.com", "me@example.com", "pass-word-1")
-        Customer.objects.create(user=user, email_verified=True)
-        self.client.force_login(user)
+        self.signed_in()
         data = order_data()
         del data["email"], data["password"]
         with mock.patch("apps.growth.billing.create_checkout", side_effect=stripe.APIConnectionError("down")):
             r = self.client.post(reverse("growth:order"), data)
         self.assertEqual(r.status_code, 502)
 
-    def test_success_page_confirms_payment_once(self):
-        user = get_user_model().objects.create_user("me@example.com", "me@example.com", "pass-word-1")
-        self.client.force_login(user)
-        order = FollowerOrder.objects.create(user=user, email=user.email, handle="brand", location="Rome", package="1k",
-                                             followers=1000, amount="34.99", stripe_checkout_session_id="cs_ok")
-        session = SimpleNamespace(id="cs_ok", status="complete", payment_status="paid", payment_intent="pi_1")
-        url = f"{reverse('growth:success')}?lang=en&platform=instagram&order={order.pk}&session_id=cs_ok"
-        with mock.patch("apps.growth.billing.retrieve_checkout", return_value=session):
+    def test_success_page_activates_once(self):
+        user = self.signed_in()
+        sub = AgencySubscription.objects.create(user=user, email=user.email, handle="brand", location="Rome", plan="starter",
+                                                amount="79.99", stripe_checkout_session_id="cs_ok")
+        session = SimpleNamespace(id="cs_ok", status="complete", payment_status="paid", subscription="sub_1")
+        url = f"{reverse('growth:success')}?lang=en&platform=instagram&sub={sub.pk}&session_id=cs_ok"
+        with mock.patch("apps.growth.billing.retrieve_checkout", return_value=session), \
+             mock.patch("apps.growth.billing.retrieve_subscription", return_value=stripe_sub()):
             first = self.client.get(url).content.decode()
             second = self.client.get(url).content.decode()
         self.assertIn("purchase-event", first)
         self.assertNotIn("purchase-event", second)
-        order.refresh_from_db()
-        self.assertEqual((order.status, order.stripe_payment_intent_id), ("paid", "pi_1"))
-        self.assertEqual([m.subject for m in mail.outbox].count("Payment received: 1,000 real Instagram followers for @brand"), 1)
+        sub.refresh_from_db()
+        self.assertEqual((sub.status, sub.stripe_subscription_id, sub.stripe_customer_id), ("active", "sub_1", "cus_1"))
+        self.assertEqual(int(sub.current_period_end.timestamp()), PERIOD_END)
+        subjects = [m.subject for m in mail.outbox]
+        self.assertEqual(subjects.count("Your Starter Creator package is active: @brand on Instagram"), 1)
+        self.assertEqual(sum("(ödendi)" in s for s in subjects), 1)
+
+    def test_billing_portal(self):
+        user = self.signed_in()
+        AgencySubscription.objects.create(user=user, email=user.email, handle="brand", location="Rome", amount="79.99",
+                                          status="active", stripe_customer_id="cus_1")
+        with mock.patch("apps.growth.billing.portal_url", return_value="https://billing.stripe.com/p/x") as portal:
+            r = self.client.post(reverse("growth:billing"), {"lang": "en"})
+        self.assertEqual((r.status_code, r["Location"]), (303, "https://billing.stripe.com/p/x"))
+        self.assertEqual(portal.call_args.args[0], "cus_1")
+        self.assertContains(self.client.get(reverse("growth:account") + "?lang=en"), "Manage billing or cancel")
 
 
 @override_settings(**STRIPE_ON)
@@ -240,27 +286,28 @@ class StripePriceTests(TestCase):
     def setUp(self):
         from django.core.cache import cache
         cache.clear()
-        self.order = FollowerOrder.objects.create(email="a@example.com", handle="brand", location="Rome", platform="tiktok",
-                                                  package="3k", followers=3000, amount="79.99")
+        self.sub = AgencySubscription.objects.create(email="a@example.com", handle="brand", location="Rome", platform="tiktok",
+                                                     plan="pro", amount="279.99")
 
-    def checkout_line(self, prices):
+    def checkout_params(self, prices):
         client = mock.Mock()
         client.v1.prices.list.return_value = SimpleNamespace(data=prices)
         client.v1.checkout.sessions.create.return_value = SimpleNamespace(id="cs", url="u")
         with mock.patch("apps.growth.billing._client", return_value=client):
-            from . import billing
-            billing.create_checkout(self.order, "https://s/ok", "https://s/cancel")
-        self.assertEqual(client.v1.prices.list.call_args.kwargs["params"]["lookup_keys"], ["sterr_tiktok_3k_usd"])
+            billing.create_checkout(self.sub, "https://s/ok", "https://s/cancel")
+        self.assertEqual(client.v1.prices.list.call_args.kwargs["params"]["lookup_keys"], ["sterr_tiktok_pro_monthly_usd"])
         return client.v1.checkout.sessions.create.call_args.kwargs["params"]
 
-    def test_uses_the_package_price_from_setup_stripe(self):
-        params = self.checkout_line([SimpleNamespace(id="price_3k", unit_amount=7999)])
-        self.assertEqual(params["line_items"], [{"quantity": 1, "price": "price_3k"}])
-        self.assertEqual(params["metadata"]["order_id"], str(self.order.pk))
+    def test_uses_the_monthly_price_from_setup_stripe(self):
+        params = self.checkout_params([SimpleNamespace(id="price_pro", unit_amount=27999)])
+        self.assertEqual(params["mode"], "subscription")
+        self.assertEqual(params["line_items"], [{"quantity": 1, "price": "price_pro"}])
+        self.assertEqual(params["subscription_data"]["metadata"]["subscription_id"], str(self.sub.pk))
 
-    def test_falls_back_to_inline_price_when_missing_or_outdated(self):
-        params = self.checkout_line([SimpleNamespace(id="price_old", unit_amount=9900)])
-        self.assertEqual(params["line_items"][0]["price_data"]["unit_amount"], 7999)
+    def test_falls_back_to_inline_monthly_price_when_missing_or_outdated(self):
+        params = self.checkout_params([SimpleNamespace(id="price_old", unit_amount=9900)])
+        data = params["line_items"][0]["price_data"]
+        self.assertEqual((data["unit_amount"], data["recurring"]), (27999, {"interval": "month"}))
 
 
 def signed(payload):
@@ -271,92 +318,114 @@ def signed(payload):
 @override_settings(**STRIPE_ON)
 class WebhookTests(TestCase):
     def setUp(self):
-        self.order = FollowerOrder.objects.create(email="a@example.com", handle="brand", location="Berlin", lang="de",
-                                                  package="5k", followers=5000, amount="124.99")
+        self.sub = AgencySubscription.objects.create(email="a@example.com", handle="brand", location="Berlin", lang="de",
+                                                     plan="rising", amount="149.99")
 
-    def send(self, event_id, event_type, obj):
+    def send(self, event_id, event_type, obj, stripe_obj=None):
         body, header = signed({"id": event_id, "type": event_type, "data": {"object": obj}})
-        return self.client.post(reverse("growth:webhook"), body, content_type="application/json", HTTP_STRIPE_SIGNATURE=header)
+        with mock.patch("apps.growth.billing.retrieve_subscription", return_value=stripe_obj or stripe_sub()):
+            return self.client.post(reverse("growth:webhook"), body, content_type="application/json", HTTP_STRIPE_SIGNATURE=header)
+
+    def checkout(self, event_id="evt_1", **extra):
+        obj = {"id": "cs_1", "mode": "subscription", "payment_status": "paid", "client_reference_id": str(self.sub.pk),
+               "subscription": "sub_1", **extra}
+        return self.send(event_id, "checkout.session.completed", obj)
+
+    def team(self, words):
+        return [m for m in mail.outbox if words in m.subject]
 
     def test_bad_signature_rejected(self):
         r = self.client.post(reverse("growth:webhook"), "{}", content_type="application/json", HTTP_STRIPE_SIGNATURE="t=1,v1=nope")
         self.assertEqual(r.status_code, 400)
 
-    def test_paid_checkout_marks_paid_and_emails_once(self):
-        obj = {"id": "cs_1", "mode": "payment", "payment_status": "paid", "client_reference_id": str(self.order.pk), "payment_intent": "pi_9"}
-        self.assertEqual(self.send("evt_1", "checkout.session.completed", obj).status_code, 200)
-        self.assertEqual(self.send("evt_1", "checkout.session.completed", obj).content, b"duplicate")
-        self.send("evt_2", "checkout.session.async_payment_succeeded", obj)
-        self.order.refresh_from_db()
-        self.assertEqual((self.order.status, self.order.stripe_payment_intent_id), ("paid", "pi_9"))
-        self.assertIsNotNone(self.order.paid_at)
-        self.assertEqual(sum(m.subject.startswith("Payment received") for m in mail.outbox), 1)
-        team = [m for m in mail.outbox if "siparişi (ödendi)" in m.subject]
+    def test_paid_checkout_activates_and_emails_once(self):
+        self.assertEqual(self.checkout().status_code, 200)
+        self.assertEqual(self.checkout().content, b"duplicate")
+        self.send("evt_2", "invoice.paid", {"id": "in_1", "subscription": "sub_1", "billing_reason": "subscription_create"})
+        self.sub.refresh_from_db()
+        self.assertEqual((self.sub.status, self.sub.stripe_subscription_id), ("active", "sub_1"))
+        self.assertIsNotNone(self.sub.started_at)
+        self.assertEqual(sum(m.subject.startswith("Your Rising Influencer package is active") for m in mail.outbox), 1)
+        team = self.team("paketi (ödendi)")
         self.assertEqual(len(team), 1)
         self.assertEqual(team[0].to, ["owner@example.com", "ekinsipahi8@gmail.com"])
+        self.assertIn("Rising Influencer", team[0].body)
         self.assertEqual(StripeEvent.objects.count(), 2)
 
     def test_unpaid_checkout_does_nothing(self):
-        obj = {"id": "cs_1", "mode": "payment", "payment_status": "unpaid", "client_reference_id": str(self.order.pk)}
-        self.send("evt_1", "checkout.session.completed", obj)
-        self.order.refresh_from_db()
-        self.assertEqual(self.order.status, "pending")
+        self.checkout(payment_status="unpaid")
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.status, "pending")
+        self.assertFalse(mail.outbox)
 
-    def test_refund(self):
-        self.order.status, self.order.stripe_payment_intent_id = "paid", "pi_9"
-        self.order.save()
-        self.send("evt_3", "charge.refunded", {"id": "ch_1", "payment_intent": "pi_9"})
-        self.order.refresh_from_db()
-        self.assertEqual(self.order.status, "refunded")
+    def test_renewal_failed_payment_cancel(self):
+        self.checkout()
+        renewal = {"id": "in_2", "parent": {"subscription_details": {"subscription": "sub_1"}},
+                   "billing_reason": "subscription_cycle", "amount_paid": 14999}
+        self.send("evt_3", "invoice.paid", renewal)
+        self.assertEqual(len(self.team("yenilendi (ödendi)")), 1)
+        self.send("evt_4", "invoice.payment_failed", {"id": "in_3", "subscription": "sub_1"}, stripe_sub("past_due"))
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.status, "past_due")
+        self.send("evt_5", "customer.subscription.updated", stripe_sub(cancel_at_period_end=True))
+        self.sub.refresh_from_db()
+        self.assertEqual((self.sub.status, self.sub.cancel_at_period_end), ("active", True))
+        self.send("evt_6", "customer.subscription.deleted", stripe_sub("canceled"))
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.status, "canceled")
+        self.assertIsNotNone(self.sub.canceled_at)
+        self.assertEqual(len(self.team("iptal edildi")), 1)
+        self.assertEqual(sum(m.subject.startswith("Your Rising") for m in mail.outbox), 1)  # the welcome went out once
 
 
 @override_settings(GROWTH_API_TOKEN="tok_test", **MAIL)
-class ProgressApiTests(TestCase):
+class StatsApiTests(TestCase):
     def setUp(self):
-        self.order = FollowerOrder.objects.create(email="a@example.com", handle="brand", location="Oslo", package="1k",
-                                                  followers=1000, amount="34.99", status="paid",
-                                                  paid_at=timezone.now() - timedelta(days=5))
+        self.sub = AgencySubscription.objects.create(email="a@example.com", handle="brand", location="Oslo", amount="79.99",
+                                                     status="active", started_at=timezone.now() - timedelta(days=5),
+                                                     current_period_end=timezone.now() + timedelta(days=25))
 
     def post(self, payload, token="tok_test"):
-        return self.client.post(reverse("growth:api_progress"), json.dumps(payload), content_type="application/json",
+        return self.client.post(reverse("growth:api_stats"), json.dumps(payload), content_type="application/json",
                                 HTTP_AUTHORIZATION=f"Bearer {token}")
 
     def test_token_required(self):
-        self.assertEqual(self.post({"order_id": self.order.pk, "delivered": 1}, token="nope").status_code, 401)
-        self.assertEqual(self.client.get(reverse("growth:api_orders")).status_code, 401)
+        self.assertEqual(self.post({"subscription_id": self.sub.pk}, token="nope").status_code, 401)
+        self.assertEqual(self.client.get(reverse("growth:api_subscriptions")).status_code, 401)
 
-    def test_lists_orders_to_deliver(self):
-        r = self.client.get(reverse("growth:api_orders"), HTTP_AUTHORIZATION="Bearer tok_test")
-        self.assertEqual([o["handle"] for o in r.json()["orders"]], ["brand"])
+    def test_lists_active_subscriptions(self):
+        r = self.client.get(reverse("growth:api_subscriptions"), HTTP_AUTHORIZATION="Bearer tok_test")
+        self.assertEqual([s["handle"] for s in r.json()["subscriptions"]], ["brand"])
 
-    def test_progress_updates_then_completes(self):
-        now = timezone.now()
+    def test_daily_stats(self):
+        today = timezone.localdate()
         r = self.post({"updates": [
-            {"order_id": self.order.pk, "delivered": 300, "followers": 1500, "start_followers": 1200, "at": (now - timedelta(days=2)).isoformat()},
-            {"order_id": self.order.pk, "delivered": 650, "followers": 1850, "at": now.isoformat()},
-            {"order_id": 999999, "delivered": 1},
+            {"subscription_id": self.sub.pk, "date": str(today - timedelta(days=2)), "followers": 1200, "likes": 40, "comments": 2},
+            {"subscription_id": self.sub.pk, "date": str(today), "followers": 1650, "likes": 300, "comments": 9},
+            {"subscription_id": 999999, "likes": 1},
+            {"subscription_id": self.sub.pk, "likes": -1},
         ]})
         self.assertEqual(r.status_code, 207)
-        self.order.refresh_from_db()
-        self.assertEqual((self.order.delivered, self.order.current_followers, self.order.start_followers), (650, 1850, 1200))
-        self.assertEqual(self.order.percent, 65)
-        self.assertEqual(OrderProgress.objects.count(), 2)
-        self.post({"order_id": self.order.pk, "delivered": 1000})
-        self.order.refresh_from_db()
-        self.assertEqual(self.order.status, "completed")
-        self.assertTrue(any(m.subject.startswith("Your order is complete") for m in mail.outbox))
+        self.sub.refresh_from_db()
+        self.assertEqual((self.sub.start_followers, self.sub.current_followers, self.sub.gained), (1200, 1650, 450))
+        self.post({"subscription_id": self.sub.pk, "date": str(today), "followers": 1700, "likes": 310, "comments": 9})
+        self.assertEqual(SubscriptionStat.objects.count(), 2)
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.gained, 500)
 
-    def test_dashboard_shows_progress(self):
+    def test_dashboard_shows_the_numbers(self):
         user = get_user_model().objects.create_user("a@example.com", "a@example.com", "pass-word-1")
-        self.order.user = user
-        self.order.save()
-        self.post({"updates": [{"order_id": self.order.pk, "delivered": 200, "at": (timezone.now() - timedelta(days=3)).isoformat()},
-                               {"order_id": self.order.pk, "delivered": 500, "followers": 4200}]})
+        self.sub.user = user
+        self.sub.save()
+        today = timezone.localdate()
+        self.post({"updates": [{"subscription_id": self.sub.pk, "date": str(today - timedelta(days=3)), "followers": 4200, "likes": 500},
+                               {"subscription_id": self.sub.pk, "date": str(today), "followers": 5400, "likes": 1500, "comments": 120}]})
         self.client.force_login(user)
         html = self.client.get(reverse("growth:account") + "?lang=en").content.decode()
-        self.assertIn("50%", html)
-        self.assertIn("500 of 1,000 delivered", html)
+        self.assertIn("1,200", html)  # new followers
+        self.assertIn("2,000", html)  # likes this month
         self.assertIn("<polyline", html)
+        self.assertIn("Renews on", html)
 
 
 @override_settings(**MAIL)
@@ -443,7 +512,7 @@ class GoogleOrderTests(FreshCache, TestCase):
     """Order details first, then "Continue with Google" instead of email + password."""
 
     def google_order(self, **extra):
-        data = order_data(via="google", platform="tiktok", package="5k", **extra)
+        data = order_data(via="google", platform="tiktok", plan="pro", **extra)
         del data["email"], data["password"]
         r = self.client.post(reverse("growth:order"), data)
         self.assertTrue(r["Location"].startswith(reverse("growth:google") + "?lang=en&order=1&next="))
@@ -458,10 +527,10 @@ class GoogleOrderTests(FreshCache, TestCase):
     @override_settings(**STRIPE_OFF)
     def test_request_mode_places_the_filled_in_order(self):
         r = self.google_order()
-        order = FollowerOrder.objects.get()
-        self.assertEqual((order.email, order.platform, order.handle, order.followers, order.status),
-                         ("fan@gmail.com", "tiktok", "my.brand", 5000, "requested"))
-        self.assertIn(f"order={order.pk}", r["Location"])
+        sub = AgencySubscription.objects.get()
+        self.assertEqual((sub.email, sub.platform, sub.handle, sub.plan, sub.status),
+                         ("fan@gmail.com", "tiktok", "my.brand", "pro", "requested"))
+        self.assertIn(f"sub={sub.pk}", r["Location"])
         self.assertNotIn("google_order", self.client.session)
 
     @override_settings(**STRIPE_ON)
@@ -470,7 +539,7 @@ class GoogleOrderTests(FreshCache, TestCase):
         with mock.patch("apps.growth.billing.create_checkout", return_value=session) as create:
             r = self.google_order()
         self.assertEqual((r.status_code, r["Location"]), (303, session.url))  # Google verified the email: no extra step
-        self.assertEqual(create.call_args.args[0].followers, 5000)
+        self.assertEqual(create.call_args.args[0].plan, "pro")
 
     @override_settings(**STRIPE_OFF)
     def test_details_are_still_required(self):

@@ -1,50 +1,53 @@
-from django.contrib import admin, messages
-from django.utils import timezone
+from django.contrib import admin
 from django.utils.html import format_html
 
 from .constants import PROFILE_URL
-from .models import Customer, FollowerOrder, GrowthSubscription, StripeEvent
-from .notifications import confirm_completed
+from .models import AgencySubscription, Customer, FollowerOrder, StripeEvent, SubscriptionStat
 
 
-@admin.register(FollowerOrder)
-class FollowerOrderAdmin(admin.ModelAdmin):
-    list_display = ("pk", "account", "platform", "followers", "amount", "status", "location", "email", "eta", "created_at")
-    list_filter = ("status", "platform", "package", "lang", "created_at")
-    search_fields = ("handle", "email", "location", "stripe_checkout_session_id", "stripe_payment_intent_id")
-    readonly_fields = ("user", "followers", "amount", "paid_at", "completed_at", "stripe_checkout_session_id",
-                       "stripe_payment_intent_id", "notified", "mail_error", "ip", "source_page", "utm_source", "utm_medium",
-                       "utm_campaign", "gclid", "created_at", "updated_at")
+class StatInline(admin.TabularInline):
+    model = SubscriptionStat
+    extra = 0
+    fields = ("date", "followers", "likes", "comments")
+    ordering = ("-date",)
+
+
+@admin.register(AgencySubscription)
+class AgencySubscriptionAdmin(admin.ModelAdmin):
+    list_display = ("pk", "account", "platform", "status", "renews", "location", "email", "amount", "created_at")
+    list_filter = ("status", "platform", "cancel_at_period_end", "lang", "created_at")
+    search_fields = ("handle", "email", "location", "stripe_subscription_id", "stripe_customer_id", "stripe_checkout_session_id")
+    readonly_fields = ("user", "amount", "started_at", "current_period_end", "cancel_at_period_end", "canceled_at",
+                       "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id", "notified", "mail_error",
+                       "ip", "source_page", "utm_source", "utm_medium", "utm_campaign", "gclid", "created_at", "updated_at")
     fieldsets = (
-        (None, {"fields": ("platform", "handle", "location", "package", "followers", "amount", "status", "note")}),
+        (None, {"fields": ("platform", "handle", "location", "amount", "status", "note")}),
         ("Müşteri", {"fields": ("user", "email", "lang")}),
-        ("Ödeme", {"fields": ("paid_at", "completed_at", "stripe_checkout_session_id", "stripe_payment_intent_id")}),
+        ("Abonelik", {"fields": ("started_at", "current_period_end", "cancel_at_period_end", "canceled_at",
+                                 "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id")}),
+        ("Veriler", {"fields": ("start_followers", "current_followers", "stats_at")}),
         ("E-posta", {"fields": ("notified", "mail_error")}),
         ("Kaynak", {"classes": ("collapse",), "fields": ("ip", "source_page", "utm_source", "utm_medium", "utm_campaign",
                                                        "gclid", "created_at", "updated_at")}),
     )
-    actions = ["mark_completed"]
+    inlines = [StatInline]
 
     @admin.display(description="Hesap", ordering="handle")
     def account(self, obj):
         return format_html('<a href="{}" target="_blank" rel="noopener">@{}</a>', PROFILE_URL[obj.platform].format(obj.handle), obj.handle)
 
-    @admin.display(description="Teslim aralığı")
-    def eta(self, obj):
-        if obj.status not in ("paid", "requested"):
+    @admin.display(description="Yenileme / bitiş", ordering="current_period_end")
+    def renews(self, obj):
+        if not obj.current_period_end or obj.status == "canceled":
             return "-"
-        start, end = obj.delivery_window()
-        return f"{start:%d.%m} – {end:%d.%m.%Y}"
+        return f"{'Biter' if obj.cancel_at_period_end else 'Yenilenir'} {obj.current_period_end:%d.%m.%Y}"
 
-    @admin.action(description="Tamamlandı olarak işaretle (müşteriye e-posta gider)")
-    def mark_completed(self, request, queryset):
-        done = 0
-        for order in queryset.filter(status="paid"):
-            order.status, order.completed_at = "completed", timezone.now()
-            order.save(update_fields=["status", "completed_at", "updated_at"])
-            confirm_completed(order)
-            done += 1
-        self.message_user(request, f"{done} sipariş tamamlandı.", messages.SUCCESS)
+
+@admin.register(FollowerOrder)
+class FollowerOrderAdmin(admin.ModelAdmin):
+    list_display = ("pk", "handle", "platform", "followers", "amount", "status", "email", "created_at")
+    list_filter = ("status", "platform")
+    search_fields = ("handle", "email")
 
 
 @admin.register(Customer)
@@ -53,13 +56,6 @@ class CustomerAdmin(admin.ModelAdmin):
     list_filter = ("email_verified", "lang")
     search_fields = ("user__email",)
     raw_id_fields = ("user",)
-
-
-@admin.register(GrowthSubscription)
-class GrowthSubscriptionAdmin(admin.ModelAdmin):
-    list_display = ("instagram", "platform", "location", "email", "status", "notified", "lang", "created_at")
-    list_filter = ("platform", "status", "lang", "created_at")
-    search_fields = ("instagram", "email", "location")
 
 
 @admin.register(StripeEvent)

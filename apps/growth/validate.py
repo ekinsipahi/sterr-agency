@@ -15,6 +15,9 @@ FORBIDDEN = re.compile(r"\bSEO\b|guarantee|garanti|garan[țt]|gwaranc|гаран
                        r"bulkoid|megafamous|useviral|media ?mister|smm panel|\bfree\b|gratis|gratuit|"
                        r"\bpaypal\b|crypto|bitcoin|5[- ]star|★", re.I)
 
+# Prices and delivery windows of the one-time packages the monthly agency package replaced.
+STALE = re.compile(r"34[.,]99|59[.,]99|124[.,]99|229[.,]99|\b(?:7|14|24|30|60)[–-](?:14|24|36|60|120)\b")
+
 
 def load(code):
     ui = import_module(f"apps.growth.i18n.{code}").UI
@@ -30,8 +33,13 @@ def shape(value, skip=("body", "keywords", "geo", "subs")):
     return type(value).__name__
 
 
+def fold(text):
+    """Lowercase for keyword matching; Turkish "İ" lowercases to "i" + a combining dot, drop the dot."""
+    return text.lower().replace("i\u0307", "i")
+
+
 def page_text(page):
-    return json.dumps({k: v for k, v in page.items() if k != "minutes"}, ensure_ascii=False).lower()
+    return fold(json.dumps({k: v for k, v in page.items() if k != "minutes"}, ensure_ascii=False))
 
 
 def check(code):
@@ -48,10 +56,15 @@ def check(code):
     for key, value in ref_ui.items():
         if key in ui and shape(ui[key]) != shape(value):
             problems.append(f"{code} UI[{key!r}] shape differs from English")
-        if key in ui and isinstance(value, str):
-            for ph in re.findall(r"\{[a-z_]+\}", value):
-                if ph not in ui[key]:
+        pairs = [(value, ui.get(key))] if isinstance(value, str) else (
+            list(zip(value, ui[key])) if isinstance(value, (list, tuple)) and key in ui else [])
+        for ref_text, text in pairs:
+            for ph in re.findall(r"\{[a-z_]+\}", ref_text) if isinstance(ref_text, str) else []:
+                if text is not None and ph not in text:
                     problems.append(f"{code} UI[{key!r}] lost placeholder {ph}")
+    everything = json.dumps([ui, pages], ensure_ascii=False)
+    for stale in STALE.findall(everything):
+        problems.append(f"{code}: left over from the one-time packages: {stale!r}")
     if FORBIDDEN.search(json.dumps(ui, ensure_ascii=False)):
         problems.append(f"{code} UI: forbidden word {FORBIDDEN.search(json.dumps(ui, ensure_ascii=False)).group(0)!r}")
 
@@ -64,8 +77,9 @@ def check(code):
         if set(data.get("subs", {})) != set(page_keys) - {"main"}:
             problems.append(f"{where}: subs must cover {sorted(set(page_keys) - {'main'})}")
         slugs = list(data.get("subs", {}).values())
-        if len(set(slugs)) != len(slugs) or any(not re.fullmatch(r"[a-z0-9-]+", s) for s in slugs + [data.get("base", "")]):
-            problems.append(f"{where}: slugs must be unique, lowercase ASCII and hyphens")
+        if len(set(slugs)) != len(slugs) or not re.fullmatch(r"[a-z0-9-]+", data.get("base", "")) or any(
+                not re.fullmatch(r"[a-z0-9-]+|(/[a-z0-9-]+)+/", s) for s in slugs):
+            problems.append(f"{where}: slugs must be unique, lowercase ASCII and hyphens (or /a-path/ for pages of their own)")
         titles = set()
         for page in page_keys:
             p = data.get(page)
@@ -89,8 +103,13 @@ def check(code):
             if other and other in text:
                 problems.append(f"{where}/{page}: mentions {other}")
             for kw in data.get("keywords", {}).get(page, []):
-                if kw.lower() not in text:
+                if fold(kw) not in text:
                     problems.append(f"{where}/{page}: keyword not used: {kw!r}")
+        for key, g in data.get("geo", {}).items():
+            if len(g["title"]) > TITLE_MAX or len(g["description"]) > DESCRIPTION_MAX:
+                problems.append(f"{where}/geo:{key}: title or description too long")
+            if FORBIDDEN.search(page_text(g)):
+                problems.append(f"{where}/geo:{key}: forbidden word {FORBIDDEN.search(page_text(g)).group(0)!r}")
         if len(titles) != len(page_keys):
             problems.append(f"{where}: page titles must be unique")
         if set(data.get("keywords", {})) != set(page_keys):

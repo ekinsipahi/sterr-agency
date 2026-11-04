@@ -1,7 +1,8 @@
-"""Customer accounts: email + password, the order list, email confirmation and password
-reset. Pages follow the visitor's language (?lang=, then the session); emails are English."""
+"""Customer accounts: email + password or Google, the subscriptions dashboard, email
+confirmation and password reset. Pages follow the visitor's language (?lang=, then the session); emails are English."""
 import logging
 import secrets
+from datetime import timedelta
 from urllib.parse import urlencode
 
 import requests
@@ -11,6 +12,7 @@ from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core import signing
 from django.core.cache import cache
+from django.db.models import Sum
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import formats, translation
@@ -23,9 +25,9 @@ from apps.leads.views import _client_ip
 from . import billing
 from .content import CONTENT, PLATFORM_NAMES, PLATFORMS, UI, page_path, ui_for
 from .forms import LoginForm, NewPasswordForm, ResetRequestForm, SignupForm
-from .models import Customer, FollowerOrder
+from .models import AgencySubscription, Customer
 from .notifications import send_password_reset, send_verification
-from .packages import count
+from .plan import count
 from .views import VERIFY_MAX_AGE, VERIFY_SALT, google_enabled, place_order, shell, start_checkout, verify_link
 
 logger = logging.getLogger(__name__)
@@ -79,53 +81,60 @@ def account(request):
     if not request.user.is_authenticated:
         return redirect(f"{reverse('growth:login')}?lang={code}")
     customer, _ = Customer.objects.get_or_create(user=request.user, defaults={"lang": code})
-    orders = []
     ui = UI[code]
-    lang = "nb" if code == "no" else code
-    with translation.override(lang):
-        for o in FollowerOrder.objects.filter(user=request.user).prefetch_related("progress"):
-            start, end = o.delivery_window()
-            orders.append({
-                "o": o, "count": count(o.followers, code), "status": ui[f"st_{o.status}"], "amount": f"${o.amount:.2f}",
-                "created": ui["acc_ordered"].replace("{date}", formats.date_format(o.created_at, "DATE_FORMAT")),
-                "eta": ui["acc_eta"].replace("{start}", formats.date_format(start, "DATE_FORMAT")).replace(
-                    "{end}", formats.date_format(end, "DATE_FORMAT")) if o.status in ("paid", "requested") else "",
-                "delivered": ui["acc_delivered"].replace("{delivered}", count(o.delivered, code)).replace("{total}", count(o.followers, code)),
-                "now": ui["acc_now"].replace("{count}", count(o.current_followers, code)) if o.current_followers is not None else "",
-                "updated": ui["acc_updated"].replace("{date}", formats.date_format(o.progress_at, "DATETIME_FORMAT")) if o.progress_at else "",
-                "chart": _chart(o),
-                "can_pay": o.status == "pending" and billing.enabled(),
+    subs = []
+    with translation.override("nb" if code == "no" else code):
+        def day(value):
+            return formats.date_format(value, "DATE_FORMAT")
+
+        for s in AgencySubscription.objects.filter(user=request.user).exclude(status="canceled", started_at__isnull=True).prefetch_related("stats"):
+            stats = list(s.stats.all())
+            since = (s.current_period_end - timedelta(days=30)).date() if s.current_period_end else None
+            month = [r for r in stats if since is None or r.date > since]
+            gained = s.gained
+            renews = ""
+            if s.current_period_end and s.status in ("active", "past_due"):
+                renews = ui["acc_ends" if s.cancel_at_period_end else "acc_renews"].replace("{date}", day(s.current_period_end))
+            subs.append({
+                "s": s, "status": ui[f"st_{s.status}"], "amount": f"${s.amount:.2f}", "name": ui[f"plan_{s.plan}"],
+                "started": ui["acc_ordered"].replace("{date}", day(s.started_at or s.created_at)),
+                "renews": renews,
+                "tiles": [(count(gained, code) if gained is not None else "–", ui["acc_gained"]),
+                          (count(sum(r.likes for r in month), code), ui["acc_likes"]),
+                          (count(sum(r.comments for r in month), code), ui["acc_comments"])] if stats else [],
+                "now": ui["acc_now"].replace("{count}", count(s.current_followers, code)) if s.current_followers is not None else "",
+                "updated": ui["acc_updated"].replace("{date}", formats.date_format(s.stats_at, "DATETIME_FORMAT")) if s.stats_at else "",
+                "chart": _chart(stats),
+                "can_pay": s.status == "pending" and billing.enabled(),
+                "can_manage": bool(s.stripe_customer_id) and billing.enabled(),
             })
     summary = []
-    if orders:
-        mine = [item["o"] for item in orders]
-        latest = max((o for o in mine if o.current_followers is not None), key=lambda o: o.progress_at, default=None)
+    live = [item["s"] for item in subs if item["s"].started_at]
+    if live:
+        latest = max((s for s in live if s.current_followers is not None), key=lambda s: s.stats_at, default=None)
+        totals = AgencySubscription.objects.filter(pk__in=[s.pk for s in live]).aggregate(
+            likes=Sum("stats__likes"), comments=Sum("stats__comments"))
         summary = [
-            (count(sum(o.delivered for o in mine if o.status in ("paid", "completed")), code), ui["acc_sum_delivered"]),
-            (count(sum(1 for o in mine if o.status == "paid"), code), ui["acc_sum_active"]),
+            (count(sum(s.gained or 0 for s in live), code), ui["acc_sum_gained"]),
+            (count((totals["likes"] or 0) + (totals["comments"] or 0), code), ui["acc_sum_engagement"]),
             (count(latest.current_followers, code) if latest else "–", ui["acc_sum_now"]),
         ]
     flags = {k: request.GET.get(k) for k in ("verify", "verified", "error", "reset")}
-    return render(request, "growth/account.html", _ctx(request, code, "dashboard", orders=orders, summary=summary, customer=customer, flags=flags,
+    return render(request, "growth/account.html", _ctx(request, code, "dashboard", subs=subs, summary=summary, customer=customer, flags=flags,
                                                        payments=billing.enabled(), signup_event=request.session.pop("growth_signup", None),
                                                        needs_verify=settings.GROWTH_VERIFY_EMAIL and not customer.email_verified))
 
 
-def _chart(order, width=320, height=72):
-    """SVG polyline points for delivered-over-time, from payment to the latest reading."""
-    readings = list(order.progress.all())
-    if not readings or not order.followers:
+def _chart(stats, width=320, height=72):
+    """SVG polyline points for the account's follower count, day by day."""
+    readings = [(r.date, r.followers) for r in stats if r.followers is not None]
+    if len(readings) < 2:
         return ""
-    t0 = (order.paid_at or readings[0].at).timestamp()
-    span = max(readings[-1].at.timestamp() - t0, 1)
-    points = [(0.0, float(height))] if order.paid_at and order.paid_at < readings[0].at else []
-    for r in readings:
-        x = (r.at.timestamp() - t0) / span * width
-        y = height - min(r.delivered / order.followers, 1) * height
-        points.append((max(x, 0.0), y))
-    if len(points) < 2:
-        return ""
-    return " ".join(f"{x:.1f},{y:.1f}" for x, y in points)
+    low, high = min(f for _, f in readings), max(f for _, f in readings)
+    first, last = readings[0][0].toordinal(), readings[-1][0].toordinal()
+    xspan, yspan = max(last - first, 1), max(high - low, 1)
+    return " ".join(f"{(d.toordinal() - first) / xspan * width:.1f},{height - (f - low) / yspan * (height - 4) - 2:.1f}"
+                    for d, f in readings)
 
 
 def login_view(request):
@@ -193,14 +202,14 @@ def verify(request, token):
     # The link proves the inbox: sign the person in (often a different browser or the phone).
     if not request.user.is_authenticated or request.user.pk != user.pk:
         login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-    order = FollowerOrder.objects.filter(pk=data.get("o"), user=user, status="pending").first() if data.get("o") else None
-    if order is not None and billing.enabled():
+    sub = AgencySubscription.objects.filter(pk=data.get("s"), user=user, status="pending").first() if data.get("s") else None
+    if sub is not None and billing.enabled():
         try:
-            response = redirect(start_checkout(order, f"{reverse('growth:account')}?lang={order.lang}"))
+            response = redirect(start_checkout(sub, f"{reverse('growth:account')}?lang={sub.lang}"))
             response.status_code = 303
             return response
         except Exception:
-            logger.exception("Stripe checkout failed for order #%s", order.pk)
+            logger.exception("Stripe checkout failed for subscription #%s", sub.pk)
             return redirect(f"{reverse('growth:account')}?lang={code}&error=payment")
     return redirect(f"{reverse('growth:account')}?lang={code}&verified=1")
 
@@ -209,31 +218,51 @@ def verify(request, token):
 def resend_verification(request):
     code = _lang(request)
     if request.user.is_authenticated and not _limited(request, "verify"):
-        order = FollowerOrder.objects.filter(user=request.user, status="pending").first()
-        send_verification(request.user.email, verify_link(request.user, order), order)
+        sub = AgencySubscription.objects.filter(user=request.user, status="pending").first()
+        send_verification(request.user.email, verify_link(request.user, sub), sub)
     return redirect(f"{reverse('growth:account')}?lang={code}&verify=sent")
 
 
 @require_POST
-def pay(request, order_id):
-    """'Pay now' for an order saved earlier (e.g. after a canceled checkout)."""
+def pay(request, sub_id):
+    """'Start now' for a subscription saved earlier (e.g. after a canceled checkout)."""
     code = _lang(request)
     if not request.user.is_authenticated:
         return redirect(f"{reverse('growth:login')}?lang={code}")
-    order = FollowerOrder.objects.filter(pk=order_id, user=request.user, status="pending").first()
-    if order is None or not billing.enabled():
+    sub = AgencySubscription.objects.filter(pk=sub_id, user=request.user, status="pending").first()
+    if sub is None or not billing.enabled():
         return redirect(f"{reverse('growth:account')}?lang={code}")
     customer, _ = Customer.objects.get_or_create(user=request.user, defaults={"lang": code})
     if settings.GROWTH_VERIFY_EMAIL and not customer.email_verified:
-        send_verification(request.user.email, verify_link(request.user, order), order)
+        send_verification(request.user.email, verify_link(request.user, sub), sub)
         return redirect(f"{reverse('growth:account')}?lang={code}&verify=sent")
     try:
-        response = redirect(start_checkout(order, f"{reverse('growth:account')}?lang={code}"))
+        response = redirect(start_checkout(sub, f"{reverse('growth:account')}?lang={code}"))
         response.status_code = 303
         return response
     except Exception:
-        logger.exception("Stripe checkout failed for order #%s", order.pk)
+        logger.exception("Stripe checkout failed for subscription #%s", sub.pk)
         return redirect(f"{reverse('growth:account')}?lang={code}&error=payment")
+
+
+@require_POST
+def billing_portal(request):
+    """Stripe's customer portal: card, invoices, cancel."""
+    code = _lang(request)
+    if not request.user.is_authenticated:
+        return redirect(f"{reverse('growth:login')}?lang={code}")
+    customer = (AgencySubscription.objects.filter(user=request.user).exclude(stripe_customer_id="")
+                .values_list("stripe_customer_id", flat=True).first())
+    back = f"{settings.SITE_URL}{reverse('growth:account')}?lang={code}"
+    if not customer or not billing.enabled():
+        return redirect(back)
+    try:
+        response = redirect(billing.portal_url(customer, back, code))
+        response.status_code = 303
+        return response
+    except Exception:
+        logger.exception("Stripe portal failed for %s", request.user.pk)
+        return redirect(f"{back}&error=payment")
 
 
 def reset_request(request):

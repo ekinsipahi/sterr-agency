@@ -43,7 +43,7 @@ DATA = {
         "faqs": [
             ("Arbetar ni med små kreatörer?", "Ja. Små kreatörer är precis dem vi finns till för: äkta tillväxt betyder mest när du är i början."),
             ("Skaffar ni varumärkessamarbeten åt mig?", "Nej, vi fungerar inte som din manager. Vi bygger den äkta publik som får varumärken att vilja jobba med dig."),
-            ("Måste jag skriva på ett kontrakt?", "Nej. Du beställer ett paket när du vill växa, en betalning i taget."),
+            ("Måste jag skriva på ett kontrakt?", "Nej. Byråpaketet löper månadsvis och du kan säga upp det när du vill från ditt konto."),
             ("Behöver ni mitt lösenord?", "Aldrig. Bara ditt användarnamn."),
         ],
     },
@@ -151,7 +151,7 @@ DATA = {
         "faqs": [
             ("Är 1 000 följare för lite för en byrå?", "För en managementbyrå oftast ja. För tillväxt är det den perfekta tiden att börja."),
             ("Kan en liten influencer tjäna pengar på varumärken?", "Ja, särskilt på lokala varumärken som värdesätter en äkta publik i närheten."),
-            ("Vad kostar Sterr för en liten kreatör?", "Paketen börjar på 1 000 äkta följare för $34.99, som engångsbetalning."),
+            ("Vad kostar Sterr för en liten kreatör?", "Byråpaketet kostar $79.99 i månaden: oftast 1 000–4 000 äkta följare, med likes och kommentarer från samma människor."),
         ],
     },
 }

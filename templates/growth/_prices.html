@@ -1,4 +1,4 @@
 <div class="price-strip mt-m reveal">
-  {% for pk in packages %}<a class="price-chip{% if pk.popular %} price-chip--popular{% endif %}" href="#start" data-pick="{{ pk.key }}"><b>{{ pk.count }}</b><span class="price-chip__unit">{{ platform_name }} {{ gu.followers }}</span><span class="price-chip__price">{{ pk.amount }}</span><span class="price-chip__days">{{ pk.delivery }}</span></a>{% endfor %}
+  {% for pk in plans %}<a class="price-chip{% if pk.popular %} price-chip--popular{% endif %}" href="#start" data-pick="{{ pk.key }}"><span class="price-chip__unit">{{ pk.name }}</span><b>{{ pk.amount }}<small>{{ gu.per_month }}</small></b><span class="price-chip__days">{{ pk.headline }}</span></a>{% endfor %}
 </div>
-<p class="muted price-strip__note reveal">{{ gu.policy }}</p>
+<p class="muted price-strip__note reveal">{{ gu.agency_line }} {{ gu.policy }}</p>

@@ -33,35 +33,37 @@
 
     {% if summary %}<div class="stats reveal">{% for value, label in summary %}<div class="stat"><div class="stat__value">{{ value }}</div><div class="stat__label">{{ label }}</div></div>{% endfor %}</div>{% endif %}
     <h2 class="h3 mt-m reveal">{{ gu.acc_orders }}</h2>
-    {% if not orders %}<p class="muted reveal">{{ gu.acc_empty }}</p>{% endif %}
+    {% if not subs %}<p class="muted reveal">{{ gu.acc_empty }}</p>{% endif %}
     <div class="orders">
-      {% for item in orders %}{% with o=item.o %}
-      <article class="order-card reveal order-card--{{ o.status }}">
+      {% for item in subs %}{% with s=item.s %}
+      <article class="order-card reveal order-card--{{ s.status }}">
         <header class="order-card__head">
           <div>
-            <p class="order-card__title">{{ item.count }} {{ o.platform_name }} {{ gu.followers }} <span class="muted">· @{{ o.handle }}</span></p>
-            <p class="muted order-card__sub">{{ item.created }} · {{ o.location }} · {{ item.amount }}</p>
+            <p class="order-card__title">{{ item.name }} · {{ s.platform_name }} <span class="muted">· @{{ s.handle }}</span></p>
+            <p class="muted order-card__sub">{{ item.started }} · {{ s.location }} · {{ item.amount }}{{ gu.per_month }}{% if item.renews %} · {{ item.renews }}{% endif %}</p>
           </div>
-          <span class="status status--{{ o.status }}">{{ item.status }}</span>
+          <span class="status status--{{ s.status }}">{{ item.status }}</span>
         </header>
-        {% if o.status == "paid" or o.status == "completed" %}
-        <div class="progress-bar" role="progressbar" aria-valuenow="{{ o.percent }}" aria-valuemin="0" aria-valuemax="100"><span style="width:{{ o.percent }}%"></span></div>
-        <div class="order-card__stats">
-          <span><b>{{ o.percent }}%</b> · {{ item.delivered }}</span>
-          {% if item.now %}<span>{{ item.now }}</span>{% endif %}
-          {% if item.eta %}<span>{{ item.eta }}</span>{% endif %}
-        </div>
+        {% if s.status == "active" or s.status == "past_due" or s.status == "canceled" %}
+        {% if item.tiles %}
+        <div class="order-card__tiles">{% for value, label in item.tiles %}<div class="tile"><b>{{ value }}</b><span>{{ label }}</span></div>{% endfor %}</div>
         {% if item.chart %}
         <figure class="order-chart">
           <figcaption class="muted">{{ gu.acc_chart }}</figcaption>
           <svg viewBox="0 0 320 72" preserveAspectRatio="none" aria-hidden="true"><polyline points="{{ item.chart }}" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>
         </figure>
         {% endif %}
-        {% if item.updated %}<p class="muted order-card__sub">{{ item.updated }}</p>{% endif %}
-        {% elif item.eta %}<p class="muted order-card__sub">{{ item.eta }}</p>{% endif %}
-        {% if item.can_pay %}
-        <form method="post" action="{% url 'growth:pay' o.pk %}">{% csrf_token %}<input type="hidden" name="lang" value="{{ code }}"><button class="btn btn--signal btn--sm" type="submit">{{ gu.acc_pay }} · {{ item.amount }}</button></form>
+        <div class="order-card__stats">{% if item.now %}<span>{{ item.now }}</span>{% endif %}{% if item.updated %}<span class="muted">{{ item.updated }}</span>{% endif %}</div>
+        {% else %}<p class="muted order-card__sub">{{ gu.acc_no_data }}</p>{% endif %}
         {% endif %}
+        <div class="btn-row">
+        {% if item.can_pay %}
+        <form method="post" action="{% url 'growth:pay' s.pk %}">{% csrf_token %}<input type="hidden" name="lang" value="{{ code }}"><button class="btn btn--signal btn--sm" type="submit">{{ gu.acc_pay }} · {{ item.amount }}{{ gu.per_month }}</button></form>
+        {% endif %}
+        {% if item.can_manage and s.status != "canceled" %}
+        <form method="post" action="{% url 'growth:billing' %}">{% csrf_token %}<input type="hidden" name="lang" value="{{ code }}"><button class="btn btn--ghost btn--sm" type="submit">{{ gu.acc_manage }}</button></form>
+        {% endif %}
+        </div>
       </article>
       {% endwith %}{% endfor %}
     </div>

@@ -18,11 +18,11 @@ from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
 from . import billing
-from .content import ACCOUNT_NAV, CONTENT, CREATOR_PAGES, CREATORS, GUIDES, UI, PAGES, PLATFORM_NAMES, PLATFORMS, alternates, creator_alternates, creator_path, lang_links, page_path, ui_for
+from .content import has_page, ACCOUNT_NAV, CONTENT, CREATOR_PAGES, CREATORS, GROUPS, GUIDES, PAGE_PLAN, UI, PAGES, PLATFORM_NAMES, PLATFORMS, alternates, creator_alternates, creator_path, lang_links, page_path, ui_for
 from .forms import OrderForm
-from .models import Customer, FollowerOrder, StripeEvent
+from . import plan
+from .models import AgencySubscription, Customer, StripeEvent
 from .notifications import acknowledge_request, confirm_payment, notify_team, send_verification
-from .packages import DEFAULT_PACKAGE, PACKAGE_BY_KEY, count, for_page
 
 logger = logging.getLogger(__name__)
 
@@ -44,14 +44,13 @@ def shell(code):
     return ctx
 
 
-def verify_link(user, order=None):
-    token = signing.dumps({"u": user.pk, "e": user.email, "o": order.pk if order else None}, salt=VERIFY_SALT)
+def verify_link(user, sub=None):
+    token = signing.dumps({"u": user.pk, "e": user.email, "s": sub.pk if sub else None}, salt=VERIFY_SALT)
     return settings.SITE_URL + reverse("growth:verify", args=[token])
 
 
 def _valid_page(code, page, platform):
-    kind, _, geo = page.partition(":")
-    return kind in PAGES or (kind == "geo" and geo in CONTENT[platform][code].get("geo", {}))
+    return has_page(code, page, platform)
 
 
 def _platform(value):
@@ -67,23 +66,23 @@ def _context(request, code, page, platform="instagram", form=None):
         p.update(data["geo"][geo])
     elif kind != "main":
         p = data[kind]
-    pack = kind[5:] if kind.startswith("pack_") else None
-    selected = (form.data.get("package") if form is not None and form.is_bound else None) or pack or DEFAULT_PACKAGE
     other = [q for q in PLATFORMS if q != platform and code in CONTENT[q]]
+    selected = (form.data.get("plan") if form is not None and form.is_bound else None) or request.GET.get("plan") or PAGE_PLAN.get(kind)
     ctx = shell(code)
     ctx.update({
         "page": page, "kind": kind, "g": data, "gu": gu, "p": p,
         "platform": platform, "platform_name": PLATFORM_NAMES[platform], "followers_active": True,
         "faqs": p.get("faqs"),
-        "packages": [{**pk, "delivery": gu["delivery"].replace("{min}", str(pk["days"][0])).replace("{max}", str(pk["days"][1]))}
-                     for pk in for_page(code)],
-        "selected_package": selected if selected in PACKAGE_BY_KEY else DEFAULT_PACKAGE,
-        "page_package": next((pk for pk in for_page(code) if pk["key"] == pack), None),
+        "plans": plan.for_page(code, gu),
+        "selected_plan": selected if selected in plan.PLAN_BY_KEY else plan.DEFAULT_PLAN,
+        "lowest_price": plan.money(plan.LOWEST),
         "form": form or OrderForm(ui=gu, user=request.user, initial={"location": p.get("place", "")}),
         "lang_links": lang_links(page, platform),
         "alternates": alternates(page, platform),
         "canonical_url": settings.SITE_URL + page_path(code, page, platform),
-        "hub": [{"key": k, "url": page_path(code, k, platform), "p": data[k]} for k in PAGES if k != kind],
+        "hub": [{"key": k, "url": page_path(code, k, platform), "p": data[k]} for k in ("main",) + GROUPS["followers"][:2] if k != kind],
+        "hub_groups": [(gu["groups"][g], items) for g, keys in GROUPS.items() if "groups" in gu and (items := [
+            {"url": page_path(code, k, platform), "p": data[k], "here": k == kind} for k in keys if has_page(code, k, platform)])],
         "other_platform": [{"name": PLATFORM_NAMES[q], "url": page_path(code, "main", q), "p": CONTENT[q][code]["main"],
                             "label": ui_for(code, q)["other_platform"]} for q in other],
         "creators_link": {"url": creator_path(code, "main"), "p": CREATORS[code]["main"], "label": CREATORS[code]["nav"]} if code in CREATORS else None,
@@ -130,13 +129,15 @@ def creators(request, lang, page):
     return render(request, "growth/creators.html", ctx)
 
 
-def start_checkout(order, cancel_path):
-    """Create the Stripe Checkout session for a pending order and return its URL."""
-    query = f"?lang={order.lang}&platform={order.platform}&order={order.pk}"
+def start_checkout(sub, cancel_path):
+    """Create the Stripe Checkout session for a pending subscription and return its URL."""
+    query = f"?lang={sub.lang}&platform={sub.platform}&sub={sub.pk}"
     success_url = f"{settings.SITE_URL}{reverse('growth:success')}{query}&session_id={{CHECKOUT_SESSION_ID}}"
-    session = billing.create_checkout(order, success_url, settings.SITE_URL + cancel_path)
-    order.stripe_checkout_session_id = session.id
-    order.save(update_fields=["stripe_checkout_session_id", "updated_at"])
+    customer = (AgencySubscription.objects.filter(user_id=sub.user_id).exclude(stripe_customer_id="")
+                .values_list("stripe_customer_id", flat=True).first()) if sub.user_id else ""
+    session = billing.create_checkout(sub, success_url, settings.SITE_URL + cancel_path, customer=customer or "")
+    sub.stripe_checkout_session_id = session.id
+    sub.save(update_fields=["stripe_checkout_session_id", "updated_at"])
     return session.url
 
 
@@ -146,7 +147,7 @@ def see_other(url):
     return response
 
 
-ORDER_FIELDS = ("package", "handle", "location")
+ORDER_FIELDS = ("plan", "handle", "location")
 SOURCE_FIELDS = ("source_page", "utm_source", "utm_medium", "utm_campaign", "gclid")
 
 
@@ -205,62 +206,86 @@ def order(request):
 
 
 def place_order(request, user, pending):
-    """Create the order for a signed-in user and send it on: Stripe Checkout, the email
-    confirmation step, or (payments off) a request. None when Stripe can't be reached."""
+    """Create the subscription for a signed-in user and send it on: Stripe Checkout, the
+    email confirmation step, or (payments off) a request. None when Stripe can't be reached."""
     code, platform = pending["lang"], pending["platform"]
     customer, _ = Customer.objects.get_or_create(user=user, defaults={"lang": code})
-    package = PACKAGE_BY_KEY[pending["package"]]
-    order = FollowerOrder.objects.create(
-        user=user, email=user.email, platform=platform, handle=pending["handle"], location=pending["location"],
-        package=package["key"], followers=package["followers"], amount=package["price"], lang=code, ip=pending.get("ip"),
-        **{f: pending.get(f, "") for f in SOURCE_FIELDS},
-    )
+    package = plan.PLAN_BY_KEY[pending["plan"]]
+    fields = {"email": user.email, "location": pending["location"], "plan": package["key"], "amount": package["price"], "lang": code,
+              "ip": pending.get("ip"), **{f: pending.get(f, "") for f in SOURCE_FIELDS}}
+    # Trying again for the same account (e.g. after a canceled checkout) reuses the unpaid one.
+    sub = AgencySubscription.objects.filter(user=user, platform=platform, handle=pending["handle"], status="pending").first()
+    if sub is None:
+        sub = AgencySubscription.objects.create(user=user, platform=platform, handle=pending["handle"], **fields)
+    else:
+        for name, value in fields.items():
+            setattr(sub, name, value)
+        sub.save()
     if billing.enabled():
         if settings.GROWTH_VERIFY_EMAIL and not customer.email_verified:
             # A confirmed email before the first payment keeps card-testing scripts out.
-            send_verification(user.email, verify_link(user, order), order)
+            send_verification(user.email, verify_link(user, sub), sub)
             return redirect(f"{reverse('growth:account')}?lang={code}&verify=sent")
         try:
-            return see_other(start_checkout(order, f"{page_path(code, pending['page'], platform)}?canceled=1#start"))
+            return see_other(start_checkout(sub, f"{page_path(code, pending['page'], platform)}?canceled=1#start"))
         except Exception:
-            logger.exception("Stripe checkout failed for order #%s", order.pk)
+            logger.exception("Stripe checkout failed for subscription #%s", sub.pk)
             return None
 
     # Payments off: a request. Team email via Resend, English auto-reply to the customer.
-    order.status = "requested"
-    team = notify_team(order, "request")
-    customer_mail = acknowledge_request(order)
-    order.notified = bool(team)
-    order.mail_error = "\n".join(f"{who}: {r.error}" for who, r in (("Ekip", team), ("Müşteri", customer_mail)) if not r)
-    order.save(update_fields=["status", "notified", "mail_error", "updated_at"])
+    sub.status = "requested"
+    team = notify_team(sub, "request")
+    customer_mail = acknowledge_request(sub)
+    sub.notified = bool(team)
+    sub.mail_error = "\n".join(f"{who}: {r.error}" for who, r in (("Ekip", team), ("Müşteri", customer_mail)) if not r)
+    sub.save(update_fields=["status", "notified", "mail_error", "updated_at"])
     request.session["growth_lead"] = {
-        "lead_id": f"{platform[:2]}-{order.pk}", "form_id": f"{platform}_followers", "language": code,
-        "value": float(order.amount), "currency": "USD", "package": order.package, "lead_location": order.location[:40],
-        "user_data": hashed_user_data(order.email, ""),
+        "lead_id": f"{platform[:2]}-{sub.pk}", "form_id": f"{platform}_followers", "language": code,
+        "value": float(sub.amount), "currency": "USD", "package": sub.plan, "lead_location": sub.location[:40],
+        "user_data": hashed_user_data(sub.email, ""),
     }
-    return redirect(f"{reverse('growth:success')}?lang={code}&platform={platform}&order={order.pk}")
+    return redirect(f"{reverse('growth:success')}?lang={code}&platform={platform}&sub={sub.pk}")
 
 
 def google_enabled():
     return bool(settings.GOOGLE_OAUTH_CLIENT_ID and settings.GOOGLE_OAUTH_CLIENT_SECRET)
 
 
-def mark_paid(order_id, payment_intent=""):
-    """Pending/requested -> paid, once; sends the receipt and the team note on that transition."""
+STRIPE_STATUS = {"active": "active", "trialing": "active", "past_due": "past_due", "unpaid": "past_due",
+                 "canceled": "canceled", "incomplete_expired": "canceled"}
+
+
+def sync(stripe_sub, sub_id=None):
+    """Bring our subscription in line with Stripe's. The first time it turns active the
+    team note and the customer's welcome go out. Returns the subscription (or None)."""
+    sub_id = sub_id or _sub_id(stripe_sub.get("metadata") or {})
+    first_payment = False
     with transaction.atomic():
-        order = FollowerOrder.objects.select_for_update().filter(pk=order_id).first()
-        if order is None or order.status not in ("pending", "requested"):
-            return order
-        order.status, order.paid_at = "paid", timezone.now()
-        order.stripe_payment_intent_id = payment_intent or order.stripe_payment_intent_id
-        order.save()
-    if order.user_id:
-        Customer.objects.filter(user_id=order.user_id).update(email_verified=True)  # paid through the emailed link
-    team, receipt = notify_team(order, "paid"), confirm_payment(order)
-    order.notified = bool(team)
-    order.mail_error = "\n".join(f"{who}: {r.error}" for who, r in (("Ekip", team), ("Müşteri", receipt)) if not r)
-    order.save(update_fields=["notified", "mail_error", "updated_at"])
-    return order
+        qs = AgencySubscription.objects.select_for_update()
+        sub = qs.filter(stripe_subscription_id=stripe_sub["id"]).first() or (qs.filter(pk=sub_id).first() if sub_id else None)
+        if sub is None:
+            logger.warning("Stripe subscription %s without a subscription of ours", stripe_sub.get("id"))
+            return None
+        status = STRIPE_STATUS.get(stripe_sub.get("status"))
+        sub.stripe_subscription_id = stripe_sub["id"]
+        sub.stripe_customer_id = stripe_sub.get("customer") or sub.stripe_customer_id
+        sub.current_period_end = billing.period_end(stripe_sub) or sub.current_period_end
+        sub.cancel_at_period_end = bool(stripe_sub.get("cancel_at_period_end"))
+        if status:
+            if status == "active" and sub.started_at is None:
+                sub.started_at, first_payment = timezone.now(), True
+            if status == "canceled" and sub.status != "canceled":
+                sub.canceled_at = timezone.now()
+            sub.status = status
+        sub.save()
+    if first_payment:
+        if sub.user_id:
+            Customer.objects.filter(user_id=sub.user_id).update(email_verified=True)  # paid through the emailed link
+        team, receipt = notify_team(sub, "paid"), confirm_payment(sub)
+        sub.notified = bool(team)
+        sub.mail_error = "\n".join(f"{who}: {r.error}" for who, r in (("Ekip", team), ("Müşteri", receipt)) if not r)
+        sub.save(update_fields=["notified", "mail_error", "updated_at"])
+    return sub
 
 
 def success(request):
@@ -269,73 +294,81 @@ def success(request):
     code = code if code in CONTENT[platform] else "en"
     ctx = _context(request, code, "main", platform)
     ctx["robots"] = "noindex, nofollow"
-    order, purchase = None, None
-    order_id = request.GET.get("order", "")
+    sub, purchase = None, None
+    sub_id = request.GET.get("sub", "")
     session_id = request.GET.get("session_id", "")
-    if order_id.isdigit() and request.user.is_authenticated:
-        order = FollowerOrder.objects.filter(pk=int(order_id), user=request.user).first()
-    if order is not None and session_id and billing.enabled() and session_id == order.stripe_checkout_session_id:
+    if sub_id.isdigit() and request.user.is_authenticated:
+        sub = AgencySubscription.objects.filter(pk=int(sub_id), user=request.user).first()
+    if sub is not None and session_id and billing.enabled() and session_id == sub.stripe_checkout_session_id:
         try:
             session = billing.retrieve_checkout(session_id)
+            if session.status == "complete" and session.payment_status == "paid" and session.subscription:
+                sub = sync(billing.retrieve_subscription(session.subscription), sub.pk) or sub
         except Exception:
-            logger.exception("Could not retrieve checkout session")
-            session = None
-        if session is not None and session.status == "complete" and session.payment_status == "paid":
-            order = mark_paid(order.pk, session.payment_intent or "")
-            seen = request.session.get("growth_purchases", [])
-            if session_id not in seen:
-                purchase = {
-                    "transaction_id": session.id, "value": float(order.amount), "currency": "USD", "language": code,
-                    "items": [{"item_id": f"{platform}_{order.package}", "item_name": f"{order.followers} {PLATFORM_NAMES[platform]} followers",
-                               "price": float(order.amount), "quantity": 1}],
-                    "user_data": hashed_user_data(order.email, ""),
-                }
-                request.session["growth_purchases"] = (seen + [session_id])[-10:]
-    paid = order is not None and order.status in ("paid", "completed")
+            logger.exception("Could not confirm checkout session")
+        seen = request.session.get("growth_purchases", [])
+        if sub.status == "active" and session_id not in seen:
+            purchase = {
+                "transaction_id": session_id, "value": float(sub.amount), "currency": "USD", "language": code,
+                "items": [{"item_id": f"{platform}_{sub.plan}", "item_name": f"{PLATFORM_NAMES[platform]} {sub.get_plan_display()}",
+                           "price": float(sub.amount), "quantity": 1}],
+                "user_data": hashed_user_data(sub.email, ""),
+            }
+            request.session["growth_purchases"] = (seen + [session_id])[-10:]
+    paid = sub is not None and sub.status == "active"
     text = ""
-    if order is not None:
-        low, high = order.days
-        text = (ctx["gu"]["success_text"] if paid else ctx["gu"]["pending_text"])
-        text = text.replace("{followers}", count(order.followers, code))
-        text = text.replace("{handle}", order.handle).replace("{min}", str(low)).replace("{max}", str(high))
-    ctx.update(order=order, paid=paid, success_text=text, purchase_event=purchase,
+    if sub is not None:
+        text = (ctx["gu"]["success_text"] if paid else ctx["gu"]["pending_text"]).replace("{handle}", sub.handle).replace(
+            "{package}", ctx["gu"][f"plan_{sub.plan}"])
+    ctx.update(sub=sub, paid=paid, success_text=text, purchase_event=purchase,
                lead_event=request.session.pop("growth_lead", None), signup_event=request.session.pop("growth_signup", None))
     return render(request, "growth/success.html", ctx)
 
 
 # --- Stripe webhooks --------------------------------------------------------------
 
-def _order_id(obj):
-    ref = obj.get("client_reference_id") or (obj.get("metadata") or {}).get("order_id")
+def _sub_id(obj):
+    ref = obj.get("client_reference_id") or (obj.get("metadata") or {}).get("subscription_id") or obj.get("subscription_id")
     return int(ref) if ref and str(ref).isdigit() else None
 
 
-def _on_checkout_paid(obj):
-    if obj.get("mode") != "payment" or obj.get("payment_status") != "paid":
+def _on_checkout(obj):
+    if obj.get("mode") != "subscription" or obj.get("payment_status") != "paid" or not obj.get("subscription"):
         return
-    order_id = _order_id(obj)
-    if order_id is None:
-        logger.warning("Checkout %s without an order id", obj.get("id"))
-        return
-    mark_paid(order_id, obj.get("payment_intent") or "")
+    sync(billing.retrieve_subscription(obj["subscription"]), _sub_id(obj))
 
 
-def _on_refund(obj):
-    intent = obj.get("payment_intent")
-    order = FollowerOrder.objects.filter(stripe_payment_intent_id=intent).first() if intent else None
-    if order is None and (obj.get("metadata") or {}).get("order_id", "").isdigit():
-        order = FollowerOrder.objects.filter(pk=int(obj["metadata"]["order_id"])).first()
-    if order is None or order.status == "refunded":
+def _on_invoice_paid(obj):
+    """Every paid invoice moves the period on; a monthly renewal also tells the team."""
+    stripe_id = billing.invoice_subscription(obj)
+    if not stripe_id:
         return
-    order.status = "refunded"
-    order.save(update_fields=["status", "updated_at"])
-    notify_team(order, "refunded")
+    was_active = AgencySubscription.objects.filter(stripe_subscription_id=stripe_id, status="active").exists()
+    sub = sync(billing.retrieve_subscription(stripe_id))
+    if sub is not None and was_active and obj.get("billing_reason") == "subscription_cycle":
+        notify_team(sub, "renewed", amount=obj.get("amount_paid"))
+
+
+def _on_invoice_failed(obj):
+    stripe_id = billing.invoice_subscription(obj)
+    if stripe_id:
+        sync(billing.retrieve_subscription(stripe_id))  # Stripe has it as past_due now
+
+
+def _on_subscription(obj):
+    before = AgencySubscription.objects.filter(stripe_subscription_id=obj.get("id")).values_list("status", flat=True).first()
+    sub = sync(obj)
+    if sub is not None and before and before != "canceled" and sub.status == "canceled":
+        notify_team(sub, "canceled")
 
 
 HANDLERS = {
-    "checkout.session.completed": _on_checkout_paid,
-    "checkout.session.async_payment_succeeded": _on_checkout_paid,
-    "charge.refunded": _on_refund,
+    "checkout.session.completed": _on_checkout,
+    "checkout.session.async_payment_succeeded": _on_checkout,
+    "invoice.paid": _on_invoice_paid,
+    "invoice.payment_failed": _on_invoice_failed,
+    "customer.subscription.updated": _on_subscription,
+    "customer.subscription.deleted": _on_subscription,
 }
 
 

@@ -45,7 +45,7 @@ DATA = {
         "faqs": [
             ("Travaillez-vous avec les petits comptes ?", "Oui. Les petits comptes sont exactement notre public : une vraie croissance compte le plus quand on démarre."),
             ("Me trouvez-vous des partenariats avec des marques ?", "Non, nous ne jouons pas le rôle de manager. Nous faisons grandir la vraie audience qui donne envie aux marques de travailler avec vous."),
-            ("Dois-je signer un contrat ?", "Non. Vous commandez un pack quand vous voulez de la croissance, un paiement à la fois."),
+            ("Dois-je signer un contrat ?", "Non. Le pack agence est mensuel et vous pouvez le résilier à tout moment depuis votre compte."),
             ("Avez-vous besoin de mon mot de passe ?", "Jamais. Seulement votre nom d'utilisateur."),
         ],
     },
@@ -153,7 +153,7 @@ DATA = {
         "faqs": [
             ("1 000 abonnés, est-ce trop peu pour une agence ?", "Pour une agence de management, généralement oui. Pour la croissance, c'est le moment idéal pour commencer."),
             ("Un petit compte peut-il gagner de l'argent avec les marques ?", "Oui, surtout avec des marques locales qui apprécient une audience réelle et proche."),
-            ("Combien coûte Sterr pour un petit compte ?", "Les packs commencent à 1 000 vrais abonnés pour $34.99, en paiement unique."),
+            ("Combien coûte Sterr pour un petit compte ?", "Le pack agence coûte $79.99 par mois : en général 1 000 à 4 000 vrais abonnés, avec les likes et les commentaires des mêmes personnes."),
         ],
     },
 }

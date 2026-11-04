@@ -120,7 +120,8 @@ def intl_sitemap_urls():
 def growth_sitemap_urls():
     """(path, priority, alternates, section) for the follower pages and the creators hub in every language."""
     from apps.growth.content import alternates as growth_alternates, routes as growth_routes
-    prio = {"main": "0.9", "real": "0.8", "pricing": "0.8", "agency": "0.7", "geo": "0.7"}
+    prio = {"main": "0.9", "packages": "0.9", "likes": "0.9", "views": "0.9", "comments": "0.8", "real": "0.8", "pricing": "0.8",
+            "views_reels": "0.8", "likes_monthly": "0.8", "agency": "0.7", "geo": "0.7"}
     from apps.growth.content import creator_alternates, creator_routes
     rows = [("/" + route, prio.get(page.partition(":")[0], "0.6"), growth_alternates(page, platform), platform)
             for route, code, page, platform in growth_routes()]

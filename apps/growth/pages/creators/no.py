@@ -44,7 +44,7 @@ DATA = {
         "faqs": [
             ("Jobber dere med små innholdsskapere?", "Ja. Små innholdsskapere er nettopp dem vi er til for: ekte vekst betyr mest når du er i startfasen."),
             ("Skaffer dere meg samarbeidsavtaler med merkevarer?", "Nei, vi fungerer ikke som manageren din. Vi bygger det ekte publikummet som får merkevarer til å ville jobbe med deg."),
-            ("Må jeg signere en kontrakt?", "Nei. Du bestiller en pakke når du vil vokse, én betaling om gangen."),
+            ("Må jeg signere en kontrakt?", "Nei. Byråpakken går månedlig, og du kan si den opp når som helst fra kontoen din."),
             ("Trenger dere passordet mitt?", "Aldri. Bare brukernavnet ditt."),
         ],
     },
@@ -152,7 +152,7 @@ DATA = {
         "faqs": [
             ("Er 1000 følgere for lite for et byrå?", "For et managementbyrå, som regel ja. For vekst er det det perfekte tidspunktet å starte."),
             ("Kan en liten influencer tjene penger på merkevarer?", "Ja, særlig på lokale merkevarer som verdsetter et ekte publikum i nærheten."),
-            ("Hva koster Sterr for en liten innholdsskaper?", "Pakkene starter på 1000 ekte følgere for $34.99, som en engangsbetaling."),
+            ("Hva koster Sterr for en liten innholdsskaper?", "Byråpakken koster $79.99 i måneden: vanligvis 1000–4000 ekte følgere, med likes og kommentarer fra de samme menneskene."),
         ],
     },
 }

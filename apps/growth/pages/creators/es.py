@@ -44,7 +44,7 @@ DATA = {
         "faqs": [
             ("¿Trabajáis con cuentas pequeñas?", "Sí. Las cuentas pequeñas son justo para quienes trabajamos: el crecimiento real importa más cuando estás empezando."),
             ("¿Me conseguís acuerdos con marcas?", "No, no hacemos de representantes. Hacemos crecer el público real que hace que las marcas quieran trabajar contigo."),
-            ("¿Tengo que firmar un contrato?", "No. Pides un paquete cuando quieres crecer, un pago cada vez."),
+            ("¿Tengo que firmar un contrato?", "No. El paquete de agencia es mensual y puedes cancelarlo cuando quieras desde tu cuenta."),
             ("¿Hace falta mi contraseña?", "Nunca. Solo tu usuario."),
         ],
     },
@@ -152,7 +152,7 @@ DATA = {
         "faqs": [
             ("¿1.000 seguidores es muy poco para una agencia?", "Para una agencia de representación, normalmente sí. Para crecer, es el momento perfecto para empezar."),
             ("¿Una cuenta pequeña puede ganar dinero con marcas?", "Sí, sobre todo con marcas locales que valoran un público real y cercano."),
-            ("¿Cuánto cuesta Sterr para una cuenta pequeña?", "Los paquetes empiezan en 1.000 seguidores reales por $34.99, pago único."),
+            ("¿Cuánto cuesta Sterr para una cuenta pequeña?", "El paquete de agencia cuesta $79.99 al mes: normalmente 1.000–4.000 seguidores reales, con likes y comentarios de esas mismas personas."),
         ],
     },
 }

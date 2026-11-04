@@ -5,10 +5,29 @@ PLATFORMS = ("instagram", "tiktok")
 PLATFORM_NAMES = {"instagram": "Instagram", "tiktok": "TikTok"}
 PROFILE_URL = {"instagram": "https://www.instagram.com/{}/", "tiktok": "https://www.tiktok.com/@{}"}
 
+# Landing pages for "buy 1000 / 2000 / … followers": how the agency package gets you there.
 PACKAGE_PAGES = ("pack_1k", "pack_2k", "pack_3k", "pack_5k", "pack_10k")
 # main is the hub: every other page links back to it and it links to all of them.
-PAGES = ("main", "real", "pricing") + PACKAGE_PAGES + ("agency", "non_drop", "guide_speed", "guide_buy", "legit")
-GUIDES = ("guide_speed", "guide_buy")
+FOLLOWER_PAGES = ("main", "real", "pricing") + PACKAGE_PAGES + ("agency", "non_drop", "guide_speed", "guide_buy", "legit")
+# Everything else we sell as part of the influencer packages, each with its own top-level
+# path (subs value starting with "/"), plus the guides that lead to them.
+SERVICE_PAGES = ("packages", "likes", "likes_monthly", "likes_gradual", "likes_reels", "views", "views_reels",
+                 "views_story", "comments", "comments_custom")
+BLOG_PAGES = ("instant", "blog_choose_likes", "blog_views_money", "blog_still_buy", "blog_comment_limit", "blog_more_views")
+PAGES = FOLLOWER_PAGES + SERVICE_PAGES + BLOG_PAGES
+GUIDES = ("guide_speed", "guide_buy") + BLOG_PAGES
+# The hub groups pages like this; each group has a label in the UI ("groups").
+GROUPS = {
+    "followers": FOLLOWER_PAGES[1:],
+    "packages": ("packages",),
+    "likes": ("likes", "likes_monthly", "likes_gradual", "likes_reels"),
+    "views": ("views", "views_reels", "views_story"),
+    "comments": ("comments", "comments_custom"),
+    "guides": BLOG_PAGES,
+}
+# Which package a page preselects in the order form.
+PAGE_PLAN = {"pack_1k": "starter", "pack_2k": "rising", "pack_3k": "rising", "pack_5k": "pro", "pack_10k": "pro",
+             "packages": "rising"}
 # The platform-independent "influencer agency for creators" hub and its guides.
 CREATOR_PAGES = ("main", "guide_what", "guide_red_flags", "guide_signed", "guide_small")
 

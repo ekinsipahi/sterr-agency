@@ -2,7 +2,7 @@ import re
 
 from django import forms
 
-from .packages import CHOICES as PACKAGE_CHOICES, DEFAULT_PACKAGE
+from .plan import CHOICES as PLAN_CHOICES, DEFAULT_PLAN
 
 HANDLE_RE = re.compile(r"^[A-Za-z0-9._]{1,30}$")
 PASSWORD_MIN = 8
@@ -43,9 +43,9 @@ class _UIForm(forms.Form):
 
 
 class OrderForm(_UIForm):
-    """Package, account handle and target location; email + password unless signed in."""
+    """Influencer package, account handle and target location; email + password unless signed in."""
 
-    package = forms.ChoiceField(choices=PACKAGE_CHOICES, initial=DEFAULT_PACKAGE, widget=forms.RadioSelect)
+    plan = forms.ChoiceField(choices=PLAN_CHOICES, initial=DEFAULT_PLAN, widget=forms.RadioSelect)
     handle = forms.CharField(max_length=80)
     location = forms.CharField(max_length=120)
     email = forms.EmailField(max_length=150)
@@ -66,7 +66,7 @@ class OrderForm(_UIForm):
             self.fields["email"].required = self.fields["password"].required = False
         self.fields["handle"].widget.attrs.update({"autocomplete": "off", "autocapitalize": "none", "spellcheck": "false"})
         self.fields["fax"].widget.attrs.update({"tabindex": "-1", "autocomplete": "off"})
-        self.fields["package"].error_messages["invalid_choice"] = self.ui.get("err_package", "Choose a package.")
+        self.fields["plan"].error_messages["invalid_choice"] = self.ui.get("err_plan", "Choose a package.")
 
     def is_spam(self):
         return bool(self.data.get("fax"))

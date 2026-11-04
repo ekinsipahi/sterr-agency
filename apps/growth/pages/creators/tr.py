@@ -45,7 +45,7 @@ DATA = {
         "faqs": [
             ("Küçük içerik üreticileriyle çalışıyor musunuz?", "Evet. Tam da küçük içerik üreticileri için varız: gerçek büyüme en çok yeni başlarken önemlidir."),
             ("Bana marka anlaşması buluyor musunuz?", "Hayır, menajeriniz olarak çalışmıyoruz. Markaların sizinle çalışmak istemesini sağlayan gerçek kitleyi büyütüyoruz."),
-            ("Sözleşme imzalamam gerekiyor mu?", "Hayır. Büyüme istediğinizde bir paket sipariş edersiniz; her seferinde tek ödeme."),
+            ("Sözleşme imzalamam gerekiyor mu?", "Hayır. Ajans paketi aylıktır ve hesabınızdan istediğiniz zaman iptal edebilirsiniz."),
             ("Şifremi istiyor musunuz?", "Asla. Sadece kullanıcı adınızı."),
         ],
     },
@@ -153,7 +153,7 @@ DATA = {
         "faqs": [
             ("1.000 takipçi bir ajans için çok mu az?", "Menajerlik ajansı için genellikle evet. Büyüme için ise başlamanın tam zamanı."),
             ("Küçük bir influencer markalardan kazanç elde edebilir mi?", "Evet, özellikle gerçek ve yakındaki bir kitleye değer veren yerel markalardan."),
-            ("Sterr küçük bir içerik üreticisine kaça mal olur?", "Paketler 1.000 gerçek takipçi için $34.99'dan başlar, tek seferlik."),
+            ("Sterr küçük bir içerik üreticisine kaça mal olur?", "Ajans paketi aylık $79.99: genellikle 1.000–4.000 gerçek takipçi, aynı insanlardan beğeni ve yorumla birlikte."),
         ],
     },
 }

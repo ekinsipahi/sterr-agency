@@ -44,7 +44,7 @@ DATA = {
         "faqs": [
             ("Arbeiten Sie auch mit kleinen Accounts?", "Ja. Kleine Creator sind genau die, für die wir da sind: Echtes Wachstum zählt am meisten, wenn man gerade anfängt."),
             ("Bekomme ich durch Sie Markendeals?", "Nein, wir treten nicht als Ihr Management auf. Wir bauen das echte Publikum auf, mit dem Marken zusammenarbeiten wollen."),
-            ("Muss ich einen Vertrag unterschreiben?", "Nein. Sie bestellen ein Paket, wenn Sie Wachstum wollen, eine Zahlung nach der anderen."),
+            ("Muss ich einen Vertrag unterschreiben?", "Nein. Das Agenturpaket ist monatlich, und Sie können es jederzeit in Ihrem Konto kündigen."),
             ("Brauchen Sie mein Passwort?", "Nie. Nur Ihren Benutzernamen."),
         ],
     },
@@ -152,7 +152,7 @@ DATA = {
         "faqs": [
             ("Sind 1.000 Follower zu wenig für eine Agentur?", "Für eine Management-Agentur meist ja. Für Wachstum ist es der perfekte Zeitpunkt, um anzufangen."),
             ("Können kleine Creator mit Marken Geld verdienen?", "Ja, besonders mit lokalen Marken, die ein echtes Publikum in der Nähe schätzen."),
-            ("Was kostet Sterr für kleine Creator?", "Pakete beginnen bei 1.000 echten Followern für $34.99, einmalig."),
+            ("Was kostet Sterr für kleine Creator?", "Das Agenturpaket kostet $79.99 im Monat: typischerweise 1.000–4.000 echte Follower, mit Likes und Kommentaren von denselben Menschen."),
         ],
     },
 }

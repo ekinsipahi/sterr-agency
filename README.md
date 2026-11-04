@@ -60,45 +60,61 @@ GA4, GTM, Meta Pixel, Consent Mode v2 ve lead yaşam döngüsü olayları: [`ANA
 .venv/bin/python manage.py test apps
 ```
 
-## Instagram ve TikTok takipçi paketleri (tek seferlik)
+## Instagram ve TikTok influencer paketleri (aylık abonelik)
 
-Gerçek kişilerden takipçi paketleri, iki platformda aynı fiyatlarla (`apps/growth/packages.py`):
+Büyüme yalnızca **paket** olarak satılır (ajans modeli). Tek başına beğeni, izlenme ya da yorum satılmaz. Üç aylık paket iki platformda da aynı (`apps/growth/plan.py`). Teslimat 30 güne yayılır, abonelik iptal edilene kadar her ay yenilenir ve ödenen ay iade edilmez:
 
-| Paket | Fiyat | 1000 başına | Teslim |
-|---|---|---|---|
-| 1.000 | 34.99$ | 34.99$ | 7–14 gün |
-| 2.000 | 59.99$ | 30.00$ | 14–24 gün |
-| 3.000 (en popüler) | 79.99$ | 26.66$ | 24–36 gün |
-| 5.000 | 124.99$ | 25.00$ | 30–60 gün |
-| 10.000 | 229.99$ | 23.00$ | 60–120 gün |
+| Paket | Aylık | Takipçi / ay (tipik) | Beğeni / ay | Yorum / ay | Ek |
+|---|---|---|---|---|---|
+| Starter Creator | $79.99 | 1.000–4.000 | 2.000–12.000 | 100–400 | |
+| Rising Influencer (en popüler) | $149.99 | 2.000–8.000 | 4.000–24.000 | 200–800 | Hangi gönderilerin öne çıkacağını müşteri seçer |
+| Pro Influencer | $279.99 | 4.000–16.000 | 8.000–48.000 | 400–1.600 | Gönderi seçimi + öncelikli yerleşim + doğrudan WhatsApp |
 
-**Sayfalar (her platform × 16 dil, ana sayfa hub'dır, hepsi birbirine bağlı):** ana sayfa, real/active, ucuz (pricing), 5 paket sayfası, growth agency, non-drop, instant vs kademeli, satın alma rehberi, legit. Ayrıca platformdan bağımsız **"Influencer agency for creators"** hub'ı ve 4 creator rehberi. Navbar'daki **Takipçi** menüsünde: Instagram, TikTok, creator sayfası, Hesabım.
+Rakamlar sözü verilen sayılar değil, tipik aralıklardır. Oranlar: yeni takipçi başına 2–3 beğeni, her 10 takipçide yaklaşık 1 yorum. Başlangıç paketi 1.000–4.000 takipçi/ay alındı; diğer paketler bunun 2 ve 4 katı.
+
+**Sayfalar (her platform × 16 dil, 31 sayfa + geo; hepsi takipçi ana sayfasındaki gruplu hub'dan bağlı):**
+- Takipçi: ana sayfa, real/active, pricing, "1000/2000/3000/5000/10k takipçi" sayfaları (her biri hangi paketle kaç ayda ulaşılacağını anlatır ve o paketi seçili getirir), growth agency, non-drop, hız rehberi, satın alma rehberi, legit
+- Kendi üst seviye adresleriyle: influencer paketleri (`/instagram-packages/`), beğeni (`/instagram-likes-packages/`, aylık `/monthly-instagram-likes/`, kademeli, Reels), izlenme (`/instagram-views-packages/`, Reels, story), yorum (`/instagram-comments-packages/`, özel yorum `/custom-instagram-comments/`), instant vs kademeli (`/instagram-instant-vs-gradual/`). TikTok'ta da aynıları var (`/tiktok-likes-packages/`, `/tiktok-video-views/` …).
+- Blog: beğeni paketi nasıl seçilir, izlenme başına para, 2026'da hâlâ işe yarıyor mu, yorum limiti, daha fazla izlenmenin 10 yolu
+- Navbar'daki **Takipçi** menüsü: her platform için Followers / Packages / Likes / Views / Comments, ardından creator sayfası ve Hesabım.
+
+Bir sayfa bir dilde henüz yoksa o dil için yayına çıkmaz: route, hreflang, sitemap ve menü yalnızca var olan sayfaları gösterir.
 
 **İçerik dosyaları:**
-- `apps/growth/i18n/<dil>.py`: arayüz metinleri (form, paketler, hesap, ortak bloklar; `{platform}` yer tutucusu)
-- `apps/growth/pages/instagram|tiktok|creators/<dil>.py`: slug'lar, sayfa metinleri ve her sayfanın `keywords` listesi
-- Bir dili kontrol etmek: `python manage.py check_growth_copy de` (yapı, meta uzunlukları, yasak kelimeler, keyword'lerin sayfada geçmesi). Testler 16 dilin hepsini bu kontrolden geçirir.
+- `apps/growth/i18n/<dil>.py`: arayüz metinleri (paket kartları, form, hesap, ortak bloklar; `{platform}` yer tutucusu)
+- `apps/growth/pages/instagram|tiktok|creators/<dil>.py`: slug'lar (`/` ile başlayan değer üst seviye adres demek), sayfa metinleri ve her sayfanın `keywords` listesi
+- Bir dili kontrol etmek için `python manage.py check_growth_copy de` kullanılır. Kontrol edilenler: yapı, meta uzunlukları, yasak kelimeler, eski tek seferlik fiyatların kalmaması ve keyword'lerin sayfada geçmesi. Testler 16 dilin hepsini bu kontrolden geçirir.
 - Keyword planı: [`keywords/FOLLOWERS_KEYWORDS.md`](keywords/FOLLOWERS_KEYWORDS.md)
 
-**Hesaplar ve siparişler:**
-- Sipariş formunda e-posta + şifre: hesap yoksa açılır, varsa şifreyle giriş yapılır. `/account/` paneli siparişleri, durumu, ilerleme çubuğunu, teslim grafiğini ve tahmini bitiş aralığını gösterir. Şifre sıfırlama e-postayla.
-- `GROWTH_VERIFY_EMAIL=True` (varsayılan): ilk ödemeden önce e-posta onayı istenir (kart deneyen botlara karşı). Onay linki doğrudan Stripe ödemesine götürür.
-- Admin → **Takipçi siparişleri**: durum, teslim aralığı, "Tamamlandı olarak işaretle" (müşteriye e-posta gider). **Müşteri hesapları**, **Teslimat verileri**.
-- **Google ile giriş:** `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET` (Google Cloud → OAuth client, Web). Redirect URI: `https://sterragency.com/account/google/complete/`. Google'dan gelen e-posta onaylı sayılır; aynı e-postayla açılmış hesap varsa ona girer.
-- Veriler Supabase Postgres'te (`DATABASE_URL` ya da `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD`, session pooler); Render'da disk kalıcı değil. Testler her zaman SQLite'ta çalışır.
+**Hesaplar ve abonelikler:**
+- Formda paket seçilir, ardından kullanıcı adı ve hedef konum girilir. Hesap için iki yol var: e-posta + şifre (hesap yoksa açılır, varsa şifreyle giriş yapılır) ya da "Google ile devam et".
+- `/account/` paneli her abonelik için şunları gösterir: durum, yenilenme ya da bitiş tarihi, yeni takipçi, bu ayki beğeni ve yorum, takipçi grafiği. **Faturayı yönet / iptal et** butonu Stripe müşteri portalını açar (kart, faturalar, dönem sonunda iptal).
+- `GROWTH_VERIFY_EMAIL=True` (varsayılan): ilk ödemeden önce e-posta onayı istenir (kart deneyen botlara karşı). Onay linki doğrudan Stripe ödemesine götürür. Aynı hesap ve kullanıcı adı için ödenmemiş abonelik tekrar denenirse yeni kayıt açılmaz, aynı kayıt kullanılır.
+- Admin → **Influencer paketi abonelikleri**: durum, paket, yenilenme, günlük veriler. Eski tek seferlik siparişler "Eski takipçi siparişleri"nde duruyor.
+- **Google ile giriş:** `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET`. Redirect URI: `https://sterragency.com/account/google/complete/`.
+- Veriler Supabase Postgres'te (`DATABASE_URL` ya da `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD`, session pooler). Testler her zaman SQLite'ta çalışır; `.env` içinde `DEBUG=False` iken `DEBUG=True python manage.py test apps` ile çalıştır.
 
-**Teslimat uygulaması için API** (`GROWTH_API_TOKEN`, `Authorization: Bearer <token>`):
-- `GET /growth/api/orders/?status=paid`: teslim edilecek siparişler (id, platform, kullanıcı adı, konum, paket, teslim edilen).
-- `POST /growth/api/progress/`: `{"order_id": 12, "delivered": 840, "followers": 5120, "start_followers": 4300, "at": "2026-11-02T10:00:00Z"}` ya da `{"updates": [...]}`. Panel grafiği bu verilerle çizilir; `delivered` paket sayısına ulaşınca sipariş tamamlanır ve müşteriye e-posta gider.
+**Büyüme sistemi (linksterr) için API** (`GROWTH_API_TOKEN`, `Authorization: Bearer <token>`):
+- `GET /growth/api/subscriptions/?status=active`: büyütülecek hesaplar (id, platform, kullanıcı adı, konum, dönem bitişi, başlangıç ve güncel takipçi).
+- `POST /growth/api/stats/`: `{"subscription_id": 12, "date": "2026-11-04", "followers": 5120, "likes": 230, "comments": 12}` ya da `{"updates": [...]}`. `followers` o günkü hesap takipçi sayısı; `likes` ve `comments` o gün gelenler. Aynı gün tekrar gönderilirse üzerine yazılır. `start_followers` gönderilmezse ilk okumadaki takipçi sayısı başlangıç kabul edilir. Panel bu verilerle çizilir.
 
-**Sipariş bildirimleri (ekibe, Türkçe):** yalnızca Stripe ödemeyi onaylayınca "ödendi" (ödenmemiş siparişte e-posta yok), iade olunca "iade edildi". Alıcılar: `LEAD_NOTIFY_EMAILS` + `GROWTH_NOTIFY_EMAILS` (varsayılan ekinsipahi8@gmail.com).
+**Bildirimler (ekibe, Türkçe):** ödeme olmadan e-posta gitmez. Ekibe giden e-postalar:
+- ilk ödeme Stripe'ta onaylanınca "Yeni … influencer paketi (ödendi)";
+- her aylık ödemede "… yenilendi (ödendi)";
+- abonelik bitince "… iptal edildi".
 
-**Ödeme modu:** `GROWTH_PAYMENTS=False` iken sipariş "başvuru" olarak kaydedilir; ekibe Resend ile Türkçe bildirim, müşteriye İngilizce "talebinizi aldık" gider. `True` yapınca Stripe Checkout (tek seferlik, satır içi fiyat; Stripe'ta ürün/fiyat oluşturmak gerekmez). Müşteri e-postaları her zaman İngilizcedir.
+Alıcılar: `LEAD_NOTIFY_EMAILS` + `GROWTH_NOTIFY_EMAILS` (varsayılan ekinsipahi8@gmail.com). Müşteri e-postaları her zaman İngilizcedir.
 
-**Stripe kurulumu (bir kez):**
+**Ödeme modu:** `GROWTH_PAYMENTS=False` iken abonelik "başvuru" olarak kaydedilir (ekibe bildirim, müşteriye "talebinizi aldık"). `True` iken Stripe Checkout abonelik modunda çalışır.
+
+**Stripe kurulumu (fiyat değişince tekrar çalıştır):**
 1. `STRIPE_SECRET_KEY` ve `STRIPE_PUBLISHABLE_KEY` → `.env` ve Render → Environment.
-2. `python manage.py setup_stripe`: `https://sterragency.com/growth/stripe/webhook/` webhook'unu oluşturur ya da mevcut olanın olaylarını günceller (`checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`). Yeni oluşturursa `STRIPE_WEBHOOK_SECRET` yazdırır.
-3. Stripe → Settings → Payment methods: kart, Apple Pay, Google Pay açık olsun.
+2. `python manage.py setup_stripe` şunları yapar:
+   - 6 aylık fiyatı oluşturur (`sterr_<platform>_<paket>_monthly_usd`);
+   - müşteri portalı ayarını oluşturur (kart, faturalar, dönem sonunda iptal);
+   - webhook olaylarını günceller: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated`, `customer.subscription.deleted`.
+   
+   Yeni webhook oluşturursa secret'ı `.env` dosyasına yazar, ekrana yazdırmaz.
 
 ## Yayına alma (Render)
 

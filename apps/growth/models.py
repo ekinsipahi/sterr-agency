@@ -1,10 +1,8 @@
-from datetime import timedelta
-
 from django.conf import settings
 from django.db import models
 
 from .constants import PLATFORM_NAMES
-from .packages import CHOICES as PACKAGE_CHOICES, PACKAGE_BY_KEY
+from .plan import CHOICES as PLAN_CHOICES
 
 
 class Customer(models.Model):
@@ -24,7 +22,8 @@ class Customer(models.Model):
 
 
 class FollowerOrder(models.Model):
-    """A one-time follower package for one Instagram or TikTok account."""
+    """Legacy: the one-time follower packages sold before the monthly agency package.
+    Kept for the orders already placed; new sales are AgencySubscription."""
 
     STATUS = [
         ("pending", "Ödeme bekleniyor"),
@@ -41,7 +40,7 @@ class FollowerOrder(models.Model):
     platform = models.CharField("Platform", max_length=12, choices=PLATFORMS, default="instagram")
     handle = models.CharField("Kullanıcı adı", max_length=30, help_text="@ olmadan")
     location = models.CharField("Hedef konum", max_length=120)
-    package = models.CharField("Paket", max_length=8, choices=PACKAGE_CHOICES)
+    package = models.CharField("Paket", max_length=8)
     followers = models.PositiveIntegerField("Takipçi")
     amount = models.DecimalField("Tutar (USD)", max_digits=8, decimal_places=2)
     lang = models.CharField("Dil", max_length=5, default="en")
@@ -69,8 +68,8 @@ class FollowerOrder(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        verbose_name = "Takipçi siparişi"
-        verbose_name_plural = "Takipçi siparişleri"
+        verbose_name = "Eski takipçi siparişi"
+        verbose_name_plural = "Eski takipçi siparişleri"
 
     def __str__(self):
         return f"#{self.pk} @{self.handle} {self.followers} · {self.get_status_display()}"
@@ -78,19 +77,6 @@ class FollowerOrder(models.Model):
     @property
     def platform_name(self):
         return PLATFORM_NAMES[self.platform]
-
-    @property
-    def days(self):
-        return PACKAGE_BY_KEY[self.package]["days"]
-
-    @property
-    def percent(self):
-        return min(100, round(self.delivered * 100 / self.followers)) if self.followers else 0
-
-    def delivery_window(self):
-        """(earliest, latest) completion dates, counted from payment (or the request)."""
-        start = self.paid_at or self.created_at
-        return start + timedelta(days=self.days[0]), start + timedelta(days=self.days[1])
 
 
 class OrderProgress(models.Model):
@@ -112,30 +98,38 @@ class OrderProgress(models.Model):
         return f"#{self.order_id} {self.at:%Y-%m-%d %H:%M} {self.delivered}"
 
 
-class GrowthSubscription(models.Model):
-    """Legacy: the earlier $79/mo plan, kept for the requests it collected. New sales are FollowerOrder."""
+class AgencySubscription(models.Model):
+    """A monthly influencer package for one Instagram or TikTok account (see plan.py)."""
 
     STATUS = [
         ("pending", "Ödeme bekleniyor"),
+        ("requested", "Başvuru (ödeme kapalıyken)"),
         ("active", "Aktif"),
         ("past_due", "Ödeme başarısız"),
         ("canceled", "İptal edildi"),
     ]
-
-    email = models.EmailField("E-posta")
     PLATFORMS = [("instagram", "Instagram"), ("tiktok", "TikTok")]
 
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="growth_subscriptions")
+    email = models.EmailField("E-posta")
     platform = models.CharField("Platform", max_length=12, choices=PLATFORMS, default="instagram")
-    instagram = models.CharField("Kullanıcı adı", max_length=30, help_text="@ olmadan")
+    handle = models.CharField("Kullanıcı adı", max_length=30, help_text="@ olmadan")
     location = models.CharField("Hedef konum", max_length=120)
+    plan = models.CharField("Paket", max_length=12, choices=PLAN_CHOICES, default="starter")
+    amount = models.DecimalField("Aylık tutar (USD)", max_digits=8, decimal_places=2)
     lang = models.CharField("Dil", max_length=5, default="en")
     status = models.CharField("Durum", max_length=12, choices=STATUS, default="pending")
-    cancel_at_period_end = models.BooleanField("Dönem sonunda iptal", default=False)
+    started_at = models.DateTimeField("Başladı", null=True, blank=True)
     current_period_end = models.DateTimeField("Dönem bitişi", null=True, blank=True)
-    stripe_customer_id = models.CharField(max_length=64, blank=True, db_index=True)
+    cancel_at_period_end = models.BooleanField("Dönem sonunda bitecek", default=False)
+    canceled_at = models.DateTimeField("İptal", null=True, blank=True)
+    stripe_checkout_session_id = models.CharField(max_length=128, blank=True, db_index=True)
     stripe_subscription_id = models.CharField(max_length=64, blank=True, db_index=True)
-    stripe_checkout_session_id = models.CharField(max_length=128, blank=True)
-    welcomed = models.BooleanField("Hoş geldin e-postası", default=False)
+    stripe_customer_id = models.CharField(max_length=64, blank=True, db_index=True)
+    # Filled in by the growth system through the stats API (see api.py).
+    start_followers = models.PositiveIntegerField("Başlangıç takipçi", null=True, blank=True)
+    current_followers = models.PositiveIntegerField("Güncel takipçi", null=True, blank=True)
+    stats_at = models.DateTimeField("Son veri", null=True, blank=True)
     notified = models.BooleanField("Bildirim gönderildi", default=False)
     mail_error = models.TextField("E-posta hatası", blank=True)
     note = models.TextField("Not", blank=True)
@@ -150,11 +144,42 @@ class GrowthSubscription(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        verbose_name = "Eski abonelik başvurusu"
-        verbose_name_plural = "Eski abonelik başvuruları"
+        verbose_name = "Influencer paketi aboneliği"
+        verbose_name_plural = "Influencer paketi abonelikleri"
 
     def __str__(self):
-        return f"@{self.instagram} · {self.get_status_display()}"
+        return f"#{self.pk} @{self.handle} {self.platform_name} {self.get_plan_display()} · {self.get_status_display()}"
+
+    @property
+    def platform_name(self):
+        return PLATFORM_NAMES[self.platform]
+
+    @property
+    def gained(self):
+        """Followers since the package started, from the growth system's readings."""
+        if self.start_followers is None or self.current_followers is None:
+            return None
+        return max(self.current_followers - self.start_followers, 0)
+
+
+class SubscriptionStat(models.Model):
+    """One day of numbers from the growth system: the account's follower count that day
+    and the likes and comments that came in. Feeds the account dashboard."""
+
+    subscription = models.ForeignKey(AgencySubscription, on_delete=models.CASCADE, related_name="stats")
+    date = models.DateField("Gün", db_index=True)
+    followers = models.PositiveIntegerField("Hesap takipçi", null=True, blank=True)
+    likes = models.PositiveIntegerField("Beğeni", default=0)
+    comments = models.PositiveIntegerField("Yorum", default=0)
+
+    class Meta:
+        ordering = ["date"]
+        verbose_name = "Günlük veri"
+        verbose_name_plural = "Günlük veriler"
+        constraints = [models.UniqueConstraint(fields=["subscription", "date"], name="growth_stat_subscription_date")]
+
+    def __str__(self):
+        return f"#{self.subscription_id} {self.date} {self.followers}"
 
 
 class StripeEvent(models.Model):

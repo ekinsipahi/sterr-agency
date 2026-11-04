@@ -164,12 +164,12 @@ else:
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Sterr Agency <noreply@sterragency.com>")
 # Who gets the "yeni lead geldi" email. Comma-separated for multiple recipients.
 LEAD_NOTIFY_EMAILS = env.list("LEAD_NOTIFY_EMAILS", default=[])
-# Follower orders always notify these as well (plus LEAD_NOTIFY_EMAILS).
+# Influencer package payments always notify these as well (plus LEAD_NOTIFY_EMAILS).
 GROWTH_NOTIFY_EMAILS = env.list("GROWTH_NOTIFY_EMAILS", default=["ekinsipahi8@gmail.com"])
 
-# --- Stripe (one-time Instagram / TikTok follower packages) ------------------------
-# Prices live in apps/growth/packages.py (Checkout uses inline prices, no Stripe Price
-# objects). `python manage.py setup_stripe` creates/updates the webhook endpoint.
+# --- Stripe (monthly Instagram / TikTok influencer packages) ----------------------
+# Prices live in apps/growth/plan.py. `python manage.py setup_stripe` creates the monthly
+# Stripe prices, the customer portal configuration and the webhook endpoint.
 STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
 STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY", default=env("STRIPE_PUBLISH_KEY", default=""))
 STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
@@ -183,7 +183,7 @@ LOGIN_URL = "growth:login"
 # https://sterragency.com/account/google/complete/
 GOOGLE_OAUTH_CLIENT_ID = env("GOOGLE_OAUTH_CLIENT_ID", default="")
 GOOGLE_OAUTH_CLIENT_SECRET = env("GOOGLE_OAUTH_CLIENT_SECRET", default="")
-# Bearer token for the delivery system's API (/growth/api/...). Unset = API off.
+# Bearer token for the growth system's API (/growth/api/...). Unset = API off.
 GROWTH_API_TOKEN = env("GROWTH_API_TOKEN", default="")
 
 # --- Contact ----------------------------------------------------------------
