@@ -421,6 +421,19 @@ class StatsApiTests(TestCase):
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.gained, 500)
 
+    def test_our_count_of_new_followers_wins_over_the_follower_count(self):
+        today = timezone.localdate()
+        self.post({"updates": [
+            {"subscription_id": self.sub.pk, "date": str(today - timedelta(days=1)), "followers": 1000, "new_followers": 80},
+            {"subscription_id": self.sub.pk, "date": str(today), "followers": 1050, "new_followers": 120},
+            {"subscription_id": self.sub.pk, "date": str(today - timedelta(days=2)), "new_followers": 40},
+        ]})
+        self.sub.refresh_from_db()
+        daily = self.sub.daily()
+        self.assertEqual([d["followers"] for d in daily], [40, 80, 120])
+        self.assertEqual([(d["likes"], d["comments"]) for d in daily], [(100, 4), (200, 8), (300, 12)])  # × 2.5, ÷ 10
+        self.assertEqual(self.sub.gained, 240)
+
     def test_dashboard_shows_the_numbers(self):
         user = get_user_model().objects.create_user("a@example.com", "a@example.com", "pass-word-1")
         self.sub.user = user
@@ -430,9 +443,11 @@ class StatsApiTests(TestCase):
                                {"subscription_id": self.sub.pk, "date": str(today), "followers": 5400, "likes": 1500, "comments": 120}]})
         self.client.force_login(user)
         html = self.client.get(reverse("growth:account") + "?lang=en").content.decode()
-        self.assertIn("1,200", html)  # new followers
+        self.assertIn("Today", html)
+        self.assertIn("+1,200", html)  # new followers today (count went 4,200 -> 5,400)
         self.assertIn("2,000", html)  # likes this month
-        self.assertIn("<polyline", html)
+        self.assertIn("<rect", html)  # new followers per day
+        self.assertIn("Day by day", html)
         self.assertIn("Renews on", html)
 
 

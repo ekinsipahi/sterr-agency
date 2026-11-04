@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from .constants import PLATFORM_NAMES
-from .plan import CHOICES as PLAN_CHOICES
+from .plan import CHOICES as PLAN_CHOICES, comments_for, likes_for
 
 
 class Customer(models.Model):
@@ -154,23 +154,42 @@ class AgencySubscription(models.Model):
     def platform_name(self):
         return PLATFORM_NAMES[self.platform]
 
+    def daily(self):
+        """[{date, followers, likes, comments}] per day, oldest first. New followers are what the
+        growth system counted for the day (without that, the change in the account's follower
+        count); likes and comments are counted from them unless the growth system sent its own."""
+        rows, previous = [], self.start_followers
+        for stat in sorted(self.stats.all(), key=lambda s: s.date):
+            gained = stat.new_followers
+            if gained is None and stat.followers is not None and previous is not None:
+                gained = max(stat.followers - previous, 0)
+            base = gained or 0
+            rows.append({"date": stat.date, "followers": gained,
+                         "likes": stat.likes if stat.likes is not None else likes_for(base),
+                         "comments": stat.comments if stat.comments is not None else comments_for(base)})
+            if stat.followers is not None:
+                previous = stat.followers
+        return rows
+
     @property
     def gained(self):
-        """Followers since the package started, from the growth system's readings."""
-        if self.start_followers is None or self.current_followers is None:
-            return None
-        return max(self.current_followers - self.start_followers, 0)
+        """New followers since the package started (None before the first reading)."""
+        counted = [d["followers"] for d in self.daily() if d["followers"] is not None]
+        return sum(counted) if counted else None
 
 
 class SubscriptionStat(models.Model):
-    """One day of numbers from the growth system: the account's follower count that day
-    and the likes and comments that came in. Feeds the account dashboard."""
+    """One day of numbers from the growth system: the new followers we brought that day and
+    the account's follower count. Likes and comments are counted from the new followers
+    (plan.likes_for / comments_for) unless the growth system sends them. Feeds the dashboard."""
 
     subscription = models.ForeignKey(AgencySubscription, on_delete=models.CASCADE, related_name="stats")
     date = models.DateField("Gün", db_index=True)
     followers = models.PositiveIntegerField("Hesap takipçi", null=True, blank=True)
-    likes = models.PositiveIntegerField("Beğeni", default=0)
-    comments = models.PositiveIntegerField("Yorum", default=0)
+    # Sent by the growth system; when missing, the change in the follower count is used.
+    new_followers = models.PositiveIntegerField("Yeni takipçi", null=True, blank=True)
+    likes = models.PositiveIntegerField("Beğeni", null=True, blank=True, help_text="Boşsa yeni takipçi × 2,5")
+    comments = models.PositiveIntegerField("Yorum", null=True, blank=True, help_text="Boşsa yeni takipçi ÷ 10")
 
     class Meta:
         ordering = ["date"]

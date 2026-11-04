@@ -4,10 +4,11 @@
 GET  /growth/api/subscriptions/?status=active   accounts to grow (default: active)
 POST /growth/api/stats/                         one day's numbers or {"updates": [...]}:
      {"subscription_id": 12, "date": "2026-11-04", "followers": 5120,
-      "likes": 230, "comments": 12, "start_followers": 4300}
+      "new_followers": 140, "start_followers": 4300}
      Only subscription_id is required; "date" defaults to today. The same
-     subscription + date overwrites. likes/comments are what came in that day,
-     followers is the account's follower count that day. start_followers (the
+     subscription + date overwrites. new_followers is what we brought that day (left
+     out: the change in the follower count); likes and comments are counted from it
+     (× 2.5 and ÷ 10) unless sent. followers is the account's follower count that day. start_followers (the
      count when the package started) defaults to the first reading's followers.
 """
 import hmac
@@ -77,8 +78,9 @@ def stats(request):
                 raise ValueError("each update must be an object")
             sub_id = _int(item.get("subscription_id"), "subscription_id", required=True)
             followers = _int(item.get("followers"), "followers")
-            likes = _int(item.get("likes"), "likes") or 0
-            comments = _int(item.get("comments"), "comments") or 0
+            new_followers = _int(item.get("new_followers"), "new_followers")
+            likes = _int(item.get("likes"), "likes")
+            comments = _int(item.get("comments"), "comments")
             start = _int(item.get("start_followers"), "start_followers")
             day = parse_date(item["date"]) if item.get("date") else timezone.localdate()
             if day is None:
@@ -93,7 +95,7 @@ def stats(request):
                 results.append({"subscription_id": sub_id, "ok": False, "error": "unknown subscription"})
                 continue
             SubscriptionStat.objects.update_or_create(subscription=sub, date=day, defaults={
-                "followers": followers, "likes": likes, "comments": comments})
+                "followers": followers, "new_followers": new_followers, "likes": likes, "comments": comments})
             if start is not None:
                 sub.start_followers = start
             elif sub.start_followers is None and followers is not None:

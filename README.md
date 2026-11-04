@@ -88,7 +88,7 @@ Bir sayfa bir dilde henüz yoksa o dil için yayına çıkmaz: route, hreflang, 
 
 **Hesaplar ve abonelikler:**
 - Formda paket seçilir, ardından kullanıcı adı ve hedef konum girilir. Hesap için iki yol var: e-posta + şifre (hesap yoksa açılır, varsa şifreyle giriş yapılır) ya da "Google ile devam et".
-- `/account/` paneli her abonelik için şunları gösterir: durum, yenilenme ya da bitiş tarihi, yeni takipçi, bu ayki beğeni ve yorum, takipçi grafiği. **Faturayı yönet / iptal et** butonu Stripe müşteri portalını açar (kart, faturalar, dönem sonunda iptal).
+- `/account/` paneli her abonelik için şunları gösterir: durum, yenilenme ya da bitiş tarihi, bugün ve bu ay gelen takipçi, beğeni ve yorum, günlük grafik ve gün gün tablo. **Faturayı yönet / iptal et** butonu Stripe müşteri portalını açar (kart, faturalar, dönem sonunda iptal).
 - `GROWTH_VERIFY_EMAIL=True` (varsayılan): ilk ödemeden önce e-posta onayı istenir (kart deneyen botlara karşı). Onay linki doğrudan Stripe ödemesine götürür. Aynı hesap ve kullanıcı adı için ödenmemiş abonelik tekrar denenirse yeni kayıt açılmaz, aynı kayıt kullanılır.
 - Admin → **Influencer paketi abonelikleri**: durum, paket, yenilenme, günlük veriler. Eski tek seferlik siparişler "Eski takipçi siparişleri"nde duruyor.
 - **Google ile giriş:** `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET`. Redirect URI: `https://sterragency.com/account/google/complete/`.
@@ -96,7 +96,12 @@ Bir sayfa bir dilde henüz yoksa o dil için yayına çıkmaz: route, hreflang, 
 
 **Büyüme sistemi (linksterr) için API** (`GROWTH_API_TOKEN`, `Authorization: Bearer <token>`):
 - `GET /growth/api/subscriptions/?status=active`: büyütülecek hesaplar (id, platform, kullanıcı adı, konum, dönem bitişi, başlangıç ve güncel takipçi).
-- `POST /growth/api/stats/`: `{"subscription_id": 12, "date": "2026-11-04", "followers": 5120, "likes": 230, "comments": 12}` ya da `{"updates": [...]}`. `followers` o günkü hesap takipçi sayısı; `likes` ve `comments` o gün gelenler. Aynı gün tekrar gönderilirse üzerine yazılır. `start_followers` gönderilmezse ilk okumadaki takipçi sayısı başlangıç kabul edilir. Panel bu verilerle çizilir.
+- `POST /growth/api/stats/`: `{"subscription_id": 12, "date": "2026-11-04", "new_followers": 140, "followers": 5120}` ya da `{"updates": [...]}`. Her şeyi **getirdiğimiz takipçiden** sayıyoruz:
+  - `new_followers`: o gün bizim getirdiğimiz takipçi. Gönderilmezse hesabın toplam takipçi sayısındaki fark kullanılır.
+  - Beğeni = yeni takipçi × 2,5, yorum = yeni takipçi ÷ 10 (`plan.py`). `likes` / `comments` gönderilirse gönderilen değer kullanılır.
+  - `followers` o günkü toplam takipçidir ve isteğe bağlıdır. Aynı gün tekrar gönderilirse üzerine yazılır.
+  
+  Panel her abonelik için şunları gösterir: **Bugün** (yeni takipçi, beğeni, yorum), **Bu ay**, son 30 günün grafiği ve gün gün tablo.
 
 **Bildirimler (ekibe, Türkçe):** ödeme olmadan e-posta gitmez. Ekibe giden e-postalar:
 - ilk ödeme Stripe'ta onaylanınca "Yeni … influencer paketi (ödendi)";

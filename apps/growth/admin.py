@@ -8,7 +8,7 @@ from .models import AgencySubscription, Customer, FollowerOrder, StripeEvent, Su
 class StatInline(admin.TabularInline):
     model = SubscriptionStat
     extra = 0
-    fields = ("date", "followers", "likes", "comments")
+    fields = ("date", "followers", "new_followers", "likes", "comments")
     ordering = ("-date",)
 
 

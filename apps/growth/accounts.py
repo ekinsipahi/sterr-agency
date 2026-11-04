@@ -12,10 +12,9 @@ from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core import signing
 from django.core.cache import cache
-from django.db.models import Sum
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.utils import formats, translation
+from django.utils import formats, timezone, translation
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import url_has_allowed_host_and_scheme, urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.decorators.http import require_POST
@@ -87,24 +86,32 @@ def account(request):
         def day(value):
             return formats.date_format(value, "DATE_FORMAT")
 
+        today = timezone.localdate()
         for s in AgencySubscription.objects.filter(user=request.user).exclude(status="canceled", started_at__isnull=True).prefetch_related("stats"):
-            stats = list(s.stats.all())
+            daily = s.daily()
             since = (s.current_period_end - timedelta(days=30)).date() if s.current_period_end else None
-            month = [r for r in stats if since is None or r.date > since]
-            gained = s.gained
+            month = [d for d in daily if since is None or d["date"] > since]
             renews = ""
             if s.current_period_end and s.status in ("active", "past_due"):
                 renews = ui["acc_ends" if s.cancel_at_period_end else "acc_renews"].replace("{date}", day(s.current_period_end))
+            days = [{"label": ui["acc_today"] if d["date"] == today else formats.date_format(d["date"], "j F"),
+                     "gained": f"+{count(d['followers'], code)}" if d["followers"] is not None else "–",
+                     "likes": count(d["likes"], code), "comments": count(d["comments"], code)} for d in reversed(daily)]
+            now = next((d for d in daily if d["date"] == today), None)
             subs.append({
                 "s": s, "status": ui[f"st_{s.status}"], "amount": f"${s.amount:.2f}", "name": ui[f"plan_{s.plan}"],
                 "started": ui["acc_ordered"].replace("{date}", day(s.started_at or s.created_at)),
                 "renews": renews,
-                "tiles": [(count(gained, code) if gained is not None else "–", ui["acc_gained"]),
-                          (count(sum(r.likes for r in month), code), ui["acc_likes"]),
-                          (count(sum(r.comments for r in month), code), ui["acc_comments"])] if stats else [],
+                "today": [(f"+{count(now['followers'] or 0, code)}" if now else "–", ui["acc_gained"]),
+                          (count(now["likes"], code) if now else "–", ui["acc_likes"]),
+                          (count(now["comments"], code) if now else "–", ui["acc_comments"])] if daily else [],
+                "tiles": [(count(sum(d["followers"] or 0 for d in month), code), ui["acc_gained"]),
+                          (count(sum(d["likes"] for d in month), code), ui["acc_likes"]),
+                          (count(sum(d["comments"] for d in month), code), ui["acc_comments"])] if daily else [],
+                "days": days[:14], "more_days": days[14:],
                 "now": ui["acc_now"].replace("{count}", count(s.current_followers, code)) if s.current_followers is not None else "",
                 "updated": ui["acc_updated"].replace("{date}", formats.date_format(s.stats_at, "DATETIME_FORMAT")) if s.stats_at else "",
-                "chart": _chart(stats),
+                "bars": _bars(daily),
                 "can_pay": s.status == "pending" and billing.enabled(),
                 "can_manage": bool(s.stripe_customer_id) and billing.enabled(),
             })
@@ -112,11 +119,10 @@ def account(request):
     live = [item["s"] for item in subs if item["s"].started_at]
     if live:
         latest = max((s for s in live if s.current_followers is not None), key=lambda s: s.stats_at, default=None)
-        totals = AgencySubscription.objects.filter(pk__in=[s.pk for s in live]).aggregate(
-            likes=Sum("stats__likes"), comments=Sum("stats__comments"))
+        engagement = sum(d["likes"] + d["comments"] for s in live for d in s.daily())
         summary = [
             (count(sum(s.gained or 0 for s in live), code), ui["acc_sum_gained"]),
-            (count((totals["likes"] or 0) + (totals["comments"] or 0), code), ui["acc_sum_engagement"]),
+            (count(engagement, code), ui["acc_sum_engagement"]),
             (count(latest.current_followers, code) if latest else "–", ui["acc_sum_now"]),
         ]
     flags = {k: request.GET.get(k) for k in ("verify", "verified", "error", "reset")}
@@ -125,16 +131,15 @@ def account(request):
                                                        needs_verify=settings.GROWTH_VERIFY_EMAIL and not customer.email_verified))
 
 
-def _chart(stats, width=320, height=72):
-    """SVG polyline points for the account's follower count, day by day."""
-    readings = [(r.date, r.followers) for r in stats if r.followers is not None]
-    if len(readings) < 2:
-        return ""
-    low, high = min(f for _, f in readings), max(f for _, f in readings)
-    first, last = readings[0][0].toordinal(), readings[-1][0].toordinal()
-    xspan, yspan = max(last - first, 1), max(high - low, 1)
-    return " ".join(f"{(d.toordinal() - first) / xspan * width:.1f},{height - (f - low) / yspan * (height - 4) - 2:.1f}"
-                    for d, f in readings)
+def _bars(daily, days=30, width=320, height=72):
+    """SVG bars for new followers per day, the last `days` days with a reading."""
+    rows = [(d["date"], d["followers"] or 0) for d in daily][-days:]
+    if not rows:
+        return []
+    top, slot = max(max(g for _, g in rows), 1), width / days
+    return [{"x": f"{i * slot + 1:.1f}", "w": f"{max(slot - 2, 1):.1f}", "h": f"{max(g / top * (height - 2), 1 if g else 0):.1f}",
+             "y": f"{height - max(g / top * (height - 2), 1 if g else 0):.1f}", "title": f"{d:%d.%m}: +{g}"}
+            for i, (d, g) in enumerate(rows)]
 
 
 def login_view(request):

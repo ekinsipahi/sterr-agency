@@ -8,6 +8,18 @@ from django.utils import formats, translation
 
 LIKES_PER_FOLLOWER = (2, 3)
 FOLLOWERS_PER_COMMENT = 10
+# Everything is counted from the followers we bring: a day's likes and comments, unless
+# the growth system sends them, are its new followers × the middle of 2–3, and ÷ 10.
+LIKES_PER_FOLLOWER_AVG = 2.5
+
+
+def likes_for(followers):
+    return round(followers * LIKES_PER_FOLLOWER_AVG)
+
+
+def comments_for(followers):
+    return round(followers / FOLLOWERS_PER_COMMENT)
+
 
 PLANS = (
     {"key": "starter", "price": Decimal("79.99"), "followers": (1000, 4000)},
