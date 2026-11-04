@@ -98,9 +98,9 @@ def _values(order):
 
 
 def notify_team(order, event):
-    """event: 'pending' (order placed, on its way to payment), 'request' (payments off), 'paid', 'refunded'."""
-    titles = {"pending": "Yeni {platform} takipçi siparişi (ödeme bekleniyor)",
-              "request": "Yeni {platform} takipçi başvurusu", "paid": "Yeni {platform} takipçi siparişi (ödendi)",
+    """event: 'request' (payments off), 'paid' (Stripe confirmed the payment), 'refunded'.
+    Nothing is sent for an order that hasn't been paid yet."""
+    titles = {"request": "Yeni {platform} takipçi başvurusu", "paid": "Yeni {platform} takipçi siparişi (ödendi)",
               "refunded": "{platform} takipçi siparişi iade edildi"}
     title = titles[event].replace("{platform}", order.platform_name)
     start, end = order.delivery_window()

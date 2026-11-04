@@ -206,9 +206,7 @@ class CheckoutTests(FreshCache, TestCase):
         self.assertEqual((r.status_code, r["Location"]), (303, self.session.url))
         order = create.call_args.args[0]
         self.assertEqual((order.platform, order.followers), ("tiktok", 2000))
-        heads_up = [m for m in mail.outbox if "ödeme bekleniyor" in m.subject]
-        self.assertEqual(len(heads_up), 1)
-        self.assertIn("ekinsipahi8@gmail.com", heads_up[0].to)
+        self.assertFalse([m for m in mail.outbox if "owner@example.com" in m.to])  # unpaid: no team email
 
     def test_stripe_down_shows_the_form_again(self):
         user = get_user_model().objects.create_user("me@example.com", "me@example.com", "pass-word-1")

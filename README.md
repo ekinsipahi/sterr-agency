@@ -91,7 +91,7 @@ Gerçek kişilerden takipçi paketleri, iki platformda aynı fiyatlarla (`apps/g
 - `GET /growth/api/orders/?status=paid`: teslim edilecek siparişler (id, platform, kullanıcı adı, konum, paket, teslim edilen).
 - `POST /growth/api/progress/`: `{"order_id": 12, "delivered": 840, "followers": 5120, "start_followers": 4300, "at": "2026-11-02T10:00:00Z"}` ya da `{"updates": [...]}`. Panel grafiği bu verilerle çizilir; `delivered` paket sayısına ulaşınca sipariş tamamlanır ve müşteriye e-posta gider.
 
-**Sipariş bildirimleri (ekibe, Türkçe):** sipariş verilip ödemeye geçilirken "ödeme bekleniyor", Stripe ödemeyi onaylayınca "ödendi", iade olunca "iade edildi". Alıcılar: `LEAD_NOTIFY_EMAILS` + `GROWTH_NOTIFY_EMAILS` (varsayılan ekinsipahi8@gmail.com).
+**Sipariş bildirimleri (ekibe, Türkçe):** yalnızca Stripe ödemeyi onaylayınca "ödendi" (ödenmemiş siparişte e-posta yok), iade olunca "iade edildi". Alıcılar: `LEAD_NOTIFY_EMAILS` + `GROWTH_NOTIFY_EMAILS` (varsayılan ekinsipahi8@gmail.com).
 
 **Ödeme modu:** `GROWTH_PAYMENTS=False` iken sipariş "başvuru" olarak kaydedilir; ekibe Resend ile Türkçe bildirim, müşteriye İngilizce "talebinizi aldık" gider. `True` yapınca Stripe Checkout (tek seferlik, satır içi fiyat; Stripe'ta ürün/fiyat oluşturmak gerekmez). Müşteri e-postaları her zaman İngilizcedir.
 

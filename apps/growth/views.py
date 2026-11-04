@@ -216,10 +216,6 @@ def place_order(request, user, pending):
         **{f: pending.get(f, "") for f in SOURCE_FIELDS},
     )
     if billing.enabled():
-        # Heads-up the moment someone orders; the "(ödendi)" email follows when Stripe confirms.
-        team = notify_team(order, "pending")
-        order.notified, order.mail_error = bool(team), "" if team else f"Ekip: {team.error}"
-        order.save(update_fields=["notified", "mail_error", "updated_at"])
         if settings.GROWTH_VERIFY_EMAIL and not customer.email_verified:
             # A confirmed email before the first payment keeps card-testing scripts out.
             send_verification(user.email, verify_link(user, order), order)
