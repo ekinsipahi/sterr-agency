@@ -42,3 +42,6 @@ ACCOUNT_NAV = {
     "es": "Mi cuenta", "pl": "Moje konto", "ru": "Мой аккаунт", "uk": "Мій акаунт", "ar": "حسابي",
     "sv": "Mitt konto", "da": "Min konto", "no": "Min konto", "ro": "Contul meu", "az": "Hesabım",
 }
+
+# Version of the terms a customer accepts on the order form (Terms 2a); bump it when 2a changes.
+TERMS_VERSION = "2026-11-06"

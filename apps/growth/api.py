@@ -10,6 +10,9 @@ POST /growth/api/stats/                         one day's numbers or {"updates":
      out: the change in the follower count); likes and comments are counted from it
      (× 2.5 and ÷ 10) unless sent. followers is the account's follower count that day. start_followers (the
      count when the package started) defaults to the first reading's followers.
+     Delivery evidence (kept for disputes, optional): "impressions" (people shown the
+     profile), "visits" (went to it), "confirms" (said they followed) and "countries":
+     {"DE": {"impressions": 900, "visits": 210, "confirms": 95}, ...}.
 """
 import hmac
 import json
@@ -25,6 +28,7 @@ from django.views.decorators.http import require_GET, require_POST
 from .models import AgencySubscription, SubscriptionStat
 
 MAX_UPDATES = 500
+COUNTRY_FIELDS = ("impressions", "visits", "confirms")
 
 
 def _authorized(request):
@@ -48,6 +52,19 @@ def subscriptions(request):
     status = request.GET.get("status", "active")
     qs = AgencySubscription.objects.filter(status__in=status.split(",")).order_by("started_at", "created_at")[:1000]
     return JsonResponse({"subscriptions": [_sub_json(s) for s in qs]})
+
+
+def _countries(value):
+    if value is None:
+        return {}
+    if not isinstance(value, dict) or len(value) > 250:
+        raise ValueError("countries must be an object of up to 250 country codes")
+    out = {}
+    for country, numbers in value.items():
+        if not (isinstance(country, str) and len(country) == 2 and country.isalpha()) or not isinstance(numbers, dict):
+            raise ValueError("countries: use 2-letter codes, each with impressions/visits/confirms")
+        out[country.upper()] = {f: _int(numbers.get(f), f"countries.{country}.{f}") or 0 for f in COUNTRY_FIELDS}
+    return out
 
 
 def _int(value, name, required=False):
@@ -82,6 +99,8 @@ def stats(request):
             likes = _int(item.get("likes"), "likes")
             comments = _int(item.get("comments"), "comments")
             start = _int(item.get("start_followers"), "start_followers")
+            delivery = {f: _int(item.get(f), f) for f in COUNTRY_FIELDS}
+            countries = _countries(item.get("countries"))
             day = parse_date(item["date"]) if item.get("date") else timezone.localdate()
             if day is None:
                 raise ValueError("date must be YYYY-MM-DD")
@@ -95,7 +114,8 @@ def stats(request):
                 results.append({"subscription_id": sub_id, "ok": False, "error": "unknown subscription"})
                 continue
             SubscriptionStat.objects.update_or_create(subscription=sub, date=day, defaults={
-                "followers": followers, "new_followers": new_followers, "likes": likes, "comments": comments})
+                "followers": followers, "new_followers": new_followers, "likes": likes, "comments": comments,
+                **delivery, "countries": countries})
             if start is not None:
                 sub.start_followers = start
             elif sub.start_followers is None and followers is not None:

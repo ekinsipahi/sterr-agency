@@ -21,7 +21,7 @@ from django.views.decorators.http import require_POST
 
 from apps.leads.views import _client_ip
 
-from . import billing
+from . import activity, billing
 from .content import CONTENT, PLATFORM_NAMES, PLATFORMS, UI, page_path, ui_for
 from .forms import LoginForm, NewPasswordForm, ResetRequestForm, SignupForm
 from .models import AgencySubscription, Customer
@@ -81,6 +81,7 @@ def account(request):
     if not request.user.is_authenticated:
         return redirect(f"{reverse('growth:login')}?lang={code}")
     customer, _ = Customer.objects.get_or_create(user=request.user, defaults={"lang": code})
+    activity.record(request, request.user, "dashboard")
     ui = UI[code]
     subs = []
     with translation.override("nb" if code == "no" else code):
@@ -272,6 +273,8 @@ def cancel(request, sub_id):
     if sub is None:
         return render(request, "growth/account.html", _ctx(request, code, "cancel", invalid=True))
     gu = ui_for(code, sub.platform)
+    if request.method == "GET" and sub.user_id:
+        activity.record(request, sub.user, "cancel_page")
     done, error = sub.cancel_at_period_end or sub.status == "canceled", False
     if not done and not _cancelable(sub):
         return redirect(f"{reverse('growth:account')}?lang={code}")

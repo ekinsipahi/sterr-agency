@@ -126,15 +126,18 @@ TEAM_TITLES = {
     "cancel_requested": "{platform} influencer paketi iptal talebi (dönem sonunda biter)",
     "resumed": "{platform} influencer paketi iptali geri alındı",
     "canceled": "{platform} influencer paketi iptal edildi",
+    "dispute": "DİKKAT: {platform} influencer paketi ödemesine itiraz (dispute) açıldı",
+    "dispute_closed": "{platform} influencer paketi itirazı sonuçlandı",
 }
 CANCEL_SOURCES = {"account": "müşteri hesap panelinden", "email": "müşteri hatırlatma e-postasındaki linkten",
                   "stripe": "Stripe müşteri portalından veya Stripe panelinden"}
 
 
-def notify_team(sub, event, amount=None):
+def notify_team(sub, event, amount=None, extra=""):
     """event: 'request' (payments off), 'paid' (first payment confirmed by Stripe),
     'renewed' (a monthly payment), 'cancel_requested' (no renewal, runs to the period end),
-    'resumed' (that cancel taken back), 'canceled' (ended). Nothing is sent before a payment."""
+    'resumed' (that cancel taken back), 'canceled' (ended), 'dispute' / 'dispute_closed'
+    (a chargeback; `extra` carries its details). Nothing is sent before a payment."""
     title = TEAM_TITLES[event].replace("{platform}", sub.platform_name)
     paid = f"${int(amount) / 100:.2f}" if amount is not None else f"${sub.amount:.2f}"
     period = f"{sub.current_period_end:%d.%m.%Y}" if sub.current_period_end else "-"
@@ -149,6 +152,7 @@ def notify_team(sub, event, amount=None):
         f"E-posta: {sub.email}\n"
         f"{'Bitiş' if sub.cancel_at_period_end or event == 'canceled' else 'Sonraki ödeme'}: {period}\n"
         f"{canceled}"
+        f"{extra}"
         f"Dil: {sub.lang}\n"
         f"Kaynak: {sub.source_page or '-'} {sub.utm_source or ''}\n\n"
         f"Admin: {settings.SITE_URL}/admin/growth/agencysubscription/{sub.pk}/change/\n"

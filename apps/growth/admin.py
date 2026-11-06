@@ -1,15 +1,25 @@
 from django.contrib import admin
+from django.shortcuts import get_object_or_404, render
+from django.urls import path, reverse
 from django.utils.html import format_html
 
+from . import evidence
 from .constants import PROFILE_URL
-from .models import AgencySubscription, Customer, FollowerOrder, StripeEvent, SubscriptionStat
+from .models import AccountActivity, AgencySubscription, Customer, Dispute, FollowerOrder, StripeEvent, SubscriptionStat
 
 
 class StatInline(admin.TabularInline):
     model = SubscriptionStat
     extra = 0
-    fields = ("date", "followers", "new_followers", "likes", "comments")
+    fields = ("date", "followers", "new_followers", "likes", "comments", "impressions", "visits", "confirms")
     ordering = ("-date",)
+
+
+class DisputeInline(admin.TabularInline):
+    model = Dispute
+    extra = 0
+    can_delete = False
+    fields = readonly_fields = ("dispute_id", "amount", "reason", "status", "due_by", "evidence_staged", "created_at")
 
 
 @admin.register(AgencySubscription)
@@ -18,12 +28,13 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
     list_filter = ("status", "platform", "cancel_at_period_end", "lang", "created_at")
     search_fields = ("handle", "email", "location", "stripe_subscription_id", "stripe_customer_id", "stripe_checkout_session_id")
     readonly_fields = ("user", "amount", "started_at", "current_period_end", "cancel_at_period_end", "canceled_at",
-                       "cancel_requested_at", "cancel_source", "reminded_for",
+                       "cancel_requested_at", "cancel_source", "reminded_for", "terms_accepted_at", "terms_version",
+                       "user_agent", "evidence_link",
                        "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id", "notified", "mail_error",
                        "ip", "source_page", "utm_source", "utm_medium", "utm_campaign", "gclid", "created_at", "updated_at")
     fieldsets = (
         (None, {"fields": ("platform", "handle", "location", "amount", "status", "note")}),
-        ("Müşteri", {"fields": ("user", "email", "lang")}),
+        ("Müşteri", {"fields": ("user", "email", "lang", "terms_accepted_at", "terms_version", "user_agent", "evidence_link")}),
         ("Abonelik", {"fields": ("started_at", "current_period_end", "cancel_at_period_end", "cancel_requested_at",
                                  "cancel_source", "canceled_at", "reminded_for",
                                  "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id")}),
@@ -32,7 +43,24 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
         ("Kaynak", {"classes": ("collapse",), "fields": ("ip", "source_page", "utm_source", "utm_medium", "utm_campaign",
                                                        "gclid", "created_at", "updated_at")}),
     )
-    inlines = [StatInline]
+    inlines = [StatInline, DisputeInline]
+
+    def get_urls(self):
+        return [path("<int:pk>/evidence/", self.admin_site.admin_view(self.evidence_view),
+                     name="growth_agencysubscription_evidence")] + super().get_urls()
+
+    def evidence_view(self, request, pk):
+        sub = get_object_or_404(AgencySubscription, pk=pk)
+        fields = [(name.replace("_", " ").capitalize(), text) for name, text in evidence.build(sub).items()]
+        return render(request, "admin/growth/evidence.html", {**self.admin_site.each_context(request), "sub": sub,
+                                                               "fields": fields, "title": f"Kanıt paketi: @{sub.handle}"})
+
+    @admin.display(description="Dispute kanıtı")
+    def evidence_link(self, obj):
+        if not obj.pk:
+            return "-"
+        return format_html('<a href="{}" target="_blank">Kanıt paketini aç (yazdır / PDF)</a>',
+                           reverse("admin:growth_agencysubscription_evidence", args=[obj.pk]))
 
     @admin.display(description="Hesap", ordering="handle")
     def account(self, obj):
@@ -65,3 +93,19 @@ class StripeEventAdmin(admin.ModelAdmin):
     list_display = ("type", "event_id", "created_at")
     list_filter = ("type",)
     search_fields = ("event_id",)
+
+
+@admin.register(Dispute)
+class DisputeAdmin(admin.ModelAdmin):
+    list_display = ("dispute_id", "subscription", "amount", "reason", "status", "due_by", "evidence_staged", "created_at")
+    list_filter = ("status", "reason", "evidence_staged")
+    search_fields = ("dispute_id", "subscription__handle", "subscription__email")
+    readonly_fields = [f.name for f in Dispute._meta.fields]
+
+
+@admin.register(AccountActivity)
+class AccountActivityAdmin(admin.ModelAdmin):
+    list_display = ("user", "kind", "ip", "at")
+    list_filter = ("kind",)
+    search_fields = ("user__email", "ip")
+    readonly_fields = ("user", "kind", "ip", "user_agent", "at")

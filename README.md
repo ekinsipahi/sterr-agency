@@ -100,13 +100,20 @@ Bir sayfa bir dilde henüz yoksa o dil için yayına çıkmaz: route, hreflang, 
   - `new_followers`: o gün bizim getirdiğimiz takipçi. Gönderilmezse hesabın toplam takipçi sayısındaki fark kullanılır.
   - Beğeni = yeni takipçi × 2,5, yorum = yeni takipçi ÷ 10 (`plan.py`). `likes` / `comments` gönderilirse gönderilen değer kullanılır.
   - `followers` o günkü toplam takipçidir ve isteğe bağlıdır. Aynı gün tekrar gönderilirse üzerine yazılır.
+  - Teslimat kanıtı (dispute için, isteğe bağlı): `impressions` (profilin gösterildiği kişi), `visits` (profile giden), `confirms` ("takip ettim" diyen) ve `countries`: `{"DE": {"impressions": 900, "visits": 210, "confirms": 95}}`.
   
   Panel her abonelik için şunları gösterir: **Bugün** (yeni takipçi, beğeni, yorum), **Bu ay**, son 30 günün grafiği ve gün gün tablo.
 
 **Bildirimler (ekibe, Türkçe):** ödeme olmadan e-posta gitmez. Ekibe giden e-postalar:
 - ilk ödeme Stripe'ta onaylanınca "Yeni … influencer paketi (ödendi)";
 - her aylık ödemede "… yenilendi (ödendi)";
-- abonelik bitince "… iptal edildi".
+- müşteri iptal edince (panel, hatırlatma e-postasındaki link ya da Stripe portalı) "… iptal talebi (dönem sonunda biter)", geri alınca "… iptali geri alındı";
+- abonelik bitince "… iptal edildi";
+- ödemeye itiraz gelince "DİKKAT: … itiraz (dispute) açıldı", sonuçlanınca "… itirazı sonuçlandı".
+
+**İptal ve hatırlatma:** panelde "Aboneliği iptal et" (onay sayfası, dönem sonunda biter) ve "Aboneliğime devam et". Her yenilemeden önce müşteriye hatırlatma gider: tarih, tutar, tek tıkla iptal linki (girişsiz, imzalı), hesap linki ve WhatsApp. Stripe'ın `invoice.upcoming` olayıyla gider (Stripe → Settings → Billing → Subscriptions and emails → *Upcoming renewal events*: 3 gün); yedek olarak `python manage.py send_renewal_reminders` (günlük cron) aynı işi yapar, dönem başına bir kez.
+
+**Dispute kanıtı:** sipariş formundaki zorunlu şart kutusu (zaman, IP, tarayıcı, `TERMS_VERSION`), müşterinin girişleri ve panel ziyaretleri (`AccountActivity`), linksterr'ın günlük teslimat verisi, iptal ve hatırlatma kayıtları. İtiraz açılınca (`charge.dispute.created`) bunlar Stripe'a **taslak** olarak yüklenir, ekibe e-posta gider; Stripe'ta kontrol edip *Submit* edilir. Admin → abonelik → "Kanıt paketini aç" sayfası yazdırılıp PDF olarak eklenebilir. Checkout'ta 3D Secure istenir ve yenileme/iptal şartı ödeme butonunun üstünde yazar. Aynı Stripe hesabındaki diğer sitelerin olayları atlanır: ödeme yalnızca bizim oluşturduğumuz Checkout oturumuyla, abonelik ve itiraz yalnızca bizim Stripe kimliklerimizle eşleşir.
 
 Alıcılar: `LEAD_NOTIFY_EMAILS` + `GROWTH_NOTIFY_EMAILS` (varsayılan ekinsipahi8@gmail.com). Müşteri e-postaları her zaman İngilizcedir.
 
@@ -117,7 +124,7 @@ Alıcılar: `LEAD_NOTIFY_EMAILS` + `GROWTH_NOTIFY_EMAILS` (varsayılan ekinsipah
 2. `python manage.py setup_stripe` şunları yapar:
    - 6 aylık fiyatı oluşturur (`sterr_<platform>_<paket>_monthly_usd`);
    - müşteri portalı ayarını oluşturur (kart, faturalar, dönem sonunda iptal);
-   - webhook olaylarını günceller: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated`, `customer.subscription.deleted`.
+   - webhook olaylarını günceller: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `invoice.paid`, `invoice.payment_failed`, `invoice.upcoming`, `customer.subscription.updated`, `customer.subscription.deleted`, `charge.dispute.created`, `charge.dispute.closed`.
    
    Yeni webhook oluşturursa secret'ı `.env` dosyasına yazar, ekrana yazdırmaz.
 

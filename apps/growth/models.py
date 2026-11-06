@@ -128,6 +128,10 @@ class AgencySubscription(models.Model):
     cancel_source = models.CharField("İptal nereden", max_length=10, choices=CANCEL_SOURCES, blank=True)
     reminded_for = models.DateTimeField("Hatırlatma gönderilen dönem", null=True, blank=True,
                                         help_text="Yenileme hatırlatması bu dönem bitişi için gönderildi")
+    # Evidence of what the customer agreed to: the required terms box on the order form.
+    terms_accepted_at = models.DateTimeField("Şartlar kabul edildi", null=True, blank=True)
+    terms_version = models.CharField("Şart sürümü", max_length=20, blank=True)
+    user_agent = models.CharField("Tarayıcı", max_length=300, blank=True)
     stripe_checkout_session_id = models.CharField(max_length=128, blank=True, db_index=True)
     stripe_subscription_id = models.CharField(max_length=64, blank=True, db_index=True)
     stripe_customer_id = models.CharField(max_length=64, blank=True, db_index=True)
@@ -195,6 +199,12 @@ class SubscriptionStat(models.Model):
     new_followers = models.PositiveIntegerField("Yeni takipçi", null=True, blank=True)
     likes = models.PositiveIntegerField("Beğeni", null=True, blank=True, help_text="Boşsa yeni takipçi × 2,5")
     comments = models.PositiveIntegerField("Yorum", null=True, blank=True, help_text="Boşsa yeni takipçi ÷ 10")
+    # Delivery evidence from the growth system: how many real people were shown the profile,
+    # went to it and said they followed, and from which countries ({"DE": {"impressions": ...}}).
+    impressions = models.PositiveIntegerField("Gösterim", null=True, blank=True, help_text="Profilin gösterildiği kişi")
+    visits = models.PositiveIntegerField("Profil ziyareti", null=True, blank=True)
+    confirms = models.PositiveIntegerField("Takip onayı", null=True, blank=True, help_text="“Takip ettim” diyen kişi")
+    countries = models.JSONField("Ülkeler", default=dict, blank=True)
 
     class Meta:
         ordering = ["date"]
@@ -204,6 +214,50 @@ class SubscriptionStat(models.Model):
 
     def __str__(self):
         return f"#{self.subscription_id} {self.date} {self.followers}"
+
+
+class AccountActivity(models.Model):
+    """Sign-ins and dashboard visits of customer accounts: evidence that a customer used
+    the service (Stripe dispute access_activity_log). Dashboard visits at most once an hour."""
+
+    KINDS = [("login", "Giriş"), ("dashboard", "Panel görüntüleme"), ("cancel_page", "İptal sayfası")]
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="growth_activity")
+    kind = models.CharField("Ne", max_length=12, choices=KINDS)
+    ip = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField("Tarayıcı", max_length=300, blank=True)
+    at = models.DateTimeField("Zaman", auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-at"]
+        verbose_name = "Hesap hareketi"
+        verbose_name_plural = "Hesap hareketleri"
+
+    def __str__(self):
+        return f"{self.user} {self.kind} {self.at:%Y-%m-%d %H:%M}"
+
+
+class Dispute(models.Model):
+    """A Stripe dispute (chargeback) on one of our subscriptions. Evidence is staged on Stripe
+    when it opens; the team reviews it and presses Submit in the Stripe Dashboard."""
+
+    subscription = models.ForeignKey(AgencySubscription, on_delete=models.CASCADE, related_name="disputes")
+    dispute_id = models.CharField(max_length=64, unique=True)
+    amount = models.DecimalField("Tutar (USD)", max_digits=8, decimal_places=2)
+    reason = models.CharField("Sebep", max_length=40, blank=True)
+    status = models.CharField("Durum", max_length=40, blank=True)
+    due_by = models.DateTimeField("Son kanıt tarihi", null=True, blank=True)
+    evidence_staged = models.BooleanField("Kanıt Stripe'a yüklendi", default=False)
+    error = models.TextField("Hata", blank=True)
+    created_at = models.DateTimeField("Açıldı", auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "İtiraz (dispute)"
+        verbose_name_plural = "İtirazlar (dispute)"
+
+    def __str__(self):
+        return f"{self.dispute_id} #{self.subscription_id} {self.status}"
 
 
 class StripeEvent(models.Model):

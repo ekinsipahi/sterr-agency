@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<style>
+  .evidence { max-width: 900px; }
+  .evidence h2 { margin: 24px 0 6px; font-size: 15px; }
+  .evidence pre { white-space: pre-wrap; font: 13px/1.5 ui-monospace, Menlo, monospace; background: var(--darkened-bg, #f8f8f8);
+                  border: 1px solid var(--hairline-color, #e5e5e5); padding: 12px; border-radius: 4px; margin: 0; }
+  @media print { #header, .breadcrumbs, #nav-sidebar, .evidence .no-print { display: none !important; } .evidence pre { border: 0; padding: 0; } }
+</style>
+<div class="evidence">
+  <p class="no-print">Stripe Dashboard'daki dispute sayfasında bu metinler alanlara taslak olarak yüklenir. Bu sayfayı
+    <b>Yazdır → PDF olarak kaydet</b> ile "Service documentation" dosyası olarak da ekleyebilirsin; panelin ve profilin ekran görüntülerini de ekle.
+    <button type="button" onclick="window.print()">Yazdır / PDF</button></p>
+  <h1>Sterr Agency: service record for @{{ sub.handle }} ({{ sub.platform_name }})</h1>
+  {% for name, text in fields %}
+  <h2>{{ name }}</h2>
+  <pre>{{ text }}</pre>
+  {% endfor %}
+</div>
+{% endblock %}

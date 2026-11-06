@@ -30,6 +30,8 @@ WEBHOOK_EVENTS = [
     "invoice.upcoming",
     "customer.subscription.updated",
     "customer.subscription.deleted",
+    "charge.dispute.created",
+    "charge.dispute.closed",
 ]
 
 

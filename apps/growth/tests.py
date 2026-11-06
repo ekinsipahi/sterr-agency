@@ -18,7 +18,8 @@ from apps.core.languages import LANGS
 from . import billing
 from .content import CONTENT, CREATORS, PAGES, PLATFORMS, UI, alternates, followers_menu, page_path, routes
 from .forms import clean_handle
-from .models import AgencySubscription, Customer, StripeEvent, SubscriptionStat
+from .models import AccountActivity, AgencySubscription, Customer, Dispute, StripeEvent, SubscriptionStat
+from .constants import TERMS_VERSION
 from .plan import PLANS
 from .validate import check
 
@@ -231,6 +232,9 @@ class CheckoutTests(FreshCache, TestCase):
         self.assertTrue(Customer.objects.get().email_verified)
         sub.refresh_from_db()
         self.assertEqual(sub.stripe_checkout_session_id, "cs_test_1")
+        self.assertIsNotNone(sub.terms_accepted_at)
+        self.assertEqual(sub.terms_version, TERMS_VERSION)
+        self.assertIn("cancel", create.call_args.kwargs["note"])
 
     def test_verified_customer_goes_straight_to_stripe_and_retries_reuse_the_unpaid_one(self):
         self.signed_in()
@@ -302,6 +306,7 @@ class StripePriceTests(TestCase):
 
     def test_uses_the_monthly_price_from_setup_stripe(self):
         params = self.checkout_params([SimpleNamespace(id="price_pro", unit_amount=27999)])
+        self.assertEqual(params["payment_method_options"], {"card": {"request_three_d_secure": "any"}})
         self.assertEqual(params["mode"], "subscription")
         self.assertEqual(params["line_items"], [{"quantity": 1, "price": "price_pro"}])
         self.assertEqual(params["subscription_data"]["metadata"]["subscription_id"], str(self.sub.pk))
@@ -341,7 +346,7 @@ def signed(payload):
 class WebhookTests(TestCase):
     def setUp(self):
         self.sub = AgencySubscription.objects.create(email="a@example.com", handle="brand", location="Berlin", lang="de",
-                                                     plan="rising", amount="149.99")
+                                                     plan="rising", amount="149.99", stripe_checkout_session_id="cs_1")
 
     def send(self, event_id, event_type, obj, stripe_obj=None):
         body, header = signed({"id": event_id, "type": event_type, "data": {"object": obj}})
@@ -373,6 +378,15 @@ class WebhookTests(TestCase):
         self.assertEqual(team[0].to, ["owner@example.com", "ekinsipahi8@gmail.com"])
         self.assertIn("Rising Influencer", team[0].body)
         self.assertEqual(StripeEvent.objects.count(), 2)
+
+    def test_another_sites_checkout_is_skipped(self):
+        # Other sites share the Stripe account: a numeric reference that happens to match our id is not ours.
+        r = self.checkout(id="cs_other_site", client_reference_id=str(self.sub.pk), metadata={"subscription_id": str(self.sub.pk)})
+        self.assertEqual(r.status_code, 200)
+        self.send("evt_9", "customer.subscription.updated", stripe_sub(sub_id="sub_other", metadata={"subscription_id": str(self.sub.pk)}))
+        self.sub.refresh_from_db()
+        self.assertEqual((self.sub.status, self.sub.stripe_subscription_id), ("pending", ""))
+        self.assertFalse(mail.outbox)
 
     def test_unpaid_checkout_does_nothing(self):
         self.checkout(payment_status="unpaid")
@@ -487,6 +501,72 @@ class CancelTests(TestCase):
         self.assertEqual(len(self.team("iptali geri alındı")), 1)
 
 
+@override_settings(**STRIPE_ON)
+class DisputeTests(FreshCache, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.create_user("me@example.com", "me@example.com", "pass-word-1")
+        self.sub = AgencySubscription.objects.create(
+            user=self.user, email="me@example.com", handle="brand", location="Berlin", plan="rising", amount="149.99",
+            status="active", started_at=timezone.now() - timedelta(days=12), stripe_subscription_id="sub_1",
+            stripe_customer_id="cus_1", current_period_end=timezone.now() + timedelta(days=18), ip="203.0.113.9",
+            terms_accepted_at=timezone.now() - timedelta(days=12), terms_version=TERMS_VERSION)
+        SubscriptionStat.objects.create(subscription=self.sub, date=timezone.localdate(), new_followers=140, impressions=1200,
+                                        visits=310, confirms=95, countries={"DE": {"impressions": 900, "visits": 200, "confirms": 70}})
+
+    def dispute(self, event_id, status="needs_response", traced=("sub_1", "cus_1")):
+        obj = {"id": "dp_1", "object": "dispute", "amount": 14999, "reason": "product_not_received", "status": status,
+               "charge": "ch_1", "payment_intent": "pi_1", "evidence_details": {"due_by": 1767225600}}
+        body, header = signed({"id": event_id, "type": f"charge.dispute.{'created' if status == 'needs_response' else 'closed'}",
+                               "data": {"object": obj}})
+        with mock.patch("apps.growth.billing.dispute_subscription", return_value=traced), \
+                mock.patch("apps.growth.billing.stage_evidence") as stage:
+            self.client.post(reverse("growth:webhook"), body, content_type="application/json", HTTP_STRIPE_SIGNATURE=header)
+        return stage
+
+    def test_dispute_stages_evidence_and_tells_the_team(self):
+        self.client.force_login(self.user)  # a sign-in and a dashboard visit are on record
+        self.client.get(reverse("growth:account") + "?lang=en")
+        stage = self.dispute("evt_d1")
+        dispute_id, evidence = stage.call_args.args
+        self.assertEqual(dispute_id, "dp_1")
+        self.assertIn("@brand", evidence["product_description"])
+        self.assertIn("203.0.113.9", evidence["cancellation_policy_disclosure"])
+        self.assertIn("profile shown to 1,200 people", evidence["uncategorized_text"])
+        self.assertIn("DE 900", evidence["uncategorized_text"])
+        self.assertIn("opened the growth dashboard", evidence["access_activity_log"])
+        self.assertIn("never canceled", evidence["cancellation_rebuttal"])
+        self.assertTrue(all(len(v) <= 20000 for v in evidence.values()))
+        d = Dispute.objects.get()
+        self.assertEqual((d.subscription_id, str(d.amount), d.evidence_staged), (self.sub.pk, "149.99", True))
+        team = [m for m in mail.outbox if "itiraz (dispute) açıldı" in m.subject]
+        self.assertEqual(len(team), 1)
+        self.assertIn("dashboard.stripe.com/disputes/dp_1", team[0].body)
+        self.dispute("evt_d2", status="won")
+        self.assertEqual(Dispute.objects.get().status, "won")
+        self.assertIn("KAZANILDI", [m for m in mail.outbox if "itirazı sonuçlandı" in m.subject][0].body)
+
+    def test_another_sites_dispute_is_skipped(self):
+        stage = self.dispute("evt_d3", traced=("sub_x", "cus_x"))
+        stage.assert_not_called()
+        self.assertFalse(Dispute.objects.exists())
+        self.assertFalse(mail.outbox)
+
+    def test_evidence_page_in_admin(self):
+        admin = get_user_model().objects.create_superuser("boss", "boss@example.com", "pass-word-1")
+        self.client.force_login(admin)
+        r = self.client.get(reverse("admin:growth_agencysubscription_evidence", args=[self.sub.pk]))
+        self.assertContains(r, "service record for @brand")
+        self.assertContains(r, "profile shown to 1,200 people")
+        self.assertFalse(AccountActivity.objects.filter(user=admin).exists())  # staff sign-ins aren't customer activity
+
+    def test_activity_log_once_an_hour(self):
+        self.client.post(reverse("growth:login") + "?lang=en", {"email": "me@example.com", "password": "pass-word-1"})
+        for _ in range(3):
+            self.client.get(reverse("growth:account") + "?lang=en")
+        self.assertEqual(sorted(AccountActivity.objects.values_list("kind", flat=True)), ["dashboard", "login"])
+
+
 @override_settings(GROWTH_API_TOKEN="tok_test", **MAIL)
 class StatsApiTests(TestCase):
     def setUp(self):
@@ -521,6 +601,16 @@ class StatsApiTests(TestCase):
         self.assertEqual(SubscriptionStat.objects.count(), 2)
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.gained, 500)
+
+    def test_delivery_evidence(self):
+        r = self.post({"subscription_id": self.sub.pk, "date": "2026-11-04", "new_followers": 120, "impressions": 1500,
+                       "visits": 300, "confirms": 110, "countries": {"no": {"impressions": 1500, "visits": 300, "confirms": 110}}})
+        self.assertEqual(r.status_code, 200)
+        stat = SubscriptionStat.objects.get()
+        self.assertEqual((stat.impressions, stat.visits, stat.confirms), (1500, 300, 110))
+        self.assertEqual(stat.countries, {"NO": {"impressions": 1500, "visits": 300, "confirms": 110}})
+        r = self.post({"subscription_id": self.sub.pk, "countries": {"Norway": {"impressions": 1}}})
+        self.assertEqual(r.status_code, 207)
 
     def test_our_count_of_new_followers_wins_over_the_follower_count(self):
         today = timezone.localdate()

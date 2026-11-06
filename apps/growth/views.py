@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timezone as dt_timezone
 from urllib.parse import quote
 
 from django.conf import settings
@@ -10,6 +11,7 @@ from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
@@ -17,11 +19,12 @@ from apps.core.languages import LANG_BY_CODE
 from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
-from . import billing
+from . import billing, evidence
 from .content import has_page, ACCOUNT_NAV, CONTENT, CREATOR_PAGES, CREATORS, GROUPS, GUIDES, PAGE_PLAN, UI, PAGES, PLATFORM_NAMES, PLATFORMS, alternates, creator_alternates, creator_path, lang_links, page_path, ui_for
+from .constants import TERMS_VERSION
 from .forms import OrderForm
 from . import plan
-from .models import AgencySubscription, Customer, StripeEvent
+from .models import AgencySubscription, Customer, Dispute, StripeEvent
 from .notifications import (acknowledge_request, confirm_cancel, confirm_payment, notify_team, remind_renewal,
                             send_verification)
 
@@ -153,7 +156,8 @@ def start_checkout(sub, cancel_path):
     success_url = f"{settings.SITE_URL}{reverse('growth:success')}{query}&session_id={{CHECKOUT_SESSION_ID}}"
     customer = (AgencySubscription.objects.filter(user_id=sub.user_id).exclude(stripe_customer_id="")
                 .values_list("stripe_customer_id", flat=True).first()) if sub.user_id else ""
-    session = billing.create_checkout(sub, success_url, settings.SITE_URL + cancel_path, customer=customer or "")
+    session = billing.create_checkout(sub, success_url, settings.SITE_URL + cancel_path, customer=customer or "",
+                                      note=ui_for(sub.lang, sub.platform)["policy"])
     sub.stripe_checkout_session_id = session.id
     sub.save(update_fields=["stripe_checkout_session_id", "updated_at"])
     return session.url
@@ -206,6 +210,7 @@ def order(request):
     cache.set(rate_key, cache.get(rate_key, 0) + 1, RATE_WINDOW)
 
     pending = {"platform": platform, "lang": code, "page": page_key, "ip": ip,
+               "terms_at": timezone.now().isoformat(), "user_agent": request.META.get("HTTP_USER_AGENT", "")[:300],
                **{f: form.cleaned_data[f] for f in ORDER_FIELDS},
                **{f: request.POST.get(f, "")[:300 if f == "source_page" else 150] for f in SOURCE_FIELDS}}
     if via_google:
@@ -230,7 +235,10 @@ def place_order(request, user, pending):
     customer, _ = Customer.objects.get_or_create(user=user, defaults={"lang": code})
     package = plan.PLAN_BY_KEY[pending["plan"]]
     fields = {"email": user.email, "location": pending["location"], "plan": package["key"], "amount": package["price"], "lang": code,
-              "ip": pending.get("ip"), **{f: pending.get(f, "") for f in SOURCE_FIELDS}}
+              "ip": pending.get("ip"), **{f: pending.get(f, "") for f in SOURCE_FIELDS},
+              # The terms box is required on the order form: when, which version, from which browser.
+              "terms_accepted_at": parse_datetime(pending.get("terms_at") or "") or timezone.now(),
+              "terms_version": TERMS_VERSION, "user_agent": pending.get("user_agent", "")}
     # Trying again for the same account (e.g. after a canceled checkout) reuses the unpaid one.
     sub = AgencySubscription.objects.filter(user=user, platform=platform, handle=pending["handle"], status="pending").first()
     if sub is None:
@@ -278,13 +286,13 @@ def sync(stripe_sub, sub_id=None, source="stripe"):
     team note and the customer's welcome go out; a cancel at the period end (from our
     account page, the reminder link or Stripe's portal: `source`) and taking it back are
     told to the team, and a cancel is confirmed to the customer. Returns the subscription (or None)."""
-    sub_id = sub_id or _sub_id(stripe_sub.get("metadata") or {})
     first_payment, change = False, None
     with transaction.atomic():
         qs = AgencySubscription.objects.select_for_update()
+        # sub_id comes only from a Checkout session we created; otherwise the Stripe id must
+        # already be ours (events of the other sites on this Stripe account are skipped).
         sub = qs.filter(stripe_subscription_id=stripe_sub["id"]).first() or (qs.filter(pk=sub_id).first() if sub_id else None)
         if sub is None:
-            logger.warning("Stripe subscription %s without a subscription of ours", stripe_sub.get("id"))
             return None
         status = STRIPE_STATUS.get(stripe_sub.get("status"))
         was_canceling = sub.cancel_at_period_end
@@ -366,15 +374,13 @@ def success(request):
 
 # --- Stripe webhooks --------------------------------------------------------------
 
-def _sub_id(obj):
-    ref = obj.get("client_reference_id") or (obj.get("metadata") or {}).get("subscription_id") or obj.get("subscription_id")
-    return int(ref) if ref and str(ref).isdigit() else None
-
-
 def _on_checkout(obj):
-    if obj.get("mode") != "subscription" or obj.get("payment_status") != "paid" or not obj.get("subscription"):
+    # Other sites share this Stripe account and their events arrive here too: only a
+    # Checkout session we created is ours.
+    sub = AgencySubscription.objects.filter(stripe_checkout_session_id=obj.get("id") or "-").first()
+    if sub is None or obj.get("mode") != "subscription" or obj.get("payment_status") != "paid" or not obj.get("subscription"):
         return
-    sync(billing.retrieve_subscription(obj["subscription"]), _sub_id(obj))
+    sync(billing.retrieve_subscription(obj["subscription"]), sub.pk)
 
 
 def _on_invoice_paid(obj):
@@ -409,7 +415,53 @@ def _on_subscription(obj):
         notify_team(sub, "canceled")
 
 
+DISPUTE_RESULTS = {"won": "KAZANILDI (para geri geldi)", "lost": "KAYBEDİLDİ", "warning_closed": "uyarı kapandı",
+                   "charge_refunded": "ödeme iade edildi"}
+
+
+def _dispute_sub(obj):
+    """Our subscription behind a dispute, or None (a dispute of another site on this Stripe account)."""
+    known = Dispute.objects.filter(dispute_id=obj.get("id")).select_related("subscription").first()
+    if known is not None:
+        return known.subscription
+    stripe_sub, customer = billing.dispute_subscription(obj)
+    qs = AgencySubscription.objects.exclude(started_at=None)
+    return ((qs.filter(stripe_subscription_id=stripe_sub).first() if stripe_sub else None)
+            or (qs.filter(stripe_customer_id=customer).order_by("-started_at").first() if customer else None))
+
+
+def _on_dispute(obj):
+    sub = _dispute_sub(obj)
+    if sub is None:
+        return
+    due = (obj.get("evidence_details") or {}).get("due_by")
+    dispute, opened = Dispute.objects.update_or_create(dispute_id=obj["id"], defaults={
+        "subscription": sub, "amount": (obj.get("amount") or 0) / 100, "reason": obj.get("reason") or "",
+        "status": obj.get("status") or "", "due_by": datetime.fromtimestamp(due, tz=dt_timezone.utc) if due else None})
+    stripe_link = f"https://dashboard.stripe.com/disputes/{dispute.dispute_id}"
+    admin_link = f"{settings.SITE_URL}{reverse('admin:growth_agencysubscription_evidence', args=[sub.pk])}"
+    if opened:
+        try:
+            billing.stage_evidence(dispute.dispute_id, evidence.build(sub))
+            dispute.evidence_staged = True
+        except Exception as exc:
+            logger.exception("Could not stage evidence for %s", dispute.dispute_id)
+            dispute.error = str(exc)[:500]
+        dispute.save(update_fields=["evidence_staged", "error", "updated_at"])
+        staged = ("Kanıtlar Stripe'a TASLAK olarak yüklendi (gönderilmedi). Kontrol et, varsa ekran görüntüsü ekle ve "
+                  "Submit'e bas." if dispute.evidence_staged else f"Kanıt Stripe'a yüklenemedi: {dispute.error}")
+        due_text = f"{dispute.due_by:%d.%m.%Y %H:%M} UTC" if dispute.due_by else "-"
+        notify_team(sub, "dispute", amount=obj.get("amount"), extra=(
+            f"Sebep: {dispute.reason or '-'}\nSon kanıt tarihi: {due_text}\n{staged}\n"
+            f"Stripe: {stripe_link}\nKanıt paketi (yazdır / PDF): {admin_link}\n"))
+    elif obj.get("status") in DISPUTE_RESULTS:
+        notify_team(sub, "dispute_closed", amount=obj.get("amount"),
+                    extra=f"Sonuç: {DISPUTE_RESULTS[obj['status']]}\nStripe: {stripe_link}\n")
+
+
 HANDLERS = {
+    "charge.dispute.created": _on_dispute,
+    "charge.dispute.closed": _on_dispute,
     "checkout.session.completed": _on_checkout,
     "checkout.session.async_payment_succeeded": _on_checkout,
     "invoice.paid": _on_invoice_paid,

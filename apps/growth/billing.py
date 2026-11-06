@@ -55,7 +55,8 @@ def price_id(platform, plan_key):
     return found
 
 
-def create_checkout(sub, success_url, cancel_url, customer=""):
+def create_checkout(sub, success_url, cancel_url, customer="", note=""):
+    """`note`: the renewal and cancel terms in the page's language, shown above the pay button."""
     package = plan.PLAN_BY_KEY[sub.plan]
     name = f"{sub.get_plan_display()} · {sub.platform_name} · Sterr Agency"
     metadata = {"subscription_id": str(sub.pk), "platform": sub.platform, "handle": sub.handle, "plan": sub.plan}
@@ -74,7 +75,12 @@ def create_checkout(sub, success_url, cancel_url, customer=""):
         "metadata": metadata,
         "subscription_data": {"metadata": metadata,
                               "description": f"{name} for @{sub.handle} ({sub.location[:80]})"},
+        # 3D Secure whenever the card supports it: a fraud chargeback on an authenticated
+        # payment is the card issuer's liability.
+        "payment_method_options": {"card": {"request_three_d_secure": "any"}},
     }
+    if note:
+        params["custom_text"] = {"submit": {"message": note[:1200]}}
     if customer:
         params["customer"] = customer  # one Stripe customer per account: one portal for all packages
     else:
@@ -148,3 +154,30 @@ def parse_event(payload: bytes, signature: str):
     stripe.WebhookSignature.verify_header(payload.decode("utf-8"), signature, settings.STRIPE_WEBHOOK_SECRET,
                                           tolerance=300)
     return json.loads(payload)
+
+
+def dispute_subscription(dispute):
+    """(Stripe subscription id, Stripe customer id) behind a dispute dict; either may be ""."""
+    client, sub, customer = _client(), "", ""
+    intent = dispute.get("payment_intent")
+    try:
+        if intent:  # charge → invoice payment → invoice → subscription (newer API versions)
+            payments = client.v1.invoice_payments.list(
+                params={"payment": {"type": "payment_intent", "payment_intent": intent}, "limit": 1}).data
+            invoice = payments[0].invoice if payments else None
+            if invoice:
+                invoice = invoice if not isinstance(invoice, str) else client.v1.invoices.retrieve(invoice)
+                sub = invoice_subscription(json.loads(json.dumps(invoice.to_dict(), default=str)))
+        charge = dispute.get("charge")
+        if charge:
+            charge = client.v1.charges.retrieve(charge) if isinstance(charge, str) else charge
+            customer = getattr(charge, "customer", None) or ""
+            customer = customer if isinstance(customer, str) else getattr(customer, "id", "")
+    except stripe.StripeError:
+        logger.exception("Could not trace dispute %s", dispute.get("id"))
+    return sub, customer
+
+
+def stage_evidence(dispute_id, evidence):
+    """Save the evidence on the dispute without submitting it (the team checks and submits)."""
+    _client().v1.disputes.update(dispute_id, params={"evidence": evidence, "submit": False})
