@@ -22,13 +22,16 @@ from .content import has_page, ACCOUNT_NAV, CONTENT, CREATOR_PAGES, CREATORS, GR
 from .forms import OrderForm
 from . import plan
 from .models import AgencySubscription, Customer, StripeEvent
-from .notifications import acknowledge_request, confirm_payment, notify_team, send_verification
+from .notifications import (acknowledge_request, confirm_cancel, confirm_payment, notify_team, remind_renewal,
+                            send_verification)
 
 logger = logging.getLogger(__name__)
 
 RATE_LIMIT, RATE_WINDOW = 8, 60 * 60
 VERIFY_SALT = "growth-verify"
 VERIFY_MAX_AGE = 7 * 24 * 60 * 60
+CANCEL_SALT = "growth-cancel"
+CANCEL_MAX_AGE = 40 * 24 * 60 * 60  # the reminder's link works past the renewal it warns about
 
 
 def shell(code):
@@ -47,6 +50,21 @@ def shell(code):
 def verify_link(user, sub=None):
     token = signing.dumps({"u": user.pk, "e": user.email, "s": sub.pk if sub else None}, salt=VERIFY_SALT)
     return settings.SITE_URL + reverse("growth:verify", args=[token])
+
+
+def cancel_link(sub):
+    """One-click cancel from the renewal reminder, without signing in."""
+    token = signing.dumps({"s": sub.pk, "c": sub.stripe_subscription_id}, salt=CANCEL_SALT)
+    return f"{settings.SITE_URL}{reverse('growth:cancel', args=[sub.pk])}?t={token}&lang={sub.lang}"
+
+
+def cancel_token_sub(token):
+    """The subscription a cancel link was made for, or None (bad, expired, or another Stripe subscription)."""
+    try:
+        data = signing.loads(token, salt=CANCEL_SALT, max_age=CANCEL_MAX_AGE)
+    except signing.BadSignature:
+        return None
+    return AgencySubscription.objects.filter(pk=data.get("s"), stripe_subscription_id=data.get("c") or "-").first()
 
 
 def _valid_page(code, page, platform):
@@ -255,11 +273,13 @@ STRIPE_STATUS = {"active": "active", "trialing": "active", "past_due": "past_due
                  "canceled": "canceled", "incomplete_expired": "canceled"}
 
 
-def sync(stripe_sub, sub_id=None):
+def sync(stripe_sub, sub_id=None, source="stripe"):
     """Bring our subscription in line with Stripe's. The first time it turns active the
-    team note and the customer's welcome go out. Returns the subscription (or None)."""
+    team note and the customer's welcome go out; a cancel at the period end (from our
+    account page, the reminder link or Stripe's portal: `source`) and taking it back are
+    told to the team, and a cancel is confirmed to the customer. Returns the subscription (or None)."""
     sub_id = sub_id or _sub_id(stripe_sub.get("metadata") or {})
-    first_payment = False
+    first_payment, change = False, None
     with transaction.atomic():
         qs = AgencySubscription.objects.select_for_update()
         sub = qs.filter(stripe_subscription_id=stripe_sub["id"]).first() or (qs.filter(pk=sub_id).first() if sub_id else None)
@@ -267,6 +287,7 @@ def sync(stripe_sub, sub_id=None):
             logger.warning("Stripe subscription %s without a subscription of ours", stripe_sub.get("id"))
             return None
         status = STRIPE_STATUS.get(stripe_sub.get("status"))
+        was_canceling = sub.cancel_at_period_end
         sub.stripe_subscription_id = stripe_sub["id"]
         sub.stripe_customer_id = stripe_sub.get("customer") or sub.stripe_customer_id
         sub.current_period_end = billing.period_end(stripe_sub) or sub.current_period_end
@@ -277,6 +298,10 @@ def sync(stripe_sub, sub_id=None):
             if status == "canceled" and sub.status != "canceled":
                 sub.canceled_at = timezone.now()
             sub.status = status
+        if sub.status != "canceled" and sub.cancel_at_period_end != was_canceling:
+            change = "cancel_requested" if sub.cancel_at_period_end else "resumed"
+            sub.cancel_requested_at = timezone.now() if sub.cancel_at_period_end else None
+            sub.cancel_source = source if sub.cancel_at_period_end else ""
         sub.save()
     if first_payment:
         if sub.user_id:
@@ -285,7 +310,21 @@ def sync(stripe_sub, sub_id=None):
         sub.notified = bool(team)
         sub.mail_error = "\n".join(f"{who}: {r.error}" for who, r in (("Ekip", team), ("Müşteri", receipt)) if not r)
         sub.save(update_fields=["notified", "mail_error", "updated_at"])
+    if change:
+        notify_team(sub, change)
+        if change == "cancel_requested":
+            confirm_cancel(sub)
     return sub
+
+
+def send_reminder(sub):
+    """The renewal reminder with a one-click cancel link, once per billing period."""
+    if sub.status != "active" or sub.cancel_at_period_end or not sub.current_period_end or sub.reminded_for == sub.current_period_end:
+        return False
+    if not remind_renewal(sub, cancel_link(sub)):
+        return False
+    AgencySubscription.objects.filter(pk=sub.pk).update(reminded_for=sub.current_period_end)
+    return True
 
 
 def success(request):
@@ -355,6 +394,14 @@ def _on_invoice_failed(obj):
         sync(billing.retrieve_subscription(stripe_id))  # Stripe has it as past_due now
 
 
+def _on_invoice_upcoming(obj):
+    """Stripe's renewal notice (Settings → Billing → Subscriptions: upcoming renewal events, 3 days)."""
+    stripe_id = billing.invoice_subscription(obj)
+    sub = AgencySubscription.objects.filter(stripe_subscription_id=stripe_id).first() if stripe_id else None
+    if sub is not None:
+        send_reminder(sub)
+
+
 def _on_subscription(obj):
     before = AgencySubscription.objects.filter(stripe_subscription_id=obj.get("id")).values_list("status", flat=True).first()
     sub = sync(obj)
@@ -367,6 +414,7 @@ HANDLERS = {
     "checkout.session.async_payment_succeeded": _on_checkout,
     "invoice.paid": _on_invoice_paid,
     "invoice.payment_failed": _on_invoice_failed,
+    "invoice.upcoming": _on_invoice_upcoming,
     "customer.subscription.updated": _on_subscription,
     "customer.subscription.deleted": _on_subscription,
 }

@@ -25,6 +25,7 @@
     {% if flags.verified %}<div class="form-alert form-alert--ok reveal">{{ gu.verify_done }}</div>{% endif %}
     {% if flags.reset %}<div class="form-alert form-alert--ok reveal">{{ gu.reset_done }}</div>{% endif %}
     {% if flags.error == "payment" %}<div class="form-alert reveal">{{ gu.acc_payment_error }}</div>{% endif %}
+    {% if flags.resumed %}<div class="form-alert form-alert--ok reveal">{{ gu.acc_resumed }}</div>{% endif %}
     {% if needs_verify and payments and flags.verify != "sent" %}
     <div class="form-alert reveal">{{ gu.acc_unverified }}
       <form method="post" action="{% url 'growth:verify_again' %}" style="display:inline">{% csrf_token %}<input type="hidden" name="lang" value="{{ code }}"><button class="link-btn" type="submit">{{ gu.acc_resend }}</button></form>
@@ -73,9 +74,41 @@
         {% if item.can_manage and s.status != "canceled" %}
         <form method="post" action="{% url 'growth:billing' %}">{% csrf_token %}<input type="hidden" name="lang" value="{{ code }}"><button class="btn btn--ghost btn--sm" type="submit">{{ gu.acc_manage }}</button></form>
         {% endif %}
+        {% if item.can_cancel %}
+        <a class="btn btn--ghost btn--sm" href="{% url 'growth:cancel' s.pk %}?lang={{ code }}">{{ gu.acc_cancel }}</a>
+        {% elif item.can_resume %}
+        <form method="post" action="{% url 'growth:resume' s.pk %}">{% csrf_token %}<input type="hidden" name="lang" value="{{ code }}"><button class="btn btn--signal btn--sm" type="submit">{{ gu.acc_resume }}</button></form>
+        {% endif %}
         </div>
       </article>
       {% endwith %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% elif mode == "cancel" %}
+<section class="page-hero">
+  <div class="container split">
+    <div class="reveal">
+      <p class="eyebrow">{% if sub %}{{ plan_name }} · {{ sub.platform_name }} · @{{ sub.handle }}{% else %}{{ gu.acc_title }}{% endif %}</p>
+      <h1 class="h1">{% if done %}{{ gu.cancel_done_title }}{% else %}{{ gu.cancel_title }}{% endif %}</h1>
+      {% if cancel_text %}<p class="lede">{{ cancel_text }}</p>{% endif %}
+    </div>
+    <div class="form-card reveal">
+      {% if invalid %}
+      <div class="form-alert">{{ gu.cancel_invalid }}</div>
+      <a class="btn btn--signal btn--lg mt-s" style="width:100%" href="{% url 'growth:login' %}?lang={{ code }}">{{ gu.login_submit }}</a>
+      {% elif done %}
+      <a class="btn btn--signal btn--lg" style="width:100%" href="{% url 'growth:account' %}?lang={{ code }}">{{ gu.acc_title }}</a>
+      {% else %}
+      {% if error %}<div class="form-alert">{{ gu.cancel_error }}</div>{% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="lang" value="{{ code }}">
+        {% if token %}<input type="hidden" name="t" value="{{ token }}">{% endif %}
+        <button class="btn btn--signal btn--lg" type="submit" style="width:100%">{{ gu.cancel_yes }}</button>
+      </form>
+      <a class="btn btn--ghost btn--lg mt-s" style="width:100%" href="{% url 'growth:account' %}?lang={{ code }}">{{ gu.cancel_keep }}</a>
+      {% endif %}
     </div>
   </div>
 </section>

@@ -18,12 +18,14 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
     list_filter = ("status", "platform", "cancel_at_period_end", "lang", "created_at")
     search_fields = ("handle", "email", "location", "stripe_subscription_id", "stripe_customer_id", "stripe_checkout_session_id")
     readonly_fields = ("user", "amount", "started_at", "current_period_end", "cancel_at_period_end", "canceled_at",
+                       "cancel_requested_at", "cancel_source", "reminded_for",
                        "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id", "notified", "mail_error",
                        "ip", "source_page", "utm_source", "utm_medium", "utm_campaign", "gclid", "created_at", "updated_at")
     fieldsets = (
         (None, {"fields": ("platform", "handle", "location", "amount", "status", "note")}),
         ("Müşteri", {"fields": ("user", "email", "lang")}),
-        ("Abonelik", {"fields": ("started_at", "current_period_end", "cancel_at_period_end", "canceled_at",
+        ("Abonelik", {"fields": ("started_at", "current_period_end", "cancel_at_period_end", "cancel_requested_at",
+                                 "cancel_source", "canceled_at", "reminded_for",
                                  "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id")}),
         ("Veriler", {"fields": ("start_followers", "current_followers", "stats_at")}),
         ("E-posta", {"fields": ("notified", "mail_error")}),

@@ -1,11 +1,12 @@
 """Emails for the influencer packages and accounts: Turkish notes to the team, English for the
 customer whatever language the page was in. Failures are logged, never raised."""
 import logging
+import math
 
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.urls import reverse
-from django.utils import formats, translation
+from django.utils import formats, timezone, translation
 
 from . import plan
 from .constants import PROFILE_URL
@@ -40,9 +41,30 @@ PAID_BODY = (
     "little different, and nothing arrives instantly: instant followers are bots.\n\n"
     "You'll see your numbers in your account. We will never ask for your password; keep your account public "
     "while the package runs.\n\n"
-    "Billed monthly: the next payment is on {renews}. Cancel any time in your account; canceling stops the "
-    "next payment and the month you've paid for runs to its end (it isn't refunded).\n\n"
+    "Billed monthly: the next payment is on {renews}. We'll email you 3 days before every renewal. Cancel any "
+    "time in your account; canceling stops the next payment and the month you've paid for runs to its end "
+    "(it isn't refunded).\n\n"
     "Your account: {account}\n\n"
+    "Questions? Message us on WhatsApp: {whatsapp}"
+)
+REMINDER_SUBJECT = "Your {package} package renews in {days} ({renews})"
+REMINDER_BODY = (
+    "Hi,\n\nA reminder: your {package} package for @{handle} on {platform} renews automatically on {renews}, "
+    "and ${amount} will be charged to the card on file.\n\n"
+    "Want to keep growing? There's nothing to do.\n\n"
+    "Don't want to continue? Cancel before {renews} in any of these ways:\n"
+    "- One click, no sign-in needed: {cancel}\n"
+    "- Sign in to your account and press \"Cancel subscription\": {account}\n"
+    "- Call or message us on WhatsApp: {whatsapp}\n\n"
+    "Canceling stops the next payment; your current month runs to its end. You'll get an email confirming it.\n\n"
+    "Sterr Agency"
+)
+CANCELED_SUBJECT = "Cancellation confirmed: {package} for @{handle}"
+CANCELED_BODY = (
+    "Hi,\n\nWe've canceled the renewal of your {package} package for @{handle} on {platform}. "
+    "No further payments will be taken.\n\n"
+    "Your package keeps running until {renews}. Changed your mind? You can keep it from your account "
+    "before then: {account}\n\n"
     "Questions? Message us on WhatsApp: {whatsapp}"
 )
 RESET_SUBJECT = "Reset your password"
@@ -88,8 +110,8 @@ def _date(value):
         return formats.date_format(value, "F j, Y")
 
 
-def _values(sub):
-    return {"platform": sub.platform_name, "handle": sub.handle, "location": sub.location, "amount": f"{sub.amount:.2f}",
+def _values(sub, cancel=""):
+    return {"cancel": cancel, "platform": sub.platform_name, "handle": sub.handle, "location": sub.location, "amount": f"{sub.amount:.2f}",
             "package": sub.get_plan_display(),
             "followers": "{:,}-{:,}".format(*plan.PLAN_BY_KEY[sub.plan]["followers"]),
             "renews": _date(sub.current_period_end) if sub.current_period_end else "the same day next month",
@@ -101,16 +123,24 @@ TEAM_TITLES = {
     "request": "Yeni {platform} influencer paketi başvurusu",
     "paid": "Yeni {platform} influencer paketi (ödendi)",
     "renewed": "{platform} influencer paketi yenilendi (ödendi)",
+    "cancel_requested": "{platform} influencer paketi iptal talebi (dönem sonunda biter)",
+    "resumed": "{platform} influencer paketi iptali geri alındı",
     "canceled": "{platform} influencer paketi iptal edildi",
 }
+CANCEL_SOURCES = {"account": "müşteri hesap panelinden", "email": "müşteri hatırlatma e-postasındaki linkten",
+                  "stripe": "Stripe müşteri portalından veya Stripe panelinden"}
 
 
 def notify_team(sub, event, amount=None):
     """event: 'request' (payments off), 'paid' (first payment confirmed by Stripe),
-    'renewed' (a monthly payment), 'canceled'. Nothing is sent before a payment."""
+    'renewed' (a monthly payment), 'cancel_requested' (no renewal, runs to the period end),
+    'resumed' (that cancel taken back), 'canceled' (ended). Nothing is sent before a payment."""
     title = TEAM_TITLES[event].replace("{platform}", sub.platform_name)
     paid = f"${int(amount) / 100:.2f}" if amount is not None else f"${sub.amount:.2f}"
     period = f"{sub.current_period_end:%d.%m.%Y}" if sub.current_period_end else "-"
+    canceled = ""
+    if event == "cancel_requested" and sub.cancel_requested_at:
+        canceled = f"İptal: {sub.cancel_requested_at:%d.%m.%Y %H:%M} UTC, {CANCEL_SOURCES.get(sub.cancel_source, '-')}\n"
     body = (
         f"{title}\n\n"
         f"Paket: {sub.get_plan_display()} · {paid} / ay\n"
@@ -118,6 +148,7 @@ def notify_team(sub, event, amount=None):
         f"Hedef konum: {sub.location}\n"
         f"E-posta: {sub.email}\n"
         f"{'Bitiş' if sub.cancel_at_period_end or event == 'canceled' else 'Sonraki ödeme'}: {period}\n"
+        f"{canceled}"
         f"Dil: {sub.lang}\n"
         f"Kaynak: {sub.source_page or '-'} {sub.utm_source or ''}\n\n"
         f"Admin: {settings.SITE_URL}/admin/growth/agencysubscription/{sub.pk}/change/\n"
@@ -134,6 +165,18 @@ def acknowledge_request(sub):
 def confirm_payment(sub):
     v = _values(sub)
     return _send(_fill(PAID_SUBJECT, **v), _fill(PAID_BODY, **v), [sub.email])
+
+
+def remind_renewal(sub, cancel_link):
+    v = _values(sub, cancel_link)
+    days = max(1, math.ceil((sub.current_period_end - timezone.now()).total_seconds() / 86400))
+    v["days"] = "1 day" if days == 1 else f"{days} days"
+    return _send(_fill(REMINDER_SUBJECT, **v), _fill(REMINDER_BODY, **v), [sub.email])
+
+
+def confirm_cancel(sub):
+    v = _values(sub)
+    return _send(_fill(CANCELED_SUBJECT, **v), _fill(CANCELED_BODY, **v), [sub.email])
 
 
 def send_verification(email, link, sub=None):

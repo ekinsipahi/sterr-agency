@@ -27,6 +27,7 @@ WEBHOOK_EVENTS = [
     "checkout.session.async_payment_succeeded",
     "invoice.paid",
     "invoice.payment_failed",
+    "invoice.upcoming",
     "customer.subscription.updated",
     "customer.subscription.deleted",
 ]

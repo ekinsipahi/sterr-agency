@@ -1,12 +1,14 @@
 import json
 import re
 from datetime import timedelta
+from io import StringIO
 from types import SimpleNamespace
 from unittest import mock
 
 import stripe
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.core.management import call_command
 from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -396,6 +398,93 @@ class WebhookTests(TestCase):
         self.assertIsNotNone(self.sub.canceled_at)
         self.assertEqual(len(self.team("iptal edildi")), 1)
         self.assertEqual(sum(m.subject.startswith("Your Rising") for m in mail.outbox), 1)  # the welcome went out once
+
+
+@override_settings(**STRIPE_ON)
+class CancelTests(TestCase):
+    """Cancel from the dashboard or the reminder's link, take it back, the 3-day reminder."""
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user("me@example.com", "me@example.com", "pass-word-1")
+        self.sub = AgencySubscription.objects.create(
+            user=self.user, email="me@example.com", handle="brand", location="Berlin", lang="en", plan="starter",
+            amount="79.99", status="active", started_at=timezone.now(), stripe_subscription_id="sub_1",
+            stripe_customer_id="cus_1", current_period_end=timezone.now() + timedelta(days=2))
+        self.url = reverse("growth:cancel", args=[self.sub.pk])
+
+    def cancel(self, path, data):
+        with mock.patch("apps.growth.billing.set_cancel", return_value=stripe_sub(cancel_at_period_end=True)) as set_cancel:
+            r = self.client.post(path, data)
+        set_cancel.assert_called_once_with("sub_1", True)
+        self.sub.refresh_from_db()
+        return r
+
+    def team(self, words):
+        return [m for m in mail.outbox if words in m.subject]
+
+    def test_cancel_from_the_dashboard(self):
+        self.client.force_login(self.user)
+        r = self.client.get(reverse("growth:account") + "?lang=en")
+        self.assertContains(r, self.url)
+        self.assertContains(self.client.get(self.url + "?lang=en"), "Yes, cancel")
+        r = self.cancel(self.url, {"lang": "en"})
+        self.assertContains(r, "Your subscription is canceled")
+        self.assertEqual((self.sub.cancel_at_period_end, self.sub.cancel_source, self.sub.status), (True, "account", "active"))
+        self.assertIsNotNone(self.sub.cancel_requested_at)
+        team = self.team("iptal talebi")
+        self.assertEqual(len(team), 1)
+        self.assertIn("hesap panelinden", team[0].body)
+        self.assertEqual(len([m for m in mail.outbox if m.subject.startswith("Cancellation confirmed")]), 1)
+        # Stripe's own webhook for the same change sends nothing more.
+        body, header = signed({"id": "evt_c", "type": "customer.subscription.updated", "data": {"object": stripe_sub(cancel_at_period_end=True)}})
+        self.client.post(reverse("growth:webhook"), body, content_type="application/json", HTTP_STRIPE_SIGNATURE=header)
+        self.assertEqual(len(self.team("iptal talebi")), 1)
+        self.assertContains(self.client.get(reverse("growth:account") + "?lang=en"), reverse("growth:resume", args=[self.sub.pk]))
+
+    def test_cancel_needs_the_owner(self):
+        self.assertEqual(self.client.get(self.url).status_code, 302)  # signed out: to the login page
+        other = get_user_model().objects.create_user("x@example.com", "x@example.com", "pass-word-1")
+        self.client.force_login(other)
+        self.assertContains(self.client.get(self.url + "?lang=en"), "This link no longer works")
+
+    def test_reminder_once_per_period_and_its_cancel_link(self):
+        body, header = signed({"id": "evt_u", "type": "invoice.upcoming", "data": {"object": {
+            "parent": {"subscription_details": {"subscription": "sub_1"}}, "amount_due": 7999}}})
+        for _ in range(2):
+            self.client.post(reverse("growth:webhook"), body, content_type="application/json", HTTP_STRIPE_SIGNATURE=header)
+        call_command("send_renewal_reminders", stdout=StringIO())
+        reminders = [m for m in mail.outbox if m.subject.startswith("Your Starter Creator package renews in 2 days")]
+        self.assertEqual(len(reminders), 1)
+        path = re.search(r"https?://[^/\s]+(/account/subscriptions/\d+/cancel/\S+)", reminders[0].body).group(1)
+        self.assertContains(self.client.get(path), "Yes, cancel")  # no sign-in needed
+        token = re.search(r"[?&]t=([^&\s]+)", path).group(1)
+        r = self.cancel(path, {"t": token, "lang": "en"})
+        self.assertContains(r, "Your subscription is canceled")
+        self.assertEqual(self.sub.cancel_source, "email")
+        self.assertIn("hatırlatma e-postasındaki linkten", self.team("iptal talebi")[0].body)
+        self.assertContains(self.client.get(self.url + "?t=bad&lang=en"), "This link no longer works")
+
+    def test_reminder_command_skips_far_or_canceling(self):
+        far = AgencySubscription.objects.create(email="f@example.com", handle="far", location="x", plan="rising", amount="149.99",
+                                                status="active", stripe_subscription_id="sub_2",
+                                                current_period_end=timezone.now() + timedelta(days=20))
+        AgencySubscription.objects.filter(pk=self.sub.pk).update(cancel_at_period_end=True)
+        call_command("send_renewal_reminders", stdout=StringIO())
+        self.assertFalse(mail.outbox)
+        far.refresh_from_db()
+        self.assertIsNone(far.reminded_for)
+
+    def test_resume(self):
+        AgencySubscription.objects.filter(pk=self.sub.pk).update(cancel_at_period_end=True, cancel_source="account",
+                                                                 cancel_requested_at=timezone.now())
+        self.client.force_login(self.user)
+        with mock.patch("apps.growth.billing.set_cancel", return_value=stripe_sub()) as set_cancel:
+            r = self.client.post(reverse("growth:resume", args=[self.sub.pk]), {"lang": "en"})
+        set_cancel.assert_called_once_with("sub_1", False)
+        self.assertEqual(r["Location"], f"{reverse('growth:account')}?lang=en&resumed=1")
+        self.sub.refresh_from_db()
+        self.assertEqual((self.sub.cancel_at_period_end, self.sub.cancel_source, self.sub.cancel_requested_at), (False, "", None))
+        self.assertEqual(len(self.team("iptali geri alındı")), 1)
 
 
 @override_settings(GROWTH_API_TOKEN="tok_test", **MAIL)

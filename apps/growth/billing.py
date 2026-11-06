@@ -86,10 +86,19 @@ def retrieve_checkout(session_id):
     return _client().v1.checkout.sessions.retrieve(session_id)
 
 
-def retrieve_subscription(subscription_id):
-    """The Stripe subscription as a plain dict (the shape webhooks deliver). to_dict() keeps
+def _plain(stripe_sub):
+    """A Stripe subscription as a plain dict (the shape webhooks deliver). to_dict() keeps
     *_decimal fields as Decimal; webhooks send them as strings, so they become strings here too."""
-    return json.loads(json.dumps(_client().v1.subscriptions.retrieve(subscription_id).to_dict(), default=str))
+    return json.loads(json.dumps(stripe_sub.to_dict(), default=str))
+
+
+def retrieve_subscription(subscription_id):
+    return _plain(_client().v1.subscriptions.retrieve(subscription_id))
+
+
+def set_cancel(subscription_id, cancel):
+    """Cancel at the end of the paid period (True) or take that back (False)."""
+    return _plain(_client().v1.subscriptions.update(subscription_id, params={"cancel_at_period_end": cancel}))
 
 
 def portal_configuration():
