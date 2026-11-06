@@ -94,12 +94,21 @@ Bir sayfa bir dilde henüz yoksa o dil için yayına çıkmaz: route, hreflang, 
 - **Google ile giriş:** `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET`. Redirect URI: `https://sterragency.com/account/google/complete/`.
 - Veriler Supabase Postgres'te (`DATABASE_URL` ya da `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD`, session pooler). Testler her zaman SQLite'ta çalışır; `.env` içinde `DEBUG=False` iken `DEBUG=True python manage.py test apps` ile çalıştır.
 
-**Büyüme sistemi (linksterr) için API** (`GROWTH_API_TOKEN`, `Authorization: Bearer <token>`):
+**Linksterr bağlantısı (otomatik, elle veri girilmez):** paketlerin teslimatı Linksterr'daki promoted kampanyalarla yapılır. sterr-agency verileri Linksterr'ın ajans endpoint'inden kendisi çeker: `GET https://linksterr.com/user-api/v1/agency/accounts/?account=instagram:<kullanıcı>&since=…&until=…`, `Authorization: Bearer <LINKSTERR_AGENCY_TOKEN>`.
+- Token iki serviste de aynı isim ve değerle durur (`LINKSTERR_AGENCY_TOKEN`; Render → sterr-agency ve Render → linksterr → Environment). Boşsa bağlantı kapalıdır. Bu token yalnızca bu endpoint'i açar; Linksterr hesabına erişim vermez.
+- Eşleşme: aboneliğin platformu + kullanıcı adı = Linksterr kampanyasının `category` + `cta_url` içindeki kullanıcı adı. Aynı hesabın birden çok kampanyası toplanır; sadece paketin çalıştığı günler (başlangıç → bugün ya da iptal günü) alınır.
+- Gelenler (UTC günleri): **yeni takipçi** = Linksterr'ın gösterim başına takip oranı modeliyle (gerçek takipçi sayımlarıyla kalibre) hesaplanan sayı, profil ziyaretinden fazla olamaz; **profil ziyareti** = Follow'a basıp profile gidenler; gösterim, "takip ettim" onayı ve ülkeler (müşteriye gösterilmez, dispute kanıtında kullanılır); tarihli takipçi sayımları.
+- Ne zaman çekilir: müşteri panelini açınca (abonelik başına en fazla 10 dakikada bir), dispute açılınca, admin'de "Kanıt paketi" açılınca, admin eylemi "Linksterr'dan günlük verileri çek" ve `python manage.py sync_linksterr` (isteğe bağlı günlük cron). 2 günden eski günler bir kez yazıldıktan sonra değişmez.
+- Panel: Bugün ve Bu ay (yeni takipçi, beğeni, yorum, profil ziyareti), ülkelere göre ziyaret, son 30 gün grafiği, gün gün tablo. Gösterim sayısı panelde yoktur.
+- Ters yönde Linksterr, aynı token'la `GET /growth/api/subscriptions/?status=active,past_due,canceled` listesini okur (salt okunur; bu token `/growth/api/stats/` yazamaz) ve her paketin kampanyasını kendisi yönetir: yenilenince `paid_until` uzar, dönem sonunda iptal seçilince kampanya o gün durur, ödeme başarısızsa duraklar, abonelik bitince kapanır, aynı hesap yeniden abone olunca tekrar açılır. Yeni bir hesabın kampanyası Linksterr admin'de bir kez açılır (kullanıcı adı eşleşmesiyle bulunur); sonrası otomatiktir.
+- Admin → Müşteriler veya abonelikler → **Paneli gör**: müşterinin panelini onun gördüğü haliyle, salt okunur açar (yalnızca staff; müşteri olarak giriş yapılmaz, hiçbir düğme yoktur, ziyaret müşterinin hareketi sayılmaz).
+
+**Büyüme sistemi için API** (elle veya başka bir kaynaktan veri göndermek için; `GROWTH_API_TOKEN`, `Authorization: Bearer <token>`):
 - `GET /growth/api/subscriptions/?status=active`: büyütülecek hesaplar (id, platform, kullanıcı adı, konum, dönem bitişi, başlangıç ve güncel takipçi).
 - `POST /growth/api/stats/`: `{"subscription_id": 12, "date": "2026-11-04", "new_followers": 140, "followers": 5120}` ya da `{"updates": [...]}`. Her şeyi **getirdiğimiz takipçiden** sayıyoruz:
   - `new_followers`: o gün bizim getirdiğimiz takipçi. Gönderilmezse hesabın toplam takipçi sayısındaki fark kullanılır.
   - Beğeni = yeni takipçi × 2,5, yorum = yeni takipçi ÷ 10 (`plan.py`). `likes` / `comments` gönderilirse gönderilen değer kullanılır.
-  - `followers` o günkü toplam takipçidir ve isteğe bağlıdır. Aynı gün tekrar gönderilirse üzerine yazılır.
+  - `followers` o günkü toplam takipçidir ve isteğe bağlıdır. Aynı gün tekrar gönderilirse yalnızca gönderilen alanlar güncellenir. `date` gönderilmezse bugünün UTC tarihi kullanılır.
   - Teslimat kanıtı (dispute için, isteğe bağlı): `impressions` (profilin gösterildiği kişi), `visits` (profile giden), `confirms` ("takip ettim" diyen) ve `countries`: `{"DE": {"impressions": 900, "visits": 210, "confirms": 95}}`.
   
   Panel her abonelik için şunları gösterir: **Bugün** (yeni takipçi, beğeni, yorum), **Bu ay**, son 30 günün grafiği ve gün gün tablo.

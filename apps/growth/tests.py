@@ -5,6 +5,7 @@ from io import StringIO
 from types import SimpleNamespace
 from unittest import mock
 
+import requests
 import stripe
 from django.contrib.auth import get_user_model
 from django.core import mail
@@ -15,7 +16,7 @@ from django.utils import timezone
 
 from apps.core.languages import LANGS
 
-from . import billing
+from . import billing, linksterr
 from .content import CONTENT, CREATORS, PAGES, PLATFORMS, UI, alternates, followers_menu, page_path, routes
 from .forms import clean_handle
 from .models import AccountActivity, AgencySubscription, Customer, Dispute, StripeEvent, SubscriptionStat
@@ -507,7 +508,7 @@ class DisputeTests(FreshCache, TestCase):
             status="active", started_at=timezone.now() - timedelta(days=12), stripe_subscription_id="sub_1",
             stripe_customer_id="cus_1", current_period_end=timezone.now() + timedelta(days=18), ip="203.0.113.9",
             terms_accepted_at=timezone.now() - timedelta(days=12), terms_version=TERMS_VERSION)
-        SubscriptionStat.objects.create(subscription=self.sub, date=timezone.localdate(), new_followers=140, impressions=1200,
+        SubscriptionStat.objects.create(subscription=self.sub, date=timezone.now().date(), new_followers=140, impressions=1200,
                                         visits=310, confirms=95, countries={"DE": {"impressions": 900, "visits": 200, "confirms": 70}})
 
     def dispute(self, event_id, status="needs_response", traced=("sub_1", "cus_1")):
@@ -582,8 +583,19 @@ class StatsApiTests(TestCase):
         r = self.client.get(reverse("growth:api_subscriptions"), HTTP_AUTHORIZATION="Bearer tok_test")
         self.assertEqual([s["handle"] for s in r.json()["subscriptions"]], ["brand"])
 
+    @override_settings(LINKSTERR_AGENCY_TOKEN="agency-test-token")
+    def test_linksterr_token_reads_subscriptions_but_cannot_write(self):
+        AgencySubscription.objects.filter(pk=self.sub.pk).update(cancel_at_period_end=True, plan="pro", amount="279.99")
+        r = self.client.get(reverse("growth:api_subscriptions") + "?status=active,past_due,canceled",
+                            HTTP_AUTHORIZATION="Bearer agency-test-token")
+        item = r.json()["subscriptions"][0]
+        self.assertEqual((item["plan"], item["amount"], item["cancel_at_period_end"], item["canceled_at"]), ("pro", 279.99, True, None))
+        self.assertIsNotNone(item["current_period_end"])
+        self.assertEqual(self.post({"subscription_id": self.sub.pk, "new_followers": 5}, token="agency-test-token").status_code, 401)
+        self.assertFalse(SubscriptionStat.objects.exists())
+
     def test_daily_stats(self):
-        today = timezone.localdate()
+        today = timezone.now().date()
         r = self.post({"updates": [
             {"subscription_id": self.sub.pk, "date": str(today - timedelta(days=2)), "followers": 1200, "likes": 40, "comments": 2},
             {"subscription_id": self.sub.pk, "date": str(today), "followers": 1650, "likes": 300, "comments": 9},
@@ -609,7 +621,7 @@ class StatsApiTests(TestCase):
         self.assertEqual(r.status_code, 207)
 
     def test_our_count_of_new_followers_wins_over_the_follower_count(self):
-        today = timezone.localdate()
+        today = timezone.now().date()
         self.post({"updates": [
             {"subscription_id": self.sub.pk, "date": str(today - timedelta(days=1)), "followers": 1000, "new_followers": 80},
             {"subscription_id": self.sub.pk, "date": str(today), "followers": 1050, "new_followers": 120},
@@ -625,7 +637,7 @@ class StatsApiTests(TestCase):
         user = get_user_model().objects.create_user("a@example.com", "a@example.com", "pass-word-1")
         self.sub.user = user
         self.sub.save()
-        today = timezone.localdate()
+        today = timezone.now().date()
         self.post({"updates": [{"subscription_id": self.sub.pk, "date": str(today - timedelta(days=3)), "followers": 4200, "likes": 500},
                                {"subscription_id": self.sub.pk, "date": str(today), "followers": 5400, "likes": 1500, "comments": 120}]})
         self.client.force_login(user)
@@ -636,6 +648,161 @@ class StatsApiTests(TestCase):
         self.assertIn("<rect", html)  # new followers per day
         self.assertIn("Day by day", html)
         self.assertIn("Renews on", html)
+
+
+def linksterr_account(account="instagram:brand", days=(), readings=()):
+    return {"account": account, "platform": account.split(":")[0], "handle": account.split(":")[1],
+            "campaigns": [{"id": 2, "status": "active", "live": True, "period_start": None, "period_end": None,
+                           "rate": 0.057, "own_weight": 0.1}] if days else [],
+            "readings": list(readings), "days": list(days)}
+
+
+def linksterr_day(date, new=40, visits=420, impressions=700, confirms=380, countries=None):
+    return {"date": str(date), "live": True, "new_followers": new, "visits": visits, "impressions": impressions,
+            "confirms": confirms, "countries": countries if countries is not None else {"DE": {"impressions": 500, "visits": 300, "confirms": 250}}}
+
+
+@override_settings(LINKSTERR_AGENCY_TOKEN="agency-test-token", LINKSTERR_API_URL="https://linksterr.example", **MAIL)
+class LinksterrTests(FreshCache, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.create_user("me@example.com", "me@example.com", "pass-word-1")
+        self.today = timezone.now().date()
+        self.sub = AgencySubscription.objects.create(
+            user=self.user, email="me@example.com", handle="Brand", location="Berlin", plan="starter", amount="79.99",
+            status="active", started_at=timezone.now() - timedelta(days=5), stripe_subscription_id="sub_1",
+            current_period_end=timezone.now() + timedelta(days=25))
+
+    def respond(self, *accounts, status=200):
+        response = mock.Mock(status_code=status)
+        response.json.return_value = {"day": "UTC", "accounts": list(accounts)}
+        response.raise_for_status.side_effect = None if status == 200 else requests.HTTPError(str(status))
+        return mock.patch("apps.growth.linksterr.requests.get", return_value=response)
+
+    def test_sync_stores_the_days_of_the_package(self):
+        start = self.today - timedelta(days=5)
+        days = [linksterr_day(start - timedelta(days=1), new=999),  # before the package: not ours
+                linksterr_day(start, new=30, countries={"DE": {"impressions": 1, "visits": 2, "confirms": 3}, "": {"visits": 9}}),
+                linksterr_day(self.today, new=41)]
+        readings = [{"date": str(start - timedelta(days=1)), "followers": 1000}, {"date": str(self.today), "followers": 1071}]
+        with self.respond(linksterr_account(days=days, readings=readings)) as get:
+            self.assertEqual(linksterr.sync([self.sub]), 1)
+        args, kwargs = get.call_args
+        self.assertEqual(args[0], "https://linksterr.example/user-api/v1/agency/accounts/")
+        self.assertEqual(kwargs["headers"], {"Authorization": "Bearer agency-test-token"})
+        self.assertIn(("account", "instagram:brand"), kwargs["params"])
+        self.assertIn(("since", str(start)), kwargs["params"])
+        self.assertIn(("until", str(self.today)), kwargs["params"])
+        rows = {s.date: s for s in SubscriptionStat.objects.filter(subscription=self.sub)}
+        self.assertEqual(sorted(rows), [start, self.today])
+        self.assertEqual((rows[start].new_followers, rows[start].visits, rows[start].confirms), (30, 420, 380))
+        self.assertEqual(rows[start].countries, {"DE": {"impressions": 1, "visits": 2, "confirms": 3}})
+        self.assertEqual(rows[self.today].followers, 1071)
+        self.assertIsNone(rows[self.today].likes)  # counted from the new followers on the dashboard
+        self.sub.refresh_from_db()
+        self.assertEqual((self.sub.start_followers, self.sub.current_followers), (1000, 1071))
+        self.assertIsNotNone(self.sub.stats_at)
+
+    def test_settled_days_are_not_rewritten(self):
+        old, recent = self.today - timedelta(days=4), self.today - timedelta(days=1)
+        with self.respond(linksterr_account(days=[linksterr_day(old, new=30), linksterr_day(recent, new=30)])):
+            linksterr.sync([self.sub])
+        with self.respond(linksterr_account(days=[linksterr_day(old, new=55), linksterr_day(recent, new=55)])):
+            linksterr.sync([self.sub], force=True)
+        rows = dict(SubscriptionStat.objects.filter(subscription=self.sub).values_list("date", "new_followers"))
+        self.assertEqual(rows, {old: 30, recent: 55})
+
+    def test_fetches_at_most_every_ten_minutes_and_survives_outages(self):
+        with self.respond(linksterr_account()) as get:
+            linksterr.sync([self.sub])
+            linksterr.sync([self.sub])
+            self.assertEqual(get.call_count, 1)
+            linksterr.sync([self.sub], force=True)
+            self.assertEqual(get.call_count, 2)
+        with mock.patch("apps.growth.linksterr.requests.get", side_effect=requests.ConnectionError("down")):
+            self.assertEqual(linksterr.sync([self.sub], force=True), 0)
+        with self.respond(status=500):
+            self.assertEqual(linksterr.sync([self.sub], force=True), 0)
+
+    def test_many_subscriptions_go_in_batches_within_linksterrs_limits(self):
+        subs = [self.sub] + [AgencySubscription.objects.create(
+            email=f"u{i}@example.com", handle=f"brand{i}", location="x", plan="starter", amount="79.99", status="active",
+            started_at=timezone.now() - timedelta(days=500)) for i in range(120)]
+        with self.respond(linksterr_account()) as get:
+            linksterr.sync(subs)
+        self.assertEqual(get.call_count, 2)
+        for args, kwargs in get.call_args_list:
+            params = kwargs["params"]
+            self.assertLessEqual(sum(1 for k, _ in params if k == "account"), 100)
+            self.assertIn(("since", str(self.today - timedelta(days=399))), params)
+
+    @override_settings(LINKSTERR_AGENCY_TOKEN="")
+    def test_off_without_a_token(self):
+        with mock.patch("apps.growth.linksterr.requests.get") as get:
+            self.assertEqual(linksterr.sync([self.sub], force=True), 0)
+        get.assert_not_called()
+
+    def test_canceled_package_stops_at_its_last_day(self):
+        AgencySubscription.objects.filter(pk=self.sub.pk).update(status="canceled", canceled_at=timezone.now() - timedelta(days=2))
+        self.sub.refresh_from_db()
+        last = (timezone.now() - timedelta(days=2)).date()
+        with self.respond(linksterr_account(days=[linksterr_day(last), linksterr_day(self.today)])):
+            linksterr.sync([self.sub])
+        self.assertEqual(list(SubscriptionStat.objects.filter(subscription=self.sub).values_list("date", flat=True)), [last])
+
+    def test_dashboard_fetches_and_shows_what_they_gained(self):
+        self.client.force_login(self.user)
+        with self.respond(linksterr_account(days=[linksterr_day(self.today, new=41, visits=420)])) as get:
+            html = self.client.get(reverse("growth:account") + "?lang=en").content.decode()
+        get.assert_called_once()
+        self.assertIn("+41", html)
+        self.assertIn("Profile visits", html)
+        self.assertIn("420", html)
+        self.assertIn("Visits by country:", html)
+        self.assertIn('data-region="DE">DE</span> <b>100%</b>', html)
+        self.assertIn("Our count of the real people", html)
+        self.assertNotIn(">700<", html)  # impressions stay out of the customer's dashboard
+
+    def test_staff_sees_a_customers_dashboard_read_only(self):
+        SubscriptionStat.objects.create(subscription=self.sub, date=self.today, new_followers=41, visits=420)
+        path = reverse("growth:view_as", args=[self.user.pk]) + "?lang=en"
+        self.assertEqual(self.client.get(path).status_code, 302)  # signed out: to the admin login
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get(path).status_code, 302)  # a customer cannot use it
+        boss = get_user_model().objects.create_user("boss@example.com", "boss@example.com", "pass-word-1", is_staff=True)
+        self.client.force_login(boss)
+        with self.respond(linksterr_account()):
+            r = self.client.get(path)
+        html = r.content.decode()
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("me@example.com", html)
+        self.assertIn("+41", html)
+        self.assertIn("salt okunur", html)
+        for action in ("growth:logout", "growth:billing"):
+            self.assertNotIn(reverse(action), html)
+        self.assertNotIn(reverse("growth:cancel", args=[self.sub.pk]), html)
+        self.assertNotIn("csrfmiddlewaretoken", html)  # no form at all
+        self.assertIn("no-cache", r["Cache-Control"])
+        self.assertFalse(AccountActivity.objects.filter(user=self.user, kind="dashboard").exists())
+        self.assertEqual(self.client.get(reverse("growth:view_as", args=[9999])).status_code, 404)
+
+    def test_admin_lists_link_to_the_read_only_dashboard(self):
+        Customer.objects.create(user=self.user, lang="de")
+        boss = get_user_model().objects.create_superuser("boss", "boss@example.com", "pass-word-1")
+        self.client.force_login(boss)
+        link = reverse("growth:view_as", args=[self.user.pk])
+        self.assertContains(self.client.get(reverse("admin:growth_customer_changelist")), f"{link}?lang=de")
+        self.assertContains(self.client.get(reverse("admin:growth_agencysubscription_changelist")), link)
+
+    def test_stats_api_updates_only_the_fields_sent(self):
+        SubscriptionStat.objects.create(subscription=self.sub, date=self.today, new_followers=40, impressions=700, visits=420)
+        with override_settings(GROWTH_API_TOKEN="tok_test"):
+            r = self.client.post(reverse("growth:api_stats"), json.dumps({"subscription_id": self.sub.pk, "date": str(self.today),
+                                                                          "followers": 5000}),
+                                 content_type="application/json", HTTP_AUTHORIZATION="Bearer tok_test")
+        self.assertEqual(r.status_code, 200)
+        row = SubscriptionStat.objects.get()
+        self.assertEqual((row.followers, row.new_followers, row.impressions, row.visits), (5000, 40, 700, 420))
 
 
 @override_settings(**MAIL)

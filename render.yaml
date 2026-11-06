@@ -63,6 +63,9 @@ services:
         sync: false
       - key: GROWTH_API_TOKEN
         sync: false
+      # Same value as LINKSTERR_AGENCY_TOKEN on the Linksterr service (delivery numbers for the dashboard)
+      - key: LINKSTERR_AGENCY_TOKEN
+        sync: false
       # Google Cloud → OAuth client (Web). Redirect URI: https://sterragency.com/account/google/complete/
       - key: GOOGLE_OAUTH_CLIENT_ID
         sync: false

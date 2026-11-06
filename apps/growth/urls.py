@@ -22,6 +22,7 @@ urlpatterns = [
     path("account/subscriptions/<int:sub_id>/start/", accounts.pay, name="pay"),
     path("account/subscriptions/<int:sub_id>/cancel/", accounts.cancel, name="cancel"),
     path("account/subscriptions/<int:sub_id>/resume/", accounts.resume, name="resume"),
+    path("account/view/<int:user_id>/", accounts.view_as, name="view_as"),
     path("account/billing/", accounts.billing_portal, name="billing"),
     path("account/password/", accounts.reset_request, name="reset"),
     path("account/password/<str:uidb64>/<str:token>/", accounts.reset_confirm, name="reset_confirm"),

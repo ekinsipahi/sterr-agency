@@ -122,6 +122,15 @@
     }
   });
 
+  // Country codes (account page) become country names in the page's language.
+  var regions = document.querySelectorAll("[data-region]");
+  if (regions.length && window.Intl && Intl.DisplayNames) {
+    try {
+      var names = new Intl.DisplayNames([document.documentElement.lang || "en"], { type: "region" });
+      regions.forEach(function (el) { var name = names.of(el.dataset.region); if (name) el.textContent = name; });
+    } catch (e) {}
+  }
+
   document.querySelectorAll(".faq details").forEach(function (d) {
     d.addEventListener("toggle", function () {
       if (!d.open) return;

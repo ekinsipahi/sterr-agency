@@ -35,7 +35,7 @@ def delivery_log(sub):
             reach.append(f"{_n(stat.visits)} visited the profile")
         if stat.confirms is not None:
             reach.append(f"{_n(stat.confirms)} said they followed")
-        result = (f"{_n(day['followers'])} new followers, about {_n(day['likes'])} likes and {_n(day['comments'])} comments"
+        result = (f"{_n(day['followers'])} new followers (our count), about {_n(day['likes'])} likes and {_n(day['comments'])} comments"
                   if day["followers"] is not None else "")
         countries = ", ".join(f"{code} {_n(v.get('impressions'))}" for code, v in
                               sorted(stat.countries.items(), key=lambda kv: -kv[1].get("impressions", 0))[:6])
@@ -93,7 +93,8 @@ def build(sub):
         f"Welcome email with the terms sent to {sub.email} on activation.",
         f"Account followers at the start: {_n(sub.start_followers)}; latest: {_n(sub.current_followers)}"
         f" ({_utc(sub.stats_at)}); {reports} daily delivery reports on record.",
-        "", "Daily delivery log (from our growth system):", *delivery,
+        "", "Daily delivery log (from our growth system; new followers are our count of the people we brought "
+            "to the profile who followed, likes and comments are counted from them):", *delivery,
     ]
     evidence = {
         "product_description": product,

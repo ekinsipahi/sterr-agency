@@ -3,9 +3,17 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import path, reverse
 from django.utils.html import format_html
 
-from . import evidence
+from . import evidence, linksterr
 from .constants import PROFILE_URL
 from .models import AccountActivity, AgencySubscription, Customer, Dispute, FollowerOrder, StripeEvent, SubscriptionStat
+
+
+def _panel_link(user_id, lang):
+    """Opens the customer's dashboard read-only (staff only; nobody signs in as the customer)."""
+    if not user_id:
+        return "-"
+    return format_html('<a href="{}?lang={}" target="_blank" rel="noopener">Paneli gör</a>',
+                       reverse("growth:view_as", args=[user_id]), lang or "en")
 
 
 class StatInline(admin.TabularInline):
@@ -24,17 +32,17 @@ class DisputeInline(admin.TabularInline):
 
 @admin.register(AgencySubscription)
 class AgencySubscriptionAdmin(admin.ModelAdmin):
-    list_display = ("pk", "account", "platform", "status", "renews", "location", "email", "amount", "created_at")
+    list_display = ("pk", "account", "platform", "status", "renews", "location", "email", "amount", "created_at", "panel")
     list_filter = ("status", "platform", "cancel_at_period_end", "lang", "created_at")
     search_fields = ("handle", "email", "location", "stripe_subscription_id", "stripe_customer_id", "stripe_checkout_session_id")
     readonly_fields = ("user", "amount", "started_at", "current_period_end", "cancel_at_period_end", "canceled_at",
                        "cancel_requested_at", "cancel_source", "reminded_for", "terms_accepted_at", "terms_version",
-                       "user_agent", "evidence_link",
+                       "user_agent", "evidence_link", "panel",
                        "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id", "notified", "mail_error",
                        "ip", "source_page", "utm_source", "utm_medium", "utm_campaign", "gclid", "created_at", "updated_at")
     fieldsets = (
         (None, {"fields": ("platform", "handle", "location", "amount", "status", "note")}),
-        ("Müşteri", {"fields": ("user", "email", "lang", "terms_accepted_at", "terms_version", "user_agent", "evidence_link")}),
+        ("Müşteri", {"fields": ("user", "email", "lang", "panel", "terms_accepted_at", "terms_version", "user_agent", "evidence_link")}),
         ("Abonelik", {"fields": ("started_at", "current_period_end", "cancel_at_period_end", "cancel_requested_at",
                                  "cancel_source", "canceled_at", "reminded_for",
                                  "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id")}),
@@ -44,6 +52,15 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
                                                        "gclid", "created_at", "updated_at")}),
     )
     inlines = [StatInline, DisputeInline]
+    actions = ["sync_linksterr"]
+
+    @admin.action(description="Linksterr'dan günlük verileri çek")
+    def sync_linksterr(self, request, queryset):
+        if not linksterr.enabled():
+            self.message_user(request, "LINKSTERR_AGENCY_TOKEN ayarlı değil.", level="error")
+            return
+        updated = linksterr.sync(list(queryset.exclude(started_at=None)), force=True)
+        self.message_user(request, f"{updated} abonelik güncellendi.")
 
     def get_urls(self):
         return [path("<int:pk>/evidence/", self.admin_site.admin_view(self.evidence_view),
@@ -51,6 +68,7 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
 
     def evidence_view(self, request, pk):
         sub = get_object_or_404(AgencySubscription, pk=pk)
+        linksterr.sync([sub], force=True)
         fields = [(name.replace("_", " ").capitalize(), text) for name, text in evidence.build(sub).items()]
         return render(request, "admin/growth/evidence.html", {**self.admin_site.each_context(request), "sub": sub,
                                                                "fields": fields, "title": f"Kanıt paketi: @{sub.handle}"})
@@ -65,6 +83,10 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
     @admin.display(description="Hesap", ordering="handle")
     def account(self, obj):
         return format_html('<a href="{}" target="_blank" rel="noopener">@{}</a>', PROFILE_URL[obj.platform].format(obj.handle), obj.handle)
+
+    @admin.display(description="Müşteri paneli")
+    def panel(self, obj):
+        return _panel_link(obj.user_id, obj.lang)
 
     @admin.display(description="Yenileme / bitiş", ordering="current_period_end")
     def renews(self, obj):
@@ -82,10 +104,15 @@ class FollowerOrderAdmin(admin.ModelAdmin):
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ("user", "email_verified", "lang", "created_at")
+    list_display = ("user", "email_verified", "lang", "created_at", "panel")
     list_filter = ("email_verified", "lang")
     search_fields = ("user__email",)
     raw_id_fields = ("user",)
+    readonly_fields = ("panel",)
+
+    @admin.display(description="Müşteri paneli")
+    def panel(self, obj):
+        return _panel_link(obj.user_id, obj.lang)
 
 
 @admin.register(StripeEvent)

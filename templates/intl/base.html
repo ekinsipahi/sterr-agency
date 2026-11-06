@@ -54,7 +54,7 @@
           <li><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
           <li><a href="{{ urls.guides }}">{{ ui.nav_guides }}</a></li>
           <li><a href="{{ urls.about }}">{{ ui.nav_about }}</a></li>
-          {% for label, url in followers_menu %}<li><a href="{{ url }}">{{ label }} {{ followers_nav }}</a></li>{% endfor %}
+          {% for label, url in followers_menu %}<li><a href="{{ url }}">{{ label }}</a></li>{% endfor %}
           <li><a href="{{ instagram_link }}" target="_blank" rel="noopener">Instagram</a></li>
           {% if site.linkedin_url %}<li><a href="{{ site.linkedin_url }}" target="_blank" rel="noopener">LinkedIn</a></li>{% endif %}
         </ul>

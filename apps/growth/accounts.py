@@ -2,7 +2,7 @@
 confirmation and password reset. Pages follow the visitor's language (?lang=, then the session); emails are English."""
 import logging
 import secrets
-from datetime import timedelta
+from datetime import timedelta, timezone as dt_timezone
 from urllib.parse import quote, urlencode
 
 import requests
@@ -12,16 +12,18 @@ from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core import signing
 from django.core.cache import cache
-from django.shortcuts import redirect, render
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import formats, timezone, translation
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import url_has_allowed_host_and_scheme, urlsafe_base64_decode, urlsafe_base64_encode
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from apps.leads.views import _client_ip
 
-from . import activity, billing
+from . import activity, billing, linksterr
 from .content import CONTENT, PLATFORM_NAMES, PLATFORMS, UI, page_path, ui_for
 from .forms import LoginForm, NewPasswordForm, ResetRequestForm, SignupForm
 from .models import AgencySubscription, Customer
@@ -82,15 +84,43 @@ def account(request):
         return redirect(f"{reverse('growth:login')}?lang={code}")
     customer, _ = Customer.objects.get_or_create(user=request.user, defaults={"lang": code})
     activity.record(request, request.user, "dashboard")
+    flags = {k: request.GET.get(k) for k in ("verify", "verified", "error", "reset", "resumed")}
+    return render(request, "growth/account.html", _ctx(request, code, "dashboard", **_dashboard(request.user, code), customer=customer,
+                                                       flags=flags, payments=billing.enabled(), owner_email=request.user.email,
+                                                       signup_event=request.session.pop("growth_signup", None),
+                                                       needs_verify=settings.GROWTH_VERIFY_EMAIL and not customer.email_verified))
+
+
+@never_cache
+@staff_member_required
+def view_as(request, user_id):
+    """Staff: a customer's dashboard exactly as they see it, read-only. Nobody signs in as the
+    customer: there are no buttons, and the visit is not recorded as the customer's activity."""
+    owner = get_object_or_404(get_user_model(), pk=user_id)
+    customer = Customer.objects.filter(user=owner).first()
+    code = request.GET.get("lang")
+    if code not in UI:
+        code = customer.lang if customer and customer.lang in UI else "en"
+    return render(request, "growth/account.html", _ctx(request, code, "dashboard", **_dashboard(owner, code, readonly=True),
+                                                       customer=customer, flags={}, payments=False, owner_email=owner.email,
+                                                       readonly=True, admin_back=reverse("admin:growth_customer_changelist")))
+
+
+def _dashboard(owner, code, readonly=False):
+    """The dashboard's subscriptions and totals for `owner`. readonly: no actions offered."""
     ui = UI[code]
     subs = []
+    actions = billing.enabled() and not readonly
     with translation.override("nb" if code == "no" else code):
         def day(value):
             return formats.date_format(value, "DATE_FORMAT")
 
-        today = timezone.localdate()
-        for s in AgencySubscription.objects.filter(user=request.user).exclude(status="canceled", started_at__isnull=True).prefetch_related("stats"):
+        mine = list(AgencySubscription.objects.filter(user=owner).exclude(status="canceled", started_at__isnull=True))
+        linksterr.sync([s for s in mine if s.started_at])  # Linksterr's numbers, fetched at most every 10 minutes
+        today = timezone.now().astimezone(dt_timezone.utc).date()  # Linksterr counts UTC days
+        for s in AgencySubscription.objects.filter(pk__in=[s.pk for s in mine]).prefetch_related("stats"):
             daily = s.daily()
+            visits = any(d["visits"] is not None for d in daily)
             since = (s.current_period_end - timedelta(days=30)).date() if s.current_period_end else None
             month = [d for d in daily if since is None or d["date"] > since]
             renews = ""
@@ -98,7 +128,8 @@ def account(request):
                 renews = ui["acc_ends" if s.cancel_at_period_end else "acc_renews"].replace("{date}", day(s.current_period_end))
             days = [{"label": ui["acc_today"] if d["date"] == today else formats.date_format(d["date"], "j F"),
                      "gained": f"+{count(d['followers'], code)}" if d["followers"] is not None else "–",
-                     "likes": count(d["likes"], code), "comments": count(d["comments"], code)} for d in reversed(daily)]
+                     "likes": count(d["likes"], code), "comments": count(d["comments"], code),
+                     "visits": count(d["visits"], code) if d["visits"] is not None else "–"} for d in reversed(daily)]
             now = next((d for d in daily if d["date"] == today), None)
             subs.append({
                 "s": s, "status": ui[f"st_{s.status}"], "amount": f"${s.amount:.2f}", "name": ui[f"plan_{s.plan}"],
@@ -106,18 +137,22 @@ def account(request):
                 "renews": renews,
                 "today": [(f"+{count(now['followers'] or 0, code)}" if now else "–", ui["acc_gained"]),
                           (count(now["likes"], code) if now else "–", ui["acc_likes"]),
-                          (count(now["comments"], code) if now else "–", ui["acc_comments"])] if daily else [],
+                          (count(now["comments"], code) if now else "–", ui["acc_comments"])]
+                         + ([(count(now["visits"] or 0, code) if now else "–", ui["acc_visits"])] if visits else []) if daily else [],
                 "tiles": [(count(sum(d["followers"] or 0 for d in month), code), ui["acc_gained"]),
                           (count(sum(d["likes"] for d in month), code), ui["acc_likes"]),
-                          (count(sum(d["comments"] for d in month), code), ui["acc_comments"])] if daily else [],
+                          (count(sum(d["comments"] for d in month), code), ui["acc_comments"])]
+                         + ([(count(sum(d["visits"] or 0 for d in month), code), ui["acc_visits"])] if visits else []) if daily else [],
+                "visits": visits,
+                "countries": _countries(month),
                 "days": days[:14], "more_days": days[14:],
                 "now": ui["acc_now"].replace("{count}", count(s.current_followers, code)) if s.current_followers is not None else "",
                 "updated": ui["acc_updated"].replace("{date}", formats.date_format(s.stats_at, "DATETIME_FORMAT")) if s.stats_at else "",
                 "bars": _bars(daily),
-                "can_pay": s.status == "pending" and billing.enabled(),
-                "can_manage": bool(s.stripe_customer_id) and billing.enabled(),
-                "can_cancel": _cancelable(s) and not s.cancel_at_period_end,
-                "can_resume": _cancelable(s) and s.cancel_at_period_end,
+                "can_pay": actions and s.status == "pending",
+                "can_manage": actions and bool(s.stripe_customer_id),
+                "can_cancel": actions and _cancelable(s) and not s.cancel_at_period_end,
+                "can_resume": actions and _cancelable(s) and s.cancel_at_period_end,
             })
     summary = []
     live = [item["s"] for item in subs if item["s"].started_at]
@@ -129,10 +164,18 @@ def account(request):
             (count(engagement, code), ui["acc_sum_engagement"]),
             (count(latest.current_followers, code) if latest else "–", ui["acc_sum_now"]),
         ]
-    flags = {k: request.GET.get(k) for k in ("verify", "verified", "error", "reset", "resumed")}
-    return render(request, "growth/account.html", _ctx(request, code, "dashboard", subs=subs, summary=summary, customer=customer, flags=flags,
-                                                       payments=billing.enabled(), signup_event=request.session.pop("growth_signup", None),
-                                                       needs_verify=settings.GROWTH_VERIFY_EMAIL and not customer.email_verified))
+    return {"subs": subs, "summary": summary}
+
+
+def _countries(month, top=5):
+    """Where this month's profile visits came from: the top countries with their share."""
+    totals = {}
+    for d in month:
+        for cc, numbers in d["countries"].items():
+            totals[cc] = totals.get(cc, 0) + (numbers.get("visits") or 0)
+    total = sum(totals.values())
+    ranked = sorted(((v, cc) for cc, v in totals.items() if v), reverse=True)[:top]
+    return [{"code": cc, "share": f"{round(v * 100 / total)}%"} for v, cc in ranked] if total else []
 
 
 def _bars(daily, days=30, width=320, height=72):

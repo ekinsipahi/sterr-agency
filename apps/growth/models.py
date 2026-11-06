@@ -164,9 +164,10 @@ class AgencySubscription(models.Model):
         return PLATFORM_NAMES[self.platform]
 
     def daily(self):
-        """[{date, followers, likes, comments}] per day, oldest first. New followers are what the
-        growth system counted for the day (without that, the change in the account's follower
-        count); likes and comments are counted from them unless the growth system sent its own."""
+        """[{date, followers, likes, comments, visits, countries}] per day, oldest first. New
+        followers are what the growth system counted for the day (without that, the change in the
+        account's follower count); likes and comments are counted from them unless the growth
+        system sent its own. visits: people who opened the profile from our network (or None)."""
         rows, previous = [], self.start_followers
         for stat in sorted(self.stats.all(), key=lambda s: s.date):
             gained = stat.new_followers
@@ -175,7 +176,8 @@ class AgencySubscription(models.Model):
             base = gained or 0
             rows.append({"date": stat.date, "followers": gained,
                          "likes": stat.likes if stat.likes is not None else likes_for(base),
-                         "comments": stat.comments if stat.comments is not None else comments_for(base)})
+                         "comments": stat.comments if stat.comments is not None else comments_for(base),
+                         "visits": stat.visits, "countries": stat.countries or {}})
             if stat.followers is not None:
                 previous = stat.followers
         return rows

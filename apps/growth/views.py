@@ -19,7 +19,7 @@ from apps.core.languages import LANG_BY_CODE
 from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
-from . import billing, evidence
+from . import billing, evidence, linksterr
 from .content import has_page, ACCOUNT_NAV, CONTENT, CREATOR_PAGES, CREATORS, GROUPS, GUIDES, PAGE_PLAN, UI, PAGES, PLATFORM_NAMES, PLATFORMS, alternates, creator_alternates, creator_path, lang_links, page_path, ui_for
 from .constants import TERMS_VERSION
 from .forms import OrderForm
@@ -424,6 +424,7 @@ def _on_dispute(obj):
     stripe_link = f"https://dashboard.stripe.com/disputes/{dispute.dispute_id}"
     admin_link = f"{settings.SITE_URL}{reverse('admin:growth_agencysubscription_evidence', args=[sub.pk])}"
     if opened:
+        linksterr.sync([sub], force=True)  # the latest delivery numbers go into the evidence
         try:
             billing.stage_evidence(dispute.dispute_id, evidence.build(sub))
             dispute.evidence_staged = True

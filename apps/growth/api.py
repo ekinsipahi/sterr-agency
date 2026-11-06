@@ -1,18 +1,22 @@
 """Machine API for the growth system. Authenticated with `Authorization: Bearer
-<GROWTH_API_TOKEN>`; disabled while the token is unset.
+<GROWTH_API_TOKEN>`; disabled while the token is unset. The subscriptions list also opens
+with LINKSTERR_AGENCY_TOKEN (read-only): Linksterr reads it to keep each package's campaign
+running, renewed, resumed or ended.
 
-GET  /growth/api/subscriptions/?status=active   accounts to grow (default: active)
+GET  /growth/api/subscriptions/?status=active   accounts to grow, newest first (default: active;
+     several: status=active,past_due,canceled)
 POST /growth/api/stats/                         one day's numbers or {"updates": [...]}:
      {"subscription_id": 12, "date": "2026-11-04", "followers": 5120,
       "new_followers": 140, "start_followers": 4300}
-     Only subscription_id is required; "date" defaults to today. The same
-     subscription + date overwrites. new_followers is what we brought that day (left
+     Only subscription_id is required; "date" defaults to today (UTC). Sending the same
+     subscription + date again updates only the fields sent. new_followers is what we brought that day (left
      out: the change in the follower count); likes and comments are counted from it
      (× 2.5 and ÷ 10) unless sent. followers is the account's follower count that day. start_followers (the
      count when the package started) defaults to the first reading's followers.
      Delivery evidence (kept for disputes, optional): "impressions" (people shown the
      profile), "visits" (went to it), "confirms" (said they followed) and "countries":
      {"DE": {"impressions": 900, "visits": 210, "confirms": 95}, ...}.
+Linksterr's numbers arrive without this API: linksterr.py fetches them (pull).
 """
 import hmac
 import json
@@ -29,28 +33,34 @@ from .models import AgencySubscription, SubscriptionStat
 
 MAX_UPDATES = 500
 COUNTRY_FIELDS = ("impressions", "visits", "confirms")
+STAT_FIELDS = ("followers", "new_followers", "likes", "comments", *COUNTRY_FIELDS)
 
 
-def _authorized(request):
-    token = settings.GROWTH_API_TOKEN
-    given = request.headers.get("Authorization", "").removeprefix("Bearer ").strip()
-    return bool(token) and hmac.compare_digest(given.encode(), token.encode())
+def _authorized(request, read_only=False):
+    """GROWTH_API_TOKEN opens the whole API; Linksterr's LINKSTERR_AGENCY_TOKEN only the reads."""
+    given = request.headers.get("Authorization", "").removeprefix("Bearer ").strip().encode()
+    tokens = [settings.GROWTH_API_TOKEN, settings.LINKSTERR_AGENCY_TOKEN if read_only else ""]
+    return any(token and hmac.compare_digest(given, token.encode()) for token in tokens)
+
+
+def _iso(value):
+    return value.isoformat() if value else None
 
 
 def _sub_json(s):
     return {"id": s.pk, "platform": s.platform, "handle": s.handle, "location": s.location, "status": s.status,
-            "started_at": s.started_at.isoformat() if s.started_at else None,
-            "current_period_end": s.current_period_end.isoformat() if s.current_period_end else None,
-            "cancel_at_period_end": s.cancel_at_period_end, "start_followers": s.start_followers,
+            "plan": s.plan, "amount": float(s.amount), "started_at": _iso(s.started_at),
+            "current_period_end": _iso(s.current_period_end), "cancel_at_period_end": s.cancel_at_period_end,
+            "canceled_at": _iso(s.canceled_at), "start_followers": s.start_followers,
             "current_followers": s.current_followers}
 
 
 @require_GET
 def subscriptions(request):
-    if not _authorized(request):
+    if not _authorized(request, read_only=True):
         return JsonResponse({"error": "unauthorized"}, status=401)
     status = request.GET.get("status", "active")
-    qs = AgencySubscription.objects.filter(status__in=status.split(",")).order_by("started_at", "created_at")[:1000]
+    qs = AgencySubscription.objects.filter(status__in=status.split(",")).order_by("-started_at", "-created_at")[:1000]
     return JsonResponse({"subscriptions": [_sub_json(s) for s in qs]})
 
 
@@ -94,14 +104,13 @@ def stats(request):
             if not isinstance(item, dict):
                 raise ValueError("each update must be an object")
             sub_id = _int(item.get("subscription_id"), "subscription_id", required=True)
-            followers = _int(item.get("followers"), "followers")
-            new_followers = _int(item.get("new_followers"), "new_followers")
-            likes = _int(item.get("likes"), "likes")
-            comments = _int(item.get("comments"), "comments")
+            # Only the fields sent are written, so one sender never wipes another's numbers.
+            values = {f: _int(item[f], f) for f in STAT_FIELDS if f in item}
+            if "countries" in item:
+                values["countries"] = _countries(item["countries"])
+            followers = values.get("followers")
             start = _int(item.get("start_followers"), "start_followers")
-            delivery = {f: _int(item.get(f), f) for f in COUNTRY_FIELDS}
-            countries = _countries(item.get("countries"))
-            day = parse_date(item["date"]) if item.get("date") else timezone.localdate()
+            day = parse_date(item["date"]) if item.get("date") else timezone.now().date()  # UTC, like Linksterr
             if day is None:
                 raise ValueError("date must be YYYY-MM-DD")
         except (ValueError, TypeError) as exc:
@@ -113,9 +122,7 @@ def stats(request):
             if sub is None:
                 results.append({"subscription_id": sub_id, "ok": False, "error": "unknown subscription"})
                 continue
-            SubscriptionStat.objects.update_or_create(subscription=sub, date=day, defaults={
-                "followers": followers, "new_followers": new_followers, "likes": likes, "comments": comments,
-                **delivery, "countries": countries})
+            SubscriptionStat.objects.update_or_create(subscription=sub, date=day, defaults=values)
             if start is not None:
                 sub.start_followers = start
             elif sub.start_followers is None and followers is not None:

@@ -185,6 +185,11 @@ GOOGLE_OAUTH_CLIENT_ID = env("GOOGLE_OAUTH_CLIENT_ID", default="")
 GOOGLE_OAUTH_CLIENT_SECRET = env("GOOGLE_OAUTH_CLIENT_SECRET", default="")
 # Bearer token for the growth system's API (/growth/api/...). Unset = API off.
 GROWTH_API_TOKEN = env("GROWTH_API_TOKEN", default="")
+# Linksterr's agency endpoint (GET /user-api/v1/agency/accounts/): the delivery numbers of the
+# promoted campaigns behind each package. The same token is set on Linksterr. Unset = no sync.
+LINKSTERR_API_URL = env("LINKSTERR_API_URL", default="https://linksterr.com")
+# Tests never call Linksterr; the ones about it set their own token.
+LINKSTERR_AGENCY_TOKEN = "" if "test" in sys.argv[1:2] else env("LINKSTERR_AGENCY_TOKEN", default="")
 
 # --- Contact ----------------------------------------------------------------
 WHATSAPP_NUMBER = env("WHATSAPP_NUMBER", default="905414487561")
