@@ -312,6 +312,18 @@ class StripePriceTests(TestCase):
         with mock.patch("apps.growth.billing._client", return_value=client):
             self.assertEqual(billing.portal_configuration(), "bpc_ours")
 
+    def test_retrieve_subscription_with_decimal_fields(self):
+        # A real Stripe subscription: price.unit_amount_decimal comes back as a Decimal.
+        sub = stripe.Subscription.construct_from({"id": "sub_1", "object": "subscription", "status": "active", "items": {
+            "object": "list", "data": [{"object": "subscription_item", "current_period_end": 1700000000,
+                                        "price": {"object": "price", "id": "p", "unit_amount_decimal": "7999"}}]}}, "sk")
+        client = mock.Mock()
+        client.v1.subscriptions.retrieve.return_value = sub
+        with mock.patch("apps.growth.billing._client", return_value=client):
+            data = billing.retrieve_subscription("sub_1")
+        self.assertEqual(data["items"]["data"][0]["price"]["unit_amount_decimal"], "7999")
+        self.assertIsNotNone(billing.period_end(data))
+
     def test_falls_back_to_inline_monthly_price_when_missing_or_outdated(self):
         params = self.checkout_params([SimpleNamespace(id="price_old", unit_amount=9900)])
         data = params["line_items"][0]["price_data"]

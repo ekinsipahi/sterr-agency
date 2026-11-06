@@ -87,8 +87,9 @@ def retrieve_checkout(session_id):
 
 
 def retrieve_subscription(subscription_id):
-    """The Stripe subscription as a plain dict (the shape webhooks deliver)."""
-    return json.loads(json.dumps(_client().v1.subscriptions.retrieve(subscription_id).to_dict()))
+    """The Stripe subscription as a plain dict (the shape webhooks deliver). to_dict() keeps
+    *_decimal fields as Decimal; webhooks send them as strings, so they become strings here too."""
+    return json.loads(json.dumps(_client().v1.subscriptions.retrieve(subscription_id).to_dict(), default=str))
 
 
 def portal_configuration():
