@@ -50,14 +50,12 @@ PAID_BODY = (
 REMINDER_SUBJECT = "Your {package} package renews in {days} ({renews})"
 REMINDER_BODY = (
     "Hi,\n\nA reminder: your {package} package for @{handle} on {platform} renews automatically on {renews}, "
-    "and ${amount} will be charged to the card on file.\n\n"
-    "Want to keep growing? There's nothing to do.\n\n"
-    "Don't want to continue? Cancel before {renews} in any of these ways:\n"
-    "- One click, no sign-in needed: {cancel}\n"
-    "- Sign in to your account and press \"Cancel subscription\": {account}\n"
-    "- Call or message us on WhatsApp: {whatsapp}\n\n"
-    "Canceling stops the next payment; your current month runs to its end. You'll get an email confirming it.\n\n"
-    "Sterr Agency"
+    "and ${amount} will be charged to the card on file. There's nothing you need to do.\n\n"
+    "Your account: {account}\n\n"
+    "Questions? Message us on WhatsApp: {whatsapp}\n\n"
+    "Sterr Agency\n\n"
+    "--\n"
+    "You can manage or cancel your subscription any time in your account."
 )
 CANCELED_SUBJECT = "Cancellation confirmed: {package} for @{handle}"
 CANCELED_BODY = (
@@ -110,8 +108,8 @@ def _date(value):
         return formats.date_format(value, "F j, Y")
 
 
-def _values(sub, cancel=""):
-    return {"cancel": cancel, "platform": sub.platform_name, "handle": sub.handle, "location": sub.location, "amount": f"{sub.amount:.2f}",
+def _values(sub):
+    return {"platform": sub.platform_name, "handle": sub.handle, "location": sub.location, "amount": f"{sub.amount:.2f}",
             "package": sub.get_plan_display(),
             "followers": "{:,}-{:,}".format(*plan.PLAN_BY_KEY[sub.plan]["followers"]),
             "renews": _date(sub.current_period_end) if sub.current_period_end else "the same day next month",
@@ -129,7 +127,7 @@ TEAM_TITLES = {
     "dispute": "DİKKAT: {platform} influencer paketi ödemesine itiraz (dispute) açıldı",
     "dispute_closed": "{platform} influencer paketi itirazı sonuçlandı",
 }
-CANCEL_SOURCES = {"account": "müşteri hesap panelinden", "email": "müşteri hatırlatma e-postasındaki linkten",
+CANCEL_SOURCES = {"account": "müşteri hesap panelinden",
                   "stripe": "Stripe müşteri portalından veya Stripe panelinden"}
 
 
@@ -171,8 +169,8 @@ def confirm_payment(sub):
     return _send(_fill(PAID_SUBJECT, **v), _fill(PAID_BODY, **v), [sub.email])
 
 
-def remind_renewal(sub, cancel_link):
-    v = _values(sub, cancel_link)
+def remind_renewal(sub):
+    v = _values(sub)
     days = max(1, math.ceil((sub.current_period_end - timezone.now()).total_seconds() / 86400))
     v["days"] = "1 day" if days == 1 else f"{days} days"
     return _send(_fill(REMINDER_SUBJECT, **v), _fill(REMINDER_BODY, **v), [sub.email])

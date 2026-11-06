@@ -461,7 +461,7 @@ class CancelTests(TestCase):
         self.client.force_login(other)
         self.assertContains(self.client.get(self.url + "?lang=en"), "This link no longer works")
 
-    def test_reminder_once_per_period_and_its_cancel_link(self):
+    def test_reminder_once_per_period(self):
         body, header = signed({"id": "evt_u", "type": "invoice.upcoming", "data": {"object": {
             "parent": {"subscription_details": {"subscription": "sub_1"}}, "amount_due": 7999}}})
         for _ in range(2):
@@ -469,14 +469,10 @@ class CancelTests(TestCase):
         call_command("send_renewal_reminders", stdout=StringIO())
         reminders = [m for m in mail.outbox if m.subject.startswith("Your Starter Creator package renews in 2 days")]
         self.assertEqual(len(reminders), 1)
-        path = re.search(r"https?://[^/\s]+(/account/subscriptions/\d+/cancel/\S+)", reminders[0].body).group(1)
-        self.assertContains(self.client.get(path), "Yes, cancel")  # no sign-in needed
-        token = re.search(r"[?&]t=([^&\s]+)", path).group(1)
-        r = self.cancel(path, {"t": token, "lang": "en"})
-        self.assertContains(r, "Your subscription is canceled")
-        self.assertEqual(self.sub.cancel_source, "email")
-        self.assertIn("hatırlatma e-postasındaki linkten", self.team("iptal talebi")[0].body)
-        self.assertContains(self.client.get(self.url + "?t=bad&lang=en"), "This link no longer works")
+        text = reminders[0].body
+        self.assertNotIn("cancel", text.split("--")[0].lower())  # only the small note at the very end mentions it
+        self.assertIn("manage or cancel your subscription any time in your account", text.split("--")[1])
+        self.assertIn("/account/?lang=en", text)
 
     def test_reminder_command_skips_far_or_canceling(self):
         far = AgencySubscription.objects.create(email="f@example.com", handle="far", location="x", plan="rising", amount="149.99",

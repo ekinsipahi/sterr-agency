@@ -1,4 +1,4 @@
-"""Renewal reminders with a one-click cancel link, for packages that renew within --days
+"""Renewal reminders for packages that renew within --days
 (default 3). Each billing period gets one reminder, whether it went from here or from
 Stripe's invoice.upcoming webhook. Safe to run as often as you like (e.g. a daily cron).
 
@@ -15,7 +15,7 @@ from apps.growth.views import send_reminder
 
 
 class Command(BaseCommand):
-    help = "Email the renewal reminder (with a cancel link) to packages that renew within --days."
+    help = "Email the renewal reminder to packages that renew within --days."
 
     def add_arguments(self, parser):
         parser.add_argument("--days", type=int, default=3)

@@ -123,7 +123,7 @@ class AgencySubscription(models.Model):
     current_period_end = models.DateTimeField("Dönem bitişi", null=True, blank=True)
     cancel_at_period_end = models.BooleanField("Dönem sonunda bitecek", default=False)
     canceled_at = models.DateTimeField("İptal", null=True, blank=True)
-    CANCEL_SOURCES = [("account", "Hesap paneli"), ("email", "Hatırlatma e-postası"), ("stripe", "Stripe portalı / panel")]
+    CANCEL_SOURCES = [("account", "Hesap paneli"), ("stripe", "Stripe portalı / panel")]
     cancel_requested_at = models.DateTimeField("İptal talebi", null=True, blank=True)
     cancel_source = models.CharField("İptal nereden", max_length=10, choices=CANCEL_SOURCES, blank=True)
     reminded_for = models.DateTimeField("Hatırlatma gönderilen dönem", null=True, blank=True,

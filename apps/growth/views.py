@@ -33,8 +33,6 @@ logger = logging.getLogger(__name__)
 RATE_LIMIT, RATE_WINDOW = 8, 60 * 60
 VERIFY_SALT = "growth-verify"
 VERIFY_MAX_AGE = 7 * 24 * 60 * 60
-CANCEL_SALT = "growth-cancel"
-CANCEL_MAX_AGE = 40 * 24 * 60 * 60  # the reminder's link works past the renewal it warns about
 
 
 def shell(code):
@@ -53,21 +51,6 @@ def shell(code):
 def verify_link(user, sub=None):
     token = signing.dumps({"u": user.pk, "e": user.email, "s": sub.pk if sub else None}, salt=VERIFY_SALT)
     return settings.SITE_URL + reverse("growth:verify", args=[token])
-
-
-def cancel_link(sub):
-    """One-click cancel from the renewal reminder, without signing in."""
-    token = signing.dumps({"s": sub.pk, "c": sub.stripe_subscription_id}, salt=CANCEL_SALT)
-    return f"{settings.SITE_URL}{reverse('growth:cancel', args=[sub.pk])}?t={token}&lang={sub.lang}"
-
-
-def cancel_token_sub(token):
-    """The subscription a cancel link was made for, or None (bad, expired, or another Stripe subscription)."""
-    try:
-        data = signing.loads(token, salt=CANCEL_SALT, max_age=CANCEL_MAX_AGE)
-    except signing.BadSignature:
-        return None
-    return AgencySubscription.objects.filter(pk=data.get("s"), stripe_subscription_id=data.get("c") or "-").first()
 
 
 def _valid_page(code, page, platform):
@@ -284,7 +267,7 @@ STRIPE_STATUS = {"active": "active", "trialing": "active", "past_due": "past_due
 def sync(stripe_sub, sub_id=None, source="stripe"):
     """Bring our subscription in line with Stripe's. The first time it turns active the
     team note and the customer's welcome go out; a cancel at the period end (from our
-    account page, the reminder link or Stripe's portal: `source`) and taking it back are
+    account page or Stripe's portal: `source`) and taking it back are
     told to the team, and a cancel is confirmed to the customer. Returns the subscription (or None)."""
     first_payment, change = False, None
     with transaction.atomic():
@@ -326,10 +309,10 @@ def sync(stripe_sub, sub_id=None, source="stripe"):
 
 
 def send_reminder(sub):
-    """The renewal reminder with a one-click cancel link, once per billing period."""
+    """The renewal reminder, once per billing period."""
     if sub.status != "active" or sub.cancel_at_period_end or not sub.current_period_end or sub.reminded_for == sub.current_period_end:
         return False
-    if not remind_renewal(sub, cancel_link(sub)):
+    if not remind_renewal(sub):
         return False
     AgencySubscription.objects.filter(pk=sub.pk).update(reminded_for=sub.current_period_end)
     return True

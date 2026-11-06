@@ -27,7 +27,7 @@ from .forms import LoginForm, NewPasswordForm, ResetRequestForm, SignupForm
 from .models import AgencySubscription, Customer
 from .notifications import send_password_reset, send_verification
 from .plan import count
-from .views import (VERIFY_MAX_AGE, VERIFY_SALT, cancel_token_sub, google_enabled, place_order, shell, start_checkout,
+from .views import (VERIFY_MAX_AGE, VERIFY_SALT, google_enabled, place_order, shell, start_checkout,
                     sync, verify_link)
 
 logger = logging.getLogger(__name__)
@@ -259,28 +259,23 @@ def _cancelable(sub):
 
 
 def cancel(request, sub_id):
-    """Cancel the renewal: from the dashboard (signed in) or the reminder's link (?t=, no
-    sign-in needed). GET asks to confirm, POST cancels at the end of the paid period."""
+    """Cancel the renewal from the dashboard: GET asks to confirm, POST cancels at the end
+    of the paid period."""
     code = _lang(request)
-    token = request.GET.get("t") or request.POST.get("t") or ""
-    if token:
-        sub = cancel_token_sub(token)
-        sub = sub if sub is not None and sub.pk == sub_id else None
-    elif request.user.is_authenticated:
-        sub = AgencySubscription.objects.filter(pk=sub_id, user=request.user).first()
-    else:
+    if not request.user.is_authenticated:
         return redirect(f"{reverse('growth:login')}?lang={code}&next={quote(request.get_full_path())}")
+    sub = AgencySubscription.objects.filter(pk=sub_id, user=request.user).first()
     if sub is None:
         return render(request, "growth/account.html", _ctx(request, code, "cancel", invalid=True))
     gu = ui_for(code, sub.platform)
-    if request.method == "GET" and sub.user_id:
-        activity.record(request, sub.user, "cancel_page")
+    if request.method == "GET":
+        activity.record(request, request.user, "cancel_page")
     done, error = sub.cancel_at_period_end or sub.status == "canceled", False
     if not done and not _cancelable(sub):
         return redirect(f"{reverse('growth:account')}?lang={code}")
     if request.method == "POST" and not done:
         try:
-            sub = sync(billing.set_cancel(sub.stripe_subscription_id, True), sub.pk, source="email" if token else "account") or sub
+            sub = sync(billing.set_cancel(sub.stripe_subscription_id, True), sub.pk, source="account") or sub
             done = True
         except Exception:
             logger.exception("Stripe cancel failed for subscription #%s", sub.pk)
@@ -292,7 +287,7 @@ def cancel(request, sub_id):
     for key, value in fill.items():
         text = text.replace(key, value)
     return render(request, "growth/account.html", _ctx(request, code, "cancel", sub=sub, done=done, error=error,
-                                                       cancel_text=text, token=token, plan_name=gu[f"plan_{sub.plan}"]))
+                                                       cancel_text=text, plan_name=gu[f"plan_{sub.plan}"]))
 
 
 @require_POST

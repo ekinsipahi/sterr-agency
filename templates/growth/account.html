@@ -104,7 +104,6 @@
       <form method="post">
         {% csrf_token %}
         <input type="hidden" name="lang" value="{{ code }}">
-        {% if token %}<input type="hidden" name="t" value="{{ token }}">{% endif %}
         <button class="btn btn--signal btn--lg" type="submit" style="width:100%">{{ gu.cancel_yes }}</button>
       </form>
       <a class="btn btn--ghost btn--lg mt-s" style="width:100%" href="{% url 'growth:account' %}?lang={{ code }}">{{ gu.cancel_keep }}</a>

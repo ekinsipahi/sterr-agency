@@ -9,7 +9,7 @@ from .models import AccountActivity
 from .plan import PLAN_BY_KEY
 
 TEXT_LIMIT = 19000  # Stripe allows 20,000 characters per text field
-CANCEL_WAYS = {"account": "the Cancel button in their account", "email": "the one-click link in our renewal reminder",
+CANCEL_WAYS = {"account": "the Cancel button in their account",
                "stripe": "the Stripe billing portal"}
 ACTIVITY = {"login": "signed in", "dashboard": "opened the growth dashboard", "cancel_page": "opened the cancel page"}
 
@@ -76,18 +76,18 @@ def build(sub):
         f"Before paying, the customer ticked a required box accepting our terms (version {sub.terms_version or '-'}, "
         f"accepted {_utc(sub.terms_accepted_at)} from IP {sub.ip or '-'}). The order form, Stripe Checkout and the welcome "
         f"email all say: billed monthly until canceled; cancel any time in the account; canceling stops the next payment "
-        f"and the paid month runs to its end and isn't refunded. A reminder with the renewal date, the amount and a "
-        f"one-click cancel link is emailed 3 days before every renewal. Terms, section 2a: {terms_url}"
+        f"and the paid month runs to its end and isn't refunded. A reminder with the renewal date, the amount and how to "
+        f"cancel is emailed 3 days before every renewal. Terms, section 2a: {terms_url}"
     )
     if sub.cancel_requested_at:
         rebuttal = (f"The customer canceled the renewal on {_utc(sub.cancel_requested_at)} through "
                     f"{CANCEL_WAYS.get(sub.cancel_source, 'Stripe')}. No payment was taken after that; the package ran to "
                     f"the end of the period already paid for, as the terms say.")
     else:
-        rebuttal = ("The customer never canceled: there is no cancellation from the account page, the reminder's cancel "
-                    "link or the billing portal on record, although each is one click.")
+        rebuttal = ("The customer never canceled: there is no cancellation from the Cancel button in the account "
+                    "or the billing portal on record, although canceling takes one click.")
     if sub.reminded_for:
-        rebuttal += f" The renewal reminder with a cancel link was emailed to {sub.email} before the renewal of {_utc(sub.reminded_for)}."
+        rebuttal += f" The renewal reminder, saying how to cancel, was emailed to {sub.email} before the renewal of {_utc(sub.reminded_for)}."
     summary = [
         f"Subscription started {_utc(sub.started_at)}; status {sub.status}; current period ends {_utc(sub.current_period_end)}.",
         f"Welcome email with the terms sent to {sub.email} on activation.",

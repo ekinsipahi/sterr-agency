@@ -107,11 +107,11 @@ Bir sayfa bir dilde henüz yoksa o dil için yayına çıkmaz: route, hreflang, 
 **Bildirimler (ekibe, Türkçe):** ödeme olmadan e-posta gitmez. Ekibe giden e-postalar:
 - ilk ödeme Stripe'ta onaylanınca "Yeni … influencer paketi (ödendi)";
 - her aylık ödemede "… yenilendi (ödendi)";
-- müşteri iptal edince (panel, hatırlatma e-postasındaki link ya da Stripe portalı) "… iptal talebi (dönem sonunda biter)", geri alınca "… iptali geri alındı";
+- müşteri iptal edince (panel ya da Stripe portalı) "… iptal talebi (dönem sonunda biter)", geri alınca "… iptali geri alındı";
 - abonelik bitince "… iptal edildi";
 - ödemeye itiraz gelince "DİKKAT: … itiraz (dispute) açıldı", sonuçlanınca "… itirazı sonuçlandı".
 
-**İptal ve hatırlatma:** panelde "Aboneliği iptal et" (onay sayfası, dönem sonunda biter) ve "Aboneliğime devam et". Her yenilemeden önce müşteriye hatırlatma gider: tarih, tutar, tek tıkla iptal linki (girişsiz, imzalı), hesap linki ve WhatsApp. Stripe'ın `invoice.upcoming` olayıyla gider (Stripe → Settings → Billing → Subscriptions and emails → *Upcoming renewal events*: 3 gün); yedek olarak `python manage.py send_renewal_reminders` (günlük cron) aynı işi yapar, dönem başına bir kez.
+**İptal ve hatırlatma:** panelde "Aboneliği iptal et" (onay sayfası, dönem sonunda biter) ve "Aboneliğime devam et". Her yenilemeden önce müşteriye hatırlatma gider: tarih, tutar, hesap linki, WhatsApp ve en altta küçük bir not ("panelden istediğin zaman iptal edebilirsin"). Stripe'ın `invoice.upcoming` olayıyla gider (Stripe → Settings → Billing → Subscriptions and emails → *Upcoming renewal events*: 3 gün); yedek olarak `python manage.py send_renewal_reminders` (günlük cron) aynı işi yapar, dönem başına bir kez.
 
 **Dispute kanıtı:** sipariş formundaki zorunlu şart kutusu (zaman, IP, tarayıcı, `TERMS_VERSION`), müşterinin girişleri ve panel ziyaretleri (`AccountActivity`), linksterr'ın günlük teslimat verisi, iptal ve hatırlatma kayıtları. İtiraz açılınca (`charge.dispute.created`) bunlar Stripe'a **taslak** olarak yüklenir, ekibe e-posta gider; Stripe'ta kontrol edip *Submit* edilir. Admin → abonelik → "Kanıt paketini aç" sayfası yazdırılıp PDF olarak eklenebilir. Checkout'ta 3D Secure istenir ve yenileme/iptal şartı ödeme butonunun üstünde yazar. Aynı Stripe hesabındaki diğer sitelerin olayları atlanır: ödeme yalnızca bizim oluşturduğumuz Checkout oturumuyla, abonelik ve itiraz yalnızca bizim Stripe kimliklerimizle eşleşir.
 
