@@ -144,6 +144,7 @@ def _dashboard(owner, code, readonly=False):
                          + ([(count(sum(d["visits"] or 0 for d in month), code), ui["acc_visits"])] if visits else []) if daily else [],
                 "visits": visits,
                 "countries": _countries(month),
+                "projection": _projection(s, ui, code),
                 "days": days[:14], "more_days": days[14:],
                 "now": ui["acc_now"].replace("{count}", count(s.current_followers, code)) if s.current_followers is not None else "",
                 "updated": ui["acc_updated"].replace("{date}", formats.date_format(s.stats_at, "DATETIME_FORMAT")) if s.stats_at else "",
@@ -164,6 +165,15 @@ def _dashboard(owner, code, readonly=False):
             (count(latest.current_followers, code) if latest else "–", ui["acc_sum_now"]),
         ]
     return {"subs": subs, "summary": summary}
+
+
+def _projection(s, ui, code):
+    """'Next 30 days at today's pace: on average about N new followers (low–high)' from Linksterr."""
+    p = s.projection
+    if s.status != "active" or not p or not p.get("new_followers"):
+        return ""
+    return (ui["acc_projection"].replace("{count}", count(p["new_followers"], code))
+            .replace("{low}", count(p["low"], code)).replace("{high}", count(p["high"], code)))
 
 
 def _countries(month, top=5):

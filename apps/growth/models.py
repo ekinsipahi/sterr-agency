@@ -139,6 +139,9 @@ class AgencySubscription(models.Model):
     start_followers = models.PositiveIntegerField("Başlangıç takipçi", null=True, blank=True)
     current_followers = models.PositiveIntegerField("Güncel takipçi", null=True, blank=True)
     stats_at = models.DateTimeField("Son veri", null=True, blank=True)
+    # Linksterr's estimate for the next 30 days at today's pace:
+    # {"days": 30, "new_followers": 1230, "low": 1160, "high": 1290, "per_day": 41.0}
+    projection = models.JSONField("30 gün tahmini", null=True, blank=True)
     notified = models.BooleanField("Bildirim gönderildi", default=False)
     mail_error = models.TextField("E-posta hatası", blank=True)
     note = models.TextField("Not", blank=True)

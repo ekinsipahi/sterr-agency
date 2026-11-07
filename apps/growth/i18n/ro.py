@@ -110,6 +110,7 @@ UI = {
     "acc_visits": "Vizite pe profil",
     "acc_countries": "Vizite pe țări:",
     "acc_count_note": "Aceste cifre vin din sistemul nostru de livrare: urmăritorii noi sunt oamenii reali pe care i-am adus și care te urmăresc, numărați din vizitele lor pe profilul tău; vizitele pe profil sunt oamenii care ți-au deschis profilul din rețeaua noastră. Totalul contului tău se schimbă și prin restul creșterii tale și prin dezabonări.",
+    "acc_projection": "Următoarele 30 de zile în ritmul de azi: în medie aproximativ {count} urmăritori noi ({low}–{high}). O estimare, nu o promisiune.",
     "st_pending": "Așteaptă plata",
     "st_requested": "Cerere primită",
     "st_active": "Activ",

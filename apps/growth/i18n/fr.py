@@ -110,6 +110,7 @@ UI = {
     "acc_visits": "Visites du profil",
     "acc_countries": "Visites par pays :",
     "acc_count_note": "Ces chiffres viennent de notre système de diffusion : les nouveaux abonnés sont les vraies personnes que nous avons amenées et qui vous suivent, comptées à partir de leurs visites sur votre profil ; les visites du profil sont les personnes qui ont ouvert votre profil depuis notre réseau. Le total de votre compte varie aussi avec votre autre croissance et les désabonnements.",
+    "acc_projection": "30 prochains jours au rythme actuel : en moyenne environ {count} nouveaux abonnés ({low}–{high}). Une estimation, pas une promesse.",
     "st_pending": "En attente de paiement",
     "st_requested": "Demande reçue",
     "st_active": "Actif",

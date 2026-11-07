@@ -115,6 +115,7 @@ UI = {
     "acc_visits": "Profilbesuche",
     "acc_countries": "Besuche nach Land:",
     "acc_count_note": "Diese Zahlen stammen aus unserem Auslieferungssystem: Neue Follower sind die echten Menschen, die wir zu Ihnen gebracht haben und die Ihnen folgen, gezählt aus ihren Besuchen auf Ihrem Profil; Profilbesuche sind die Menschen, die Ihr Profil über unser Netzwerk geöffnet haben. Die Gesamtzahl Ihres Kontos ändert sich auch durch Ihr übriges Wachstum und durch Entfolgungen.",
+    "acc_projection": "Nächste 30 Tage beim heutigen Tempo: im Schnitt etwa {count} neue Follower ({low}–{high}). Eine Schätzung, kein Versprechen.",
     "st_pending": "Zahlung ausstehend",
     "st_requested": "Anfrage erhalten",
     "st_active": "Aktiv",

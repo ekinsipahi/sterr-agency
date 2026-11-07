@@ -544,6 +544,7 @@ html[lang="ru"] .nav-drop summary { padding: 8px 6px; font-size: 13.5px; }
 .country-chip { padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; }
 .country-chip b { font-weight: 600; }
 .order-card__note { font-size: 12.5px; margin: 6px 0 0; }
+.order-card__projection { margin: 12px 0 0; padding: 10px 14px; border: 1px dashed var(--line); border-radius: 12px; font-size: 14px; }
 .tile { padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; display: flex; flex-direction: column; gap: 2px; }
 .tile b { font-family: var(--font-display); font-size: 24px; letter-spacing: -0.03em; }
 .tile span { color: var(--muted); font-size: 13px; }

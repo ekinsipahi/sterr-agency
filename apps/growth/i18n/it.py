@@ -110,6 +110,7 @@ UI = {
     "acc_visits": "Visite al profilo",
     "acc_countries": "Visite per paese:",
     "acc_count_note": "Questi numeri vengono dal nostro sistema di consegna: i nuovi follower sono le persone reali che abbiamo portato e che ti seguono, contate dalle loro visite al tuo profilo; le visite al profilo sono le persone che hanno aperto il tuo profilo dalla nostra rete. Il totale del tuo account cambia anche con la tua altra crescita e con chi smette di seguirti.",
+    "acc_projection": "Prossimi 30 giorni al ritmo di oggi: in media circa {count} nuovi follower ({low}–{high}). Una stima, non una promessa.",
     "st_pending": "In attesa di pagamento",
     "st_requested": "Richiesta ricevuta",
     "st_active": "Attivo",

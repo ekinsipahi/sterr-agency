@@ -115,6 +115,7 @@ UI = {
     "acc_visits": "Profil ziyareti",
     "acc_countries": "Ülkelere göre ziyaret:",
     "acc_count_note": "Bu sayılar teslimat sistemimizden gelir: yeni takipçiler, profilinize getirdiğimiz ve sizi takip eden gerçek kişilerdir, profil ziyaretlerinden sayılır; profil ziyaretleri, ağımızdan profilinizi açan kişilerdir. Hesabınızın kendi toplamı, diğer büyümenizle ve takipten çıkanlarla da değişir.",
+    "acc_projection": "Bugünkü hızla önümüzdeki 30 gün: ortalama yaklaşık {count} yeni takipçi ({low}–{high}). Tahmindir, söz değildir.",
     "st_pending": "Ödeme bekleniyor",
     "st_requested": "Talep alındı",
     "st_active": "Aktif",

@@ -116,6 +116,15 @@ def _countries(value):
             if isinstance(cc, str) and len(cc) == 2 and cc.isalpha() and isinstance(numbers, dict)}
 
 
+def _projection(value):
+    """Linksterr's 30-day projection, validated ({days, new_followers, low, high, per_day}) or None."""
+    if not isinstance(value, dict) or not _count(value.get("days")):
+        return None
+    per_day = value.get("per_day")
+    return {**{f: _count(value.get(f)) for f in ("days", "new_followers", "low", "high")},
+            "per_day": float(per_day) if isinstance(per_day, (int, float)) and per_day >= 0 else 0.0}
+
+
 def _readings(account):
     out = {}
     for reading in account.get("readings") or []:
@@ -163,8 +172,9 @@ def store(sub, account, today, start=None, end=None):
             sub.start_followers = before[-1] if before else after[0]
         if recent:
             sub.current_followers = recent[-1][1]
+        sub.projection = _projection(account.get("projection"))
         sub.stats_at = now
-        sub.save(update_fields=["start_followers", "current_followers", "stats_at", "updated_at"])
+        sub.save(update_fields=["start_followers", "current_followers", "projection", "stats_at", "updated_at"])
     return written
 
 

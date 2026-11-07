@@ -32,12 +32,13 @@ class DisputeInline(admin.TabularInline):
 
 @admin.register(AgencySubscription)
 class AgencySubscriptionAdmin(admin.ModelAdmin):
-    list_display = ("pk", "account", "platform", "status", "renews", "location", "email", "amount", "created_at", "panel")
+    list_display = ("pk", "account", "platform", "status", "renews", "projection_text", "location", "email", "amount",
+                    "created_at", "panel")
     list_filter = ("status", "platform", "cancel_at_period_end", "lang", "created_at")
     search_fields = ("handle", "email", "location", "stripe_subscription_id", "stripe_customer_id", "stripe_checkout_session_id")
     readonly_fields = ("user", "amount", "started_at", "current_period_end", "cancel_at_period_end", "canceled_at",
                        "cancel_requested_at", "cancel_source", "reminded_for", "terms_accepted_at", "terms_version",
-                       "user_agent", "evidence_link", "panel",
+                       "user_agent", "evidence_link", "panel", "projection_text",
                        "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id", "notified", "mail_error",
                        "ip", "source_page", "utm_source", "utm_medium", "utm_campaign", "gclid", "created_at", "updated_at")
     fieldsets = (
@@ -46,7 +47,7 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
         ("Abonelik", {"fields": ("started_at", "current_period_end", "cancel_at_period_end", "cancel_requested_at",
                                  "cancel_source", "canceled_at", "reminded_for",
                                  "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id")}),
-        ("Veriler", {"fields": ("start_followers", "current_followers", "stats_at")}),
+        ("Veriler", {"fields": ("start_followers", "current_followers", "projection_text", "stats_at")}),
         ("E-posta", {"fields": ("notified", "mail_error")}),
         ("Kaynak", {"classes": ("collapse",), "fields": ("ip", "source_page", "utm_source", "utm_medium", "utm_campaign",
                                                        "gclid", "created_at", "updated_at")}),
@@ -87,6 +88,14 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
     @admin.display(description="Müşteri paneli")
     def panel(self, obj):
         return _panel_link(obj.user_id, obj.lang)
+
+    @admin.display(description="30 gün tahmini")
+    def projection_text(self, obj):
+        """Linksterr'ın bugünkü hızla 30 günlük ortalama tahmini (müşteri panelinde de görünür)."""
+        p = obj.projection
+        if not p:
+            return "-"
+        return f"~{p['new_followers']:,} takipçi ({p['low']:,}–{p['high']:,}) · günde ~{p['per_day']:.0f}".replace(",", ".")
 
     @admin.display(description="Yenileme / bitiş", ordering="current_period_end")
     def renews(self, obj):

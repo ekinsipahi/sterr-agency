@@ -54,6 +54,7 @@
         <div class="order-card__tiles order-card__tiles--today{% if item.visits %} order-card__tiles--two{% endif %}">{% for value, label in item.today %}<div class="tile"><b>{{ value }}</b><span>{{ label }}</span></div>{% endfor %}</div>
         <p class="order-card__label">{{ gu.acc_month }}</p>
         <div class="order-card__tiles{% if item.visits %} order-card__tiles--two{% endif %}">{% for value, label in item.tiles %}<div class="tile"><b>{{ value }}</b><span>{{ label }}</span></div>{% endfor %}</div>
+        {% if item.projection %}<p class="order-card__projection">{{ item.projection }}</p>{% endif %}
         {% if item.countries %}<p class="order-card__countries"><span class="muted">{{ gu.acc_countries }}</span>{% for c in item.countries %} <span class="country-chip"><span data-region="{{ c.code }}">{{ c.code }}</span> <b>{{ c.share }}</b></span>{% endfor %}</p>{% endif %}
         {% if item.bars %}
         <figure class="order-chart">

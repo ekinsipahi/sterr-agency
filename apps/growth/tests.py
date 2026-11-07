@@ -669,8 +669,9 @@ class StatsApiTests(TestCase):
         self.assertIn("Renews on", html)
 
 
-def linksterr_account(account="instagram:brand", days=(), readings=()):
+def linksterr_account(account="instagram:brand", days=(), readings=(), projection=None):
     return {"account": account, "platform": account.split(":")[0], "handle": account.split(":")[1],
+            "projection": projection,
             "campaigns": [{"id": 2, "status": "active", "live": True, "period_start": None, "period_end": None,
                            "rate": 0.057, "own_weight": 0.1}] if days else [],
             "readings": list(readings), "days": list(days)}
@@ -824,6 +825,22 @@ class LinksterrTests(FreshCache, TestCase):
         self.assertIn("These numbers come from our delivery system", html)
         self.assertNotIn("<span>Likes</span>", html)
         self.assertNotIn(">700<", html)  # impressions stay out of the customer's dashboard
+
+    def test_the_30_day_projection_reaches_the_dashboard_and_the_admin(self):
+        projection = {"days": 30, "new_followers": 1230, "low": 1160, "high": 1290, "per_day": 41.0}
+        self.client.force_login(self.user)
+        with self.respond(linksterr_account(days=[linksterr_day(self.today)], projection=projection)):
+            html = self.client.get(reverse("growth:account") + "?lang=en").content.decode()
+        self.assertIn("Next 30 days at today&#x27;s pace: on average about 1,230 new followers (1,160–1,290)", html)
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.projection, projection)
+        boss = get_user_model().objects.create_superuser("boss", "boss@example.com", "pass-word-1")
+        self.client.force_login(boss)
+        self.assertContains(self.client.get(reverse("admin:growth_agencysubscription_changelist")), "~1.230 takipçi (1.160–1.290)")
+        AgencySubscription.objects.filter(pk=self.sub.pk).update(status="canceled", canceled_at=timezone.now())
+        self.client.force_login(self.user)
+        with self.respond(linksterr_account(days=[linksterr_day(self.today)], projection=projection)):
+            self.assertNotIn("Next 30 days", self.client.get(reverse("growth:account") + "?lang=en").content.decode())
 
     def test_staff_sees_a_customers_dashboard_read_only(self):
         SubscriptionStat.objects.create(subscription=self.sub, date=self.today, new_followers=41, visits=420)

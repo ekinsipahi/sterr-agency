@@ -115,6 +115,7 @@ UI = {
     "acc_visits": "Profielbezoeken",
     "acc_countries": "Bezoeken per land:",
     "acc_count_note": "Deze cijfers komen uit ons leveringssysteem: nieuwe volgers zijn de echte mensen die we naar u hebben gebracht en die u volgen, geteld uit hun bezoeken aan uw profiel; profielbezoeken zijn de mensen die uw profiel via ons netwerk hebben geopend. Het totaal van uw account verandert ook door uw overige groei en door ontvolgers.",
+    "acc_projection": "Komende 30 dagen in het huidige tempo: gemiddeld ongeveer {count} nieuwe volgers ({low}–{high}). Een schatting, geen belofte.",
     "st_pending": "Wacht op betaling",
     "st_requested": "Aanvraag ontvangen",
     "st_active": "Actief",

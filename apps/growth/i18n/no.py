@@ -110,6 +110,7 @@ UI = {
     "acc_visits": "Profilbesøk",
     "acc_countries": "Besøk per land:",
     "acc_count_note": "Tallene kommer fra leveringssystemet vårt: nye følgere er de ekte menneskene vi har ført til deg, og som følger deg, telt ut fra besøkene deres på profilen din; profilbesøk er menneskene som har åpnet profilen din via nettverket vårt. Kontoens totale tall endres også av den øvrige veksten din og av avfølginger.",
+    "acc_projection": "De neste 30 dagene i dagens tempo: i snitt omtrent {count} nye følgere ({low}–{high}). Et anslag, ikke et løfte.",
     "st_pending": "Venter på betaling",
     "st_requested": "Forespørsel mottatt",
     "st_active": "Aktiv",
