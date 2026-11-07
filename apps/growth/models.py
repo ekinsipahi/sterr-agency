@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from .constants import PLATFORM_NAMES
-from .plan import CHOICES as PLAN_CHOICES, comments_for, likes_for
+from .plan import CHOICES as PLAN_CHOICES
 
 
 class Customer(models.Model):
@@ -164,19 +164,17 @@ class AgencySubscription(models.Model):
         return PLATFORM_NAMES[self.platform]
 
     def daily(self):
-        """[{date, followers, likes, comments, visits, countries}] per day, oldest first. New
-        followers are what the growth system counted for the day (without that, the change in the
-        account's follower count); likes and comments are counted from them unless the growth
-        system sent its own. visits: people who opened the profile from our network (or None)."""
+        """[{date, followers, likes, comments, visits, countries}] per day, oldest first, only
+        measured numbers. New followers are what the growth system counted for the day (without
+        that, the change in the account's follower count); likes and comments only when a system
+        sent them (Linksterr measures neither); visits: people who opened the profile from our
+        network (or None)."""
         rows, previous = [], self.start_followers
         for stat in sorted(self.stats.all(), key=lambda s: s.date):
             gained = stat.new_followers
             if gained is None and stat.followers is not None and previous is not None:
                 gained = max(stat.followers - previous, 0)
-            base = gained or 0
-            rows.append({"date": stat.date, "followers": gained,
-                         "likes": stat.likes if stat.likes is not None else likes_for(base),
-                         "comments": stat.comments if stat.comments is not None else comments_for(base),
+            rows.append({"date": stat.date, "followers": gained, "likes": stat.likes, "comments": stat.comments,
                          "visits": stat.visits, "countries": stat.countries or {}})
             if stat.followers is not None:
                 previous = stat.followers
@@ -191,8 +189,8 @@ class AgencySubscription(models.Model):
 
 class SubscriptionStat(models.Model):
     """One day of numbers from the growth system: the new followers we brought that day and
-    the account's follower count. Likes and comments are counted from the new followers
-    (plan.likes_for / comments_for) unless the growth system sends them. Feeds the dashboard."""
+    the account's follower count; likes and comments only when a system measured and sent them.
+    Feeds the dashboard. synced_at: when Linksterr's numbers for the day were last written."""
 
     subscription = models.ForeignKey(AgencySubscription, on_delete=models.CASCADE, related_name="stats")
     date = models.DateField("Gün", db_index=True)
@@ -207,6 +205,7 @@ class SubscriptionStat(models.Model):
     visits = models.PositiveIntegerField("Profil ziyareti", null=True, blank=True)
     confirms = models.PositiveIntegerField("Takip onayı", null=True, blank=True, help_text="“Takip ettim” diyen kişi")
     countries = models.JSONField("Ülkeler", default=dict, blank=True)
+    synced_at = models.DateTimeField("Linksterr'dan çekildi", null=True, blank=True)
 
     class Meta:
         ordering = ["date"]

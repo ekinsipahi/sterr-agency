@@ -4,7 +4,8 @@ with LINKSTERR_AGENCY_TOKEN (read-only): Linksterr reads it to keep each package
 running, renewed, resumed or ended.
 
 GET  /growth/api/subscriptions/?status=active   accounts to grow, newest first (default: active;
-     several: status=active,past_due,canceled)
+     several: status=active,past_due,canceled; packages that ended over 90 days ago are left out;
+     the Linksterr token sees only paid packages in those three statuses)
 POST /growth/api/stats/                         one day's numbers or {"updates": [...]}:
      {"subscription_id": 12, "date": "2026-11-04", "followers": 5120,
       "new_followers": 140, "start_followers": 4300}
@@ -20,6 +21,7 @@ Linksterr's numbers arrive without this API: linksterr.py fetches them (pull).
 """
 import hmac
 import json
+from datetime import timedelta
 
 from django.conf import settings
 from django.db import transaction
@@ -32,15 +34,23 @@ from django.views.decorators.http import require_GET, require_POST
 from .models import AgencySubscription, SubscriptionStat
 
 MAX_UPDATES = 500
+MAX_SUBSCRIPTIONS = 5000
+ENDED_DAYS = 90
+LINKSTERR_STATUSES = ("active", "past_due", "canceled")
 COUNTRY_FIELDS = ("impressions", "visits", "confirms")
 STAT_FIELDS = ("followers", "new_followers", "likes", "comments", *COUNTRY_FIELDS)
 
 
-def _authorized(request, read_only=False):
-    """GROWTH_API_TOKEN opens the whole API; Linksterr's LINKSTERR_AGENCY_TOKEN only the reads."""
+def _caller(request, read_only=False):
+    """'growth' (GROWTH_API_TOKEN: the whole API), 'linksterr' (LINKSTERR_AGENCY_TOKEN: only the
+    subscriptions list) or None."""
     given = request.headers.get("Authorization", "").removeprefix("Bearer ").strip().encode()
-    tokens = [settings.GROWTH_API_TOKEN, settings.LINKSTERR_AGENCY_TOKEN if read_only else ""]
-    return any(token and hmac.compare_digest(given, token.encode()) for token in tokens)
+    callers = [("growth", settings.GROWTH_API_TOKEN), ("linksterr", settings.LINKSTERR_AGENCY_TOKEN if read_only else "")]
+    return next((name for name, token in callers if token and hmac.compare_digest(given, token.encode())), None)
+
+
+def _authorized(request):
+    return _caller(request) == "growth"
 
 
 def _iso(value):
@@ -57,10 +67,15 @@ def _sub_json(s):
 
 @require_GET
 def subscriptions(request):
-    if not _authorized(request, read_only=True):
+    caller = _caller(request, read_only=True)
+    if caller is None:
         return JsonResponse({"error": "unauthorized"}, status=401)
-    status = request.GET.get("status", "active")
-    qs = AgencySubscription.objects.filter(status__in=status.split(",")).order_by("-started_at", "-created_at")[:1000]
+    qs = AgencySubscription.objects.filter(status__in=request.GET.get("status", "active").split(","))
+    if caller == "linksterr":  # only paid packages, only what its campaigns need
+        qs = qs.filter(status__in=LINKSTERR_STATUSES).exclude(started_at=None)
+    # A package that ended long ago has nothing left to stop; keeping it out keeps every running one in.
+    qs = qs.exclude(status="canceled", canceled_at__lt=timezone.now() - timedelta(days=ENDED_DAYS))
+    qs = qs.order_by("-started_at", "-created_at")[:MAX_SUBSCRIPTIONS]
     return JsonResponse({"subscriptions": [_sub_json(s) for s in qs]})
 
 

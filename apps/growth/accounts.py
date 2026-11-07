@@ -11,6 +11,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core import signing
+from django.core.exceptions import PermissionDenied
 from django.core.cache import cache
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import get_object_or_404, redirect, render
@@ -96,6 +97,8 @@ def account(request):
 def view_as(request, user_id):
     """Staff: a customer's dashboard exactly as they see it, read-only. Nobody signs in as the
     customer: there are no buttons, and the visit is not recorded as the customer's activity."""
+    if not request.user.has_perm("growth.view_agencysubscription"):
+        raise PermissionDenied
     owner = get_object_or_404(get_user_model(), pk=user_id)
     customer = Customer.objects.filter(user=owner).first()
     code = request.GET.get("lang")
@@ -128,20 +131,16 @@ def _dashboard(owner, code, readonly=False):
                 renews = ui["acc_ends" if s.cancel_at_period_end else "acc_renews"].replace("{date}", day(s.current_period_end))
             days = [{"label": ui["acc_today"] if d["date"] == today else formats.date_format(d["date"], "j F"),
                      "gained": f"+{count(d['followers'], code)}" if d["followers"] is not None else "–",
-                     "likes": count(d["likes"], code), "comments": count(d["comments"], code),
                      "visits": count(d["visits"], code) if d["visits"] is not None else "–"} for d in reversed(daily)]
             now = next((d for d in daily if d["date"] == today), None)
             subs.append({
                 "s": s, "status": ui[f"st_{s.status}"], "amount": f"${s.amount:.2f}", "name": ui[f"plan_{s.plan}"],
                 "started": ui["acc_ordered"].replace("{date}", day(s.started_at or s.created_at)),
                 "renews": renews,
-                "today": [(f"+{count(now['followers'] or 0, code)}" if now else "–", ui["acc_gained"]),
-                          (count(now["likes"], code) if now else "–", ui["acc_likes"]),
-                          (count(now["comments"], code) if now else "–", ui["acc_comments"])]
+                # Only what Linksterr measured: new followers and profile visits (no likes or comments).
+                "today": [(f"+{count(now['followers'] or 0, code)}" if now else "–", ui["acc_gained"])]
                          + ([(count(now["visits"] or 0, code) if now else "–", ui["acc_visits"])] if visits else []) if daily else [],
-                "tiles": [(count(sum(d["followers"] or 0 for d in month), code), ui["acc_gained"]),
-                          (count(sum(d["likes"] for d in month), code), ui["acc_likes"]),
-                          (count(sum(d["comments"] for d in month), code), ui["acc_comments"])]
+                "tiles": [(count(sum(d["followers"] or 0 for d in month), code), ui["acc_gained"])]
                          + ([(count(sum(d["visits"] or 0 for d in month), code), ui["acc_visits"])] if visits else []) if daily else [],
                 "visits": visits,
                 "countries": _countries(month),
@@ -158,10 +157,10 @@ def _dashboard(owner, code, readonly=False):
     live = [item["s"] for item in subs if item["s"].started_at]
     if live:
         latest = max((s for s in live if s.current_followers is not None), key=lambda s: s.stats_at, default=None)
-        engagement = sum(d["likes"] + d["comments"] for s in live for d in s.daily())
+        visits = sum(d["visits"] or 0 for s in live for d in s.daily())
         summary = [
             (count(sum(s.gained or 0 for s in live), code), ui["acc_sum_gained"]),
-            (count(engagement, code), ui["acc_sum_engagement"]),
+            (count(visits, code), ui["acc_sum_visits"]),
             (count(latest.current_followers, code) if latest else "–", ui["acc_sum_now"]),
         ]
     return {"subs": subs, "summary": summary}
@@ -175,7 +174,8 @@ def _countries(month, top=5):
             totals[cc] = totals.get(cc, 0) + (numbers.get("visits") or 0)
     total = sum(totals.values())
     ranked = sorted(((v, cc) for cc, v in totals.items() if v), reverse=True)[:top]
-    return [{"code": cc, "share": f"{round(v * 100 / total)}%"} for v, cc in ranked] if total else []
+    return [{"code": cc, "share": f"{round(v * 100 / total)}%" if v * 100 >= total / 2 else "<1%"}
+            for v, cc in ranked] if total else []
 
 
 def _bars(daily, days=30, width=320, height=72):

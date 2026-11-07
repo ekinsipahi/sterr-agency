@@ -539,7 +539,7 @@ html[lang="ru"] .nav-drop summary { padding: 8px 6px; font-size: 13.5px; }
 .order-card__title { font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
 .order-card__sub { font-size: 13.5px; margin: 4px 0 0; }
 .order-card__tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-.order-card__tiles--four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.order-card__tiles--two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .order-card__countries { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 10px 0 0; font-size: 13.5px; }
 .country-chip { padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; }
 .country-chip b { font-weight: 600; }
@@ -595,4 +595,4 @@ html[lang="ru"] .nav-drop summary { padding: 8px 6px; font-size: 13.5px; }
 .days th { color: var(--muted); font-weight: 500; font-size: 12.5px; }
 .days td:not(:first-child), .days th:not(:first-child) { text-align: end; }
 .days__gain { color: var(--signal); font-weight: 600; }
-@media (max-width: 560px) { .days { font-size: 13px; } .days th, .days td { padding: 8px 5px; } .days th { font-size: 11.5px; white-space: normal; } .order-card__tiles { gap: 6px; } .order-card__tiles--four { grid-template-columns: repeat(2, minmax(0, 1fr)); } .days__visits { display: none; } .tile { padding: 12px; } .tile b { font-size: 20px; } }
+@media (max-width: 560px) { .days { font-size: 13px; } .days th, .days td { padding: 8px 5px; } .days th { font-size: 11.5px; white-space: normal; } .order-card__tiles { gap: 6px; } .tile { padding: 12px; } .tile b { font-size: 20px; } }
