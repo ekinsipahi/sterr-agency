@@ -10,6 +10,7 @@ ended (UTC) and is FINAL_AFTER_DAYS old: from then on a customer never sees its 
 when Linksterr's rate moves. A day fetched while still running is fetched again later."""
 import logging
 import re
+import threading
 from datetime import datetime, time, timedelta, timezone as dt_timezone
 
 import requests
@@ -24,6 +25,7 @@ from .models import AgencySubscription, SubscriptionStat
 logger = logging.getLogger(__name__)
 
 PATH = "/user-api/v1/agency/accounts/"
+SYNC_PATH = "/user-api/v1/agency/sync/"
 TIMEOUT = (3, 8)            # connect, read: the dashboard waits for this at most
 FRESH_SECONDS = 10 * 60     # a subscription is fetched at most this often (unless forced)
 FINAL_AFTER_DAYS = 2        # a day fetched after it ended is settled once it is this old
@@ -202,3 +204,24 @@ def sync(subs, force=False):
         except Exception:
             logger.exception("Could not store Linksterr numbers for subscription #%s", sub.pk)
     return updated
+
+
+def ping():
+    """Ask Linksterr to bring the campaigns in line with the subscriptions now: it reads the list
+    itself and opens, renews, pauses or ends campaigns (its cron does the same as a fallback).
+    Never raises."""
+    if not enabled():
+        return False
+    try:
+        requests.post(settings.LINKSTERR_API_URL.rstrip("/") + SYNC_PATH, timeout=(3, 5),
+                      headers={"Authorization": f"Bearer {settings.LINKSTERR_AGENCY_TOKEN}"}).raise_for_status()
+        return True
+    except requests.RequestException:
+        logger.warning("Linksterr sync ping failed", exc_info=True)
+        return False
+
+
+def ping_soon():
+    """ping() without holding up the request or the Stripe webhook that changed a subscription."""
+    if enabled():
+        threading.Thread(target=ping, daemon=True).start()

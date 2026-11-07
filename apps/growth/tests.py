@@ -274,7 +274,7 @@ class CheckoutTests(FreshCache, TestCase):
         self.assertEqual((sub.status, sub.stripe_subscription_id, sub.stripe_customer_id), ("active", "sub_1", "cus_1"))
         self.assertEqual(int(sub.current_period_end.timestamp()), PERIOD_END)
         subjects = [m.subject for m in mail.outbox]
-        self.assertEqual(subjects.count("Your Starter Creator package is active: @brand on Instagram"), 1)
+        self.assertEqual(subjects.count("Your campaign has started: Starter Creator for @brand on Instagram"), 1)
         self.assertEqual(sum("(ödendi)" in s for s in subjects), 1)
 
     def test_billing_portal(self):
@@ -373,7 +373,7 @@ class WebhookTests(TestCase):
         self.sub.refresh_from_db()
         self.assertEqual((self.sub.status, self.sub.stripe_subscription_id), ("active", "sub_1"))
         self.assertIsNotNone(self.sub.started_at)
-        self.assertEqual(sum(m.subject.startswith("Your Rising Influencer package is active") for m in mail.outbox), 1)
+        self.assertEqual(sum(m.subject.startswith("Your campaign has started: Rising Influencer") for m in mail.outbox), 1)
         team = self.team("paketi (ödendi)")
         self.assertEqual(len(team), 1)
         self.assertEqual(team[0].to, ["owner@example.com", "ekinsipahi8@gmail.com"])
@@ -388,6 +388,23 @@ class WebhookTests(TestCase):
         self.sub.refresh_from_db()
         self.assertEqual((self.sub.status, self.sub.stripe_subscription_id), ("pending", ""))
         self.assertFalse(mail.outbox)
+
+    def test_failed_payment_and_its_recovery_are_told_and_linksterr_is_asked_at_once(self):
+        with mock.patch("apps.growth.linksterr.ping_soon") as ping:
+            with self.captureOnCommitCallbacks(execute=True):
+                self.checkout()
+            self.assertEqual(ping.call_count, 1)  # first payment: Linksterr opens the campaign now
+            with self.captureOnCommitCallbacks(execute=True):
+                self.send("evt_f", "invoice.payment_failed", {"id": "in_f", "subscription": "sub_1"}, stripe_sub("past_due"))
+            with self.captureOnCommitCallbacks(execute=True):
+                self.send("evt_r", "invoice.paid", {"id": "in_r", "subscription": "sub_1", "billing_reason": "subscription_cycle"})
+            self.assertEqual(ping.call_count, 3)
+            with self.captureOnCommitCallbacks(execute=True):
+                self.send("evt_same", "customer.subscription.updated", stripe_sub())
+            self.assertEqual(ping.call_count, 3)  # nothing changed: no ping
+        self.assertEqual(len(self.team("ödemesi alınamadı")), 1)
+        self.assertEqual(len(self.team("ödemesi alındı")), 1)
+        self.assertEqual(sum(m.subject == "Payment received: your campaign is running again" for m in mail.outbox), 1)
 
     def test_unpaid_checkout_does_nothing(self):
         self.checkout(payment_status="unpaid")
@@ -412,7 +429,9 @@ class WebhookTests(TestCase):
         self.assertEqual(self.sub.status, "canceled")
         self.assertIsNotNone(self.sub.canceled_at)
         self.assertEqual(len(self.team("iptal edildi")), 1)
-        self.assertEqual(sum(m.subject.startswith("Your Rising") for m in mail.outbox), 1)  # the welcome went out once
+        self.assertEqual(sum(m.subject.startswith("Your campaign has started") for m in mail.outbox), 1)  # the welcome went out once
+        self.assertEqual(len(self.team("ödemesi alınamadı")), 1)  # past_due: the campaign pauses
+        self.assertEqual(sum(m.subject.startswith("We couldn't take your payment") for m in mail.outbox), 1)
 
 
 @override_settings(**STRIPE_ON)

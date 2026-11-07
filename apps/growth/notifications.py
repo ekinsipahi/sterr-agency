@@ -31,10 +31,10 @@ REQUEST_BODY = (
     "Your account: {account}\n\n"
     "Questions? Message us on WhatsApp: {whatsapp}"
 )
-PAID_SUBJECT = "Your {package} package is active: @{handle} on {platform}"
+PAID_SUBJECT = "Your campaign has started: {package} for @{handle} on {platform}"
 PAID_BODY = (
     "Thanks for starting the {package} package for @{handle} on {platform} ({location}). We've received your "
-    "payment of ${amount}.\n\n"
+    "payment of ${amount}, and your campaign has started.\n\n"
     "From today, real people discover your profile every day. Those who like it follow you, like your posts "
     "and comment, all on their own. Your package is spread over every 30 days; a typical month brings {followers} new followers, 2-3 likes for every "
     "new follower and about one comment for every 10. Every follower is a real person, so every month is a "
@@ -44,6 +44,21 @@ PAID_BODY = (
     "Billed monthly: the next payment is on {renews}. We'll email you 3 days before every renewal. Cancel any "
     "time in your account; canceling stops the next payment and the month you've paid for runs to its end "
     "(it isn't refunded).\n\n"
+    "Your account: {account}\n\n"
+    "Questions? Message us on WhatsApp: {whatsapp}"
+)
+PAYMENT_FAILED_SUBJECT = "We couldn't take your payment, so your campaign is paused"
+PAYMENT_FAILED_BODY = (
+    "Hi,\n\nYour monthly payment of ${amount} for the {package} package for @{handle} on {platform} didn't go "
+    "through, so we've paused your campaign.\n\n"
+    "Update your card in your account (Manage billing) and the campaign starts again as soon as the payment "
+    "goes through: {account}\n\n"
+    "Questions? Message us on WhatsApp: {whatsapp}"
+)
+PAYMENT_RECOVERED_SUBJECT = "Payment received: your campaign is running again"
+PAYMENT_RECOVERED_BODY = (
+    "Hi,\n\nWe've received your payment for the {package} package for @{handle} on {platform}, and your campaign "
+    "is running again. The next payment is on {renews}.\n\n"
     "Your account: {account}\n\n"
     "Questions? Message us on WhatsApp: {whatsapp}"
 )
@@ -121,6 +136,8 @@ TEAM_TITLES = {
     "request": "Yeni {platform} influencer paketi başvurusu",
     "paid": "Yeni {platform} influencer paketi (ödendi)",
     "renewed": "{platform} influencer paketi yenilendi (ödendi)",
+    "payment_failed": "{platform} influencer paketi ödemesi alınamadı (kampanya duraklatıldı)",
+    "payment_recovered": "{platform} influencer paketi ödemesi alındı (kampanya yeniden başladı)",
     "cancel_requested": "{platform} influencer paketi iptal talebi (dönem sonunda biter)",
     "resumed": "{platform} influencer paketi iptali geri alındı",
     "canceled": "{platform} influencer paketi iptal edildi",
@@ -174,6 +191,14 @@ def remind_renewal(sub):
     days = max(1, math.ceil((sub.current_period_end - timezone.now()).total_seconds() / 86400))
     v["days"] = "1 day" if days == 1 else f"{days} days"
     return _send(_fill(REMINDER_SUBJECT, **v), _fill(REMINDER_BODY, **v), [sub.email])
+
+
+def payment_notice(sub, event):
+    """event: 'payment_failed' (campaign paused) or 'payment_recovered' (running again)."""
+    subject, body = ((PAYMENT_FAILED_SUBJECT, PAYMENT_FAILED_BODY) if event == "payment_failed"
+                     else (PAYMENT_RECOVERED_SUBJECT, PAYMENT_RECOVERED_BODY))
+    v = _values(sub)
+    return _send(_fill(subject, **v), _fill(body, **v), [sub.email])
 
 
 def confirm_cancel(sub):

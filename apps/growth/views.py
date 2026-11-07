@@ -25,8 +25,8 @@ from .constants import TERMS_VERSION
 from .forms import OrderForm
 from . import plan
 from .models import AgencySubscription, Customer, Dispute, StripeEvent
-from .notifications import (acknowledge_request, confirm_cancel, confirm_payment, notify_team, remind_renewal,
-                            send_verification)
+from .notifications import (acknowledge_request, confirm_cancel, confirm_payment, notify_team, payment_notice,
+                            remind_renewal, send_verification)
 
 logger = logging.getLogger(__name__)
 
@@ -268,8 +268,10 @@ def sync(stripe_sub, sub_id=None, source="stripe"):
     """Bring our subscription in line with Stripe's. The first time it turns active the
     team note and the customer's welcome go out; a cancel at the period end (from our
     account page or Stripe's portal: `source`) and taking it back are
-    told to the team, and a cancel is confirmed to the customer. Returns the subscription (or None)."""
-    first_payment, change = False, None
+    told to the team, and a cancel is confirmed to the customer. A failed payment (the campaign
+    pauses) and its recovery are told to both. Any change asks Linksterr to bring the campaign
+    in line right away. Returns the subscription (or None)."""
+    first_payment, change, payment = False, None, None
     with transaction.atomic():
         qs = AgencySubscription.objects.select_for_update()
         # sub_id comes only from a Checkout session we created; otherwise the Stripe id must
@@ -278,7 +280,7 @@ def sync(stripe_sub, sub_id=None, source="stripe"):
         if sub is None:
             return None
         status = STRIPE_STATUS.get(stripe_sub.get("status"))
-        was_canceling = sub.cancel_at_period_end
+        was_canceling, was_status, was_end = sub.cancel_at_period_end, sub.status, sub.current_period_end
         sub.stripe_subscription_id = stripe_sub["id"]
         sub.stripe_customer_id = stripe_sub.get("customer") or sub.stripe_customer_id
         sub.current_period_end = billing.period_end(stripe_sub) or sub.current_period_end
@@ -293,7 +295,13 @@ def sync(stripe_sub, sub_id=None, source="stripe"):
             change = "cancel_requested" if sub.cancel_at_period_end else "resumed"
             sub.cancel_requested_at = timezone.now() if sub.cancel_at_period_end else None
             sub.cancel_source = source if sub.cancel_at_period_end else ""
+        if was_status == "active" and sub.status == "past_due":
+            payment = "payment_failed"
+        elif was_status == "past_due" and sub.status == "active":
+            payment = "payment_recovered"
         sub.save()
+        if first_payment or change or sub.status != was_status or sub.current_period_end != was_end:
+            transaction.on_commit(linksterr.ping_soon)  # Linksterr opens, renews, pauses or ends the campaign now
     if first_payment:
         if sub.user_id:
             Customer.objects.filter(user_id=sub.user_id).update(email_verified=True)  # paid through the emailed link
@@ -305,6 +313,9 @@ def sync(stripe_sub, sub_id=None, source="stripe"):
         notify_team(sub, change)
         if change == "cancel_requested":
             confirm_cancel(sub)
+    if payment:
+        notify_team(sub, payment)
+        payment_notice(sub, payment)
     return sub
 
 
