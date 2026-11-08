@@ -37,7 +37,8 @@
           {# Enter in any field submits the normal order, not "Continue with Google" #}
           <button class="sr-only" type="submit" tabindex="-1" aria-hidden="true"></button>
           <div class="field">{{ form.handle.label_tag }}{{ form.handle }}{{ form.handle.errors }}</div>
-          <div class="field">{{ form.location.label_tag }}{{ form.location }}{{ form.location.errors }}</div>
+          <div class="field">{{ form.location.label_tag }}{{ form.location }}<small class="field__help">{{ gu.f_location_help }}</small>{{ form.location.errors }}</div>
+          <div class="field">{{ form.phone.label_tag }}{{ form.phone }}<small class="field__help">{{ gu.f_phone_help }}</small>{{ form.phone.errors }}</div>
           <label class="consent">{{ form.consent }}<span>{{ form.consent.label }} <a href="{% url 'core:terms' %}" hreflang="tr" target="_blank" rel="noopener" aria-label="Terms">↗</a></span></label>
           {{ form.consent.errors }}
           {% if form.email %}

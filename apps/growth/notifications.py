@@ -148,6 +148,13 @@ CANCEL_SOURCES = {"account": "müşteri hesap panelinden",
                   "stripe": "Stripe müşteri portalından veya Stripe panelinden"}
 
 
+def _phone(phone):
+    """The number with a WhatsApp link when it has a country code."""
+    if not phone:
+        return "-"
+    return f"{phone}  (https://wa.me/{phone.lstrip('+')})" if phone.startswith("+") else phone
+
+
 def notify_team(sub, event, amount=None, extra=""):
     """event: 'request' (payments off), 'paid' (first payment confirmed by Stripe),
     'renewed' (a monthly payment), 'cancel_requested' (no renewal, runs to the period end),
@@ -164,6 +171,7 @@ def notify_team(sub, event, amount=None, extra=""):
         f"Paket: {sub.get_plan_display()} · {paid} / ay\n"
         f"{sub.platform_name}: @{sub.handle}  ({PROFILE_URL[sub.platform].format(sub.handle)})\n"
         f"Hedef konum: {sub.location}\n"
+        f"Telefon: {_phone(sub.phone)}\n"
         f"E-posta: {sub.email}\n"
         f"{'Bitiş' if sub.cancel_at_period_end or event == 'canceled' else 'Sonraki ödeme'}: {period}\n"
         f"{canceled}"

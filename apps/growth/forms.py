@@ -5,6 +5,7 @@ from django import forms
 from .plan import CHOICES as PLAN_CHOICES, DEFAULT_PLAN
 
 HANDLE_RE = re.compile(r"^[A-Za-z0-9._]{1,30}$")
+PHONE_RE = re.compile(r"^\+?\d{7,15}$")
 PASSWORD_MIN = 8
 
 
@@ -48,13 +49,15 @@ class OrderForm(_UIForm):
     plan = forms.ChoiceField(choices=PLAN_CHOICES, initial=DEFAULT_PLAN, widget=forms.RadioSelect)
     handle = forms.CharField(max_length=80)
     location = forms.CharField(max_length=120)
+    phone = forms.CharField(max_length=32)
     email = forms.EmailField(max_length=150)
     password = forms.CharField(widget=forms.PasswordInput(attrs={"autocomplete": "current-password"}), strip=False)
     consent = forms.BooleanField()
     fax = forms.CharField(required=False)  # honeypot
 
-    labels = {"handle": "f_handle", "location": "f_location", "email": "f_email", "password": "f_password", "consent": "f_consent"}
-    placeholders = {"handle": "f_handle_ph", "location": "f_location_ph", "email": "f_email_ph"}
+    labels = {"handle": "f_handle", "location": "f_location", "phone": "f_phone", "email": "f_email", "password": "f_password",
+              "consent": "f_consent"}
+    placeholders = {"handle": "f_handle_ph", "location": "f_location_ph", "phone": "f_phone_ph", "email": "f_email_ph"}
 
     def __init__(self, *args, user=None, account_fields=True, **kwargs):
         super().__init__(*args, **kwargs)
@@ -65,11 +68,22 @@ class OrderForm(_UIForm):
             # "Continue with Google": the account comes from Google, the fields stay on the page.
             self.fields["email"].required = self.fields["password"].required = False
         self.fields["handle"].widget.attrs.update({"autocomplete": "off", "autocapitalize": "none", "spellcheck": "false"})
+        self.fields["phone"].widget.input_type = "tel"
+        self.fields["phone"].widget.attrs.update({"autocomplete": "tel", "inputmode": "tel"})
         self.fields["fax"].widget.attrs.update({"tabindex": "-1", "autocomplete": "off"})
         self.fields["plan"].error_messages["invalid_choice"] = self.ui.get("err_plan", "Choose a package.")
 
     def is_spam(self):
         return bool(self.data.get("fax"))
+
+    def clean_phone(self):
+        """'+90 532 123 45 67', '(0532) 123-4567', '0090…' -> '+905321234567' / '05321234567'."""
+        phone = re.sub(r"[\s().\-/]", "", self.cleaned_data["phone"] or "")
+        if phone.startswith("00"):
+            phone = "+" + phone[2:]
+        if not PHONE_RE.match(phone):
+            raise forms.ValidationError(self.ui.get("err_phone", "Enter a valid phone number."))
+        return phone
 
     def clean_handle(self):
         handle = clean_handle(self.cleaned_data["handle"])

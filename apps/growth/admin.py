@@ -35,7 +35,7 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
     list_display = ("pk", "account", "platform", "status", "renews", "projection_text", "location", "email", "amount",
                     "created_at", "panel")
     list_filter = ("status", "platform", "cancel_at_period_end", "lang", "created_at")
-    search_fields = ("handle", "email", "location", "stripe_subscription_id", "stripe_customer_id", "stripe_checkout_session_id")
+    search_fields = ("handle", "email", "phone", "location", "stripe_subscription_id", "stripe_customer_id", "stripe_checkout_session_id")
     readonly_fields = ("user", "amount", "started_at", "current_period_end", "cancel_at_period_end", "canceled_at",
                        "cancel_requested_at", "cancel_source", "reminded_for", "terms_accepted_at", "terms_version",
                        "user_agent", "evidence_link", "panel", "projection_text",
@@ -43,7 +43,7 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
                        "ip", "source_page", "utm_source", "utm_medium", "utm_campaign", "gclid", "created_at", "updated_at")
     fieldsets = (
         (None, {"fields": ("platform", "handle", "location", "amount", "status", "note")}),
-        ("Müşteri", {"fields": ("user", "email", "lang", "panel", "terms_accepted_at", "terms_version", "user_agent", "evidence_link")}),
+        ("Müşteri", {"fields": ("user", "email", "phone", "lang", "panel", "terms_accepted_at", "terms_version", "user_agent", "evidence_link")}),
         ("Abonelik", {"fields": ("started_at", "current_period_end", "cancel_at_period_end", "cancel_requested_at",
                                  "cancel_source", "canceled_at", "reminded_for",
                                  "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id")}),

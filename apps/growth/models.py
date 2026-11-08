@@ -115,6 +115,7 @@ class AgencySubscription(models.Model):
     platform = models.CharField("Platform", max_length=12, choices=PLATFORMS, default="instagram")
     handle = models.CharField("Kullanıcı adı", max_length=30, help_text="@ olmadan")
     location = models.CharField("Hedef konum", max_length=120)
+    phone = models.CharField("Telefon", max_length=20, blank=True, help_text="Influencer ile iletişim için (sipariş formu)")
     plan = models.CharField("Paket", max_length=12, choices=PLAN_CHOICES, default="starter")
     amount = models.DecimalField("Aylık tutar (USD)", max_digits=8, decimal_places=2)
     lang = models.CharField("Dil", max_length=5, default="en")

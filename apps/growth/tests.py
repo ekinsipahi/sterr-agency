@@ -159,7 +159,8 @@ class FreshCache:
 
 def order_data(**extra):
     data = {"lang": "en", "page": "main", "platform": "instagram", "plan": "rising", "handle": "@My.Brand",
-            "location": "Berlin, Germany", "email": "Buyer@Example.com", "password": "s3cret-pass", "consent": "on"}
+            "location": "Berlin, Germany", "phone": "+49 (151) 234-56789", "email": "Buyer@Example.com",
+            "password": "s3cret-pass", "consent": "on"}
     data.update(extra)
     return data
 
@@ -177,10 +178,22 @@ class RequestModeTests(FreshCache, TestCase):
         self.assertTrue(sub.notified)
         subjects = [m.subject for m in mail.outbox]
         self.assertIn("We received your request: Rising Influencer for @my.brand on Instagram", subjects)
+        self.assertEqual(sub.phone, "+4915123456789")
+        team = next(m for m in mail.outbox if "başvurusu" in m.subject)
+        self.assertIn("Telefon: +4915123456789  (https://wa.me/4915123456789)", team.body)
         page = self.client.get(r["Location"]).content.decode()
         self.assertIn("lead-event", page)
         self.assertIn("signup-event", page)
         self.assertIn("Rising Influencer", page)
+
+    def test_phone_is_required_and_checked(self):
+        for phone in ("", "12-34", "call me"):
+            r = self.client.post(reverse("growth:order"), order_data(phone=phone))
+            self.assertEqual(r.status_code, 400)
+        self.assertFalse(AgencySubscription.objects.exists())
+        self.assertContains(self.client.post(reverse("growth:order"), order_data(phone="12")), "Enter a valid phone number", status_code=400)
+        self.client.post(reverse("growth:order"), order_data(phone="0090 532 123 45 67"))
+        self.assertEqual(AgencySubscription.objects.get().phone, "+905321234567")
 
     def test_existing_email_needs_the_right_password(self):
         get_user_model().objects.create_user("buyer@example.com", "buyer@example.com", "the-real-one")

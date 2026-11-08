@@ -152,7 +152,7 @@ def see_other(url):
     return response
 
 
-ORDER_FIELDS = ("plan", "handle", "location")
+ORDER_FIELDS = ("plan", "handle", "location", "phone")
 SOURCE_FIELDS = ("source_page", "utm_source", "utm_medium", "utm_campaign", "gclid")
 
 
@@ -217,7 +217,7 @@ def place_order(request, user, pending):
     code, platform = pending["lang"], pending["platform"]
     customer, _ = Customer.objects.get_or_create(user=user, defaults={"lang": code})
     package = plan.PLAN_BY_KEY[pending["plan"]]
-    fields = {"email": user.email, "location": pending["location"], "plan": package["key"], "amount": package["price"], "lang": code,
+    fields = {"email": user.email, "location": pending["location"], "phone": pending.get("phone", ""), "plan": package["key"], "amount": package["price"], "lang": code,
               "ip": pending.get("ip"), **{f: pending.get(f, "") for f in SOURCE_FIELDS},
               # The terms box is required on the order form: when, which version, from which browser.
               "terms_accepted_at": parse_datetime(pending.get("terms_at") or "") or timezone.now(),
