@@ -259,6 +259,7 @@ DATA = {
             ("callout", "Op zoek naar de beste site om Instagram volgers te kopen? Kies uw bureaupakket: echte volgers, likes en reacties, vanaf $79.99 per maand."),
         ],
         "faqs": [
+            ("Wat als het maandelijkse groeidoel niet wordt gehaald?", "De groei kan per maand verschillen. Halen we bijvoorbeeld het doel van 1.000 nieuwe volgers in een maand niet, dan houden we het verschil voor u bij als groei die nog volgt. Dat aantal gaat niet verloren: we vullen het in latere maanden aan, boven op de groei van die maanden. Daar betaalt u niets extra voor."),
             ("Is het veilig om bij Sterr Instagram volgers te kopen?", "Ja. U deelt nooit uw wachtwoord, en elke volger is een echt mens die ervoor koos u te volgen. Niets wat we doen geeft de nepsignalen die Instagram bestraft."),
             ("Zijn de volgers echt?", "Ja, elke volger is een echt mens. Daarom is de groei over de maand verspreid in plaats van in één minuut binnen te komen."),
             ("Hoeveel volgers krijg ik?", "Meestal 1.000–4.000 per maand met Starter Creator, 2.000–8.000 met Rising Influencer en 4.000–16.000 met Pro Influencer, met 2–3 likes per nieuwe volger en ongeveer één reactie per 10. Echte mensen beslissen zelf, dus elke maand is net iets anders."),
@@ -309,6 +310,7 @@ DATA = {
             ("callout", "De beste lage prijs voor echte mensen: volgers, likes en reacties, vanaf $79.99 per maand."),
         ],
         "faqs": [
+            ("Wat als het maandelijkse groeidoel niet wordt gehaald?", "De groei kan per maand verschillen. Halen we bijvoorbeeld het doel van 1.000 nieuwe volgers in een maand niet, dan houden we het verschil voor u bij als groei die nog volgt. Dat aantal gaat niet verloren: we vullen het in latere maanden aan, boven op de groei van die maanden. Daar betaalt u niets extra voor."),
             ("Wat is de goedkoopste manier om echte volgers te krijgen?", "Starter Creator: $79.99 per maand, meestal 1.000–4.000 echte volgers, likes en reacties inbegrepen."),
             ("Verkoopt u 100 of 500 volgers, of 50k?", "We verkopen geen vaste aantallen. Echte mensen beslissen zelf of ze volgen, dus we verkopen maandpakketten en laten u zien wat ze opleveren. Voor grotere doelen laat u het pakket maand na maand doorlopen."),
             ("Is het een abonnement?", "Ja, maandelijks. Zeg op elk moment op in uw account; de betaalde maand loopt door tot het einde."),
@@ -334,6 +336,7 @@ DATA = {
             ("p", "Sites die 1.000 volgers op één dag verkopen, verkopen bots. Ze liken en reageren niet, ze worden in golven verwijderd, en wie blijft verlaagt stilletjes het bereik van uw posts."),
         ],
         "faqs": [
+            ("Wat als het maandelijkse groeidoel niet wordt gehaald?", "De groei kan per maand verschillen. Halen we bijvoorbeeld het doel van 1.000 nieuwe volgers in een maand niet, dan houden we het verschil voor u bij als groei die nog volgt. Dat aantal gaat niet verloren: we vullen het in latere maanden aan, boven op de groei van die maanden. Daar betaalt u niets extra voor."),
             ("Hoe lang duren 1.000 echte volgers?", "Met Starter Creator meestal binnen de eerste maand. Echte mensen volgen in hun eigen tempo, dus elke maand is net iets anders."),
             ("Is het een eenmalig pakket van 1.000?", "Nee. We verkopen groei als maandelijkse bureaupakketten; Starter Creator kost $79.99 per maand en u kunt op elk moment opzeggen in uw account."),
             ("Krijg ik ook likes en reacties?", "Ja, van dezelfde echte mensen: meestal 2–3 likes per nieuwe volger en ongeveer één reactie per 10."),
@@ -595,6 +598,7 @@ DATA = {
             ("callout", "Kies Starter Creator, Rising Influencer of Pro Influencer en begin binnen enkele dagen te groeien."),
         ],
         "faqs": [
+            ("Wat als het maandelijkse groeidoel niet wordt gehaald?", "De groei kan per maand verschillen. Halen we bijvoorbeeld het doel van 1.000 nieuwe volgers in een maand niet, dan houden we het verschil voor u bij als groei die nog volgt. Dat aantal gaat niet verloren: we vullen het in latere maanden aan, boven op de groei van die maanden. Daar betaalt u niets extra voor."),
             ("Wat zit er in elk pakket?", "Echte volgers, likes, views en reacties van dezelfde mensen, verspreid over 30 dagen. Hoe groter het pakket, hoe meer mensen uw profiel ontdekken."),
             ("Kan ik Instagram views en likes los kopen?", "Nee. We zijn een bureau en verkopen groei in pakketten, omdat likes en views die niet bij uw volgers passen een nepsignaal zijn."),
             ("Liggen de aantallen vast?", "Het zijn typische maandbereiken. Echte mensen kiezen zelf of ze volgen en liken, dus elke maand is net iets anders."),

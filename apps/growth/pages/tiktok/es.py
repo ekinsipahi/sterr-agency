@@ -371,6 +371,7 @@ DATA = {
             ("callout", "¿Buscas el mejor sitio para comprar seguidores de TikTok? Elige tu paquete de agencia: seguidores reales, likes y comentarios desde $79.99 al mes."),
         ],
         "faqs": [
+            ("¿Qué pasa si no se alcanza el objetivo de crecimiento mensual?", "El ritmo de crecimiento puede variar de un mes a otro. Por ejemplo, si no alcanzamos el objetivo de 1.000 nuevos seguidores en un mes, registramos la diferencia como crecimiento pendiente para ti. Esa cantidad no se pierde: la completamos en los meses siguientes, además del crecimiento de esos meses, sin coste adicional."),
             ("¿Es seguro comprar seguidores en TikTok con Sterr?", "Sí. Nunca compartes tu contraseña y cada seguidor es una persona real que decidió seguirte. Nada de lo que hacemos crea las señales falsas que TikTok penaliza."),
             ("¿Los seguidores son reales?", "Sí, cada uno es una persona real. Por eso el crecimiento se reparte a lo largo del mes en lugar de llegar en un minuto."),
             ("¿Cuántos seguidores recibo?", "Normalmente 1.000–4.000 al mes con Starter Creator, 2.000–8.000 con Rising Influencer y 4.000–16.000 con Pro Influencer, con 2–3 likes por cada seguidor nuevo y más o menos un comentario por cada 10. Las personas reales deciden por sí mismas, así que cada mes es un poco distinto."),
@@ -421,6 +422,7 @@ DATA = {
             ("callout", "El mejor precio bajo por personas reales: seguidores, likes y comentarios desde $79.99 al mes."),
         ],
         "faqs": [
+            ("¿Qué pasa si no se alcanza el objetivo de crecimiento mensual?", "El ritmo de crecimiento puede variar de un mes a otro. Por ejemplo, si no alcanzamos el objetivo de 1.000 nuevos seguidores en un mes, registramos la diferencia como crecimiento pendiente para ti. Esa cantidad no se pierde: la completamos en los meses siguientes, además del crecimiento de esos meses, sin coste adicional."),
             ("¿Cuál es la forma más barata de tener seguidores reales?", "Starter Creator: $79.99 al mes, normalmente 1.000–4.000 seguidores reales con likes y comentarios incluidos."),
             ("¿Vendéis 100 o 500 seguidores, o 50k?", "No vendemos cantidades fijas. Las personas reales deciden si te siguen, así que vendemos paquetes mensuales y te mostramos lo que traen. Para objetivos mayores, mantenlo activo mes tras mes."),
             ("¿Es una suscripción?", "Sí, mensual. Puedes cancelar cuando quieras desde tu cuenta; el mes pagado sigue hasta el final."),
@@ -446,6 +448,7 @@ DATA = {
             ("p", "Las webs que venden 1.000 seguidores en un día venden bots. No dan like ni comentan, se borran en oleadas y los que se quedan reducen en silencio el alcance de tus vídeos."),
         ],
         "faqs": [
+            ("¿Qué pasa si no se alcanza el objetivo de crecimiento mensual?", "El ritmo de crecimiento puede variar de un mes a otro. Por ejemplo, si no alcanzamos el objetivo de 1.000 nuevos seguidores en un mes, registramos la diferencia como crecimiento pendiente para ti. Esa cantidad no se pierde: la completamos en los meses siguientes, además del crecimiento de esos meses, sin coste adicional."),
             ("¿Cuánto tardan 1000 seguidores TikTok reales?", "Con Starter Creator, normalmente en el primer mes. Las personas reales siguen a su ritmo, así que cada mes es un poco distinto."),
             ("¿Es un paquete único de 1.000?", "No. Vendemos el crecimiento en paquetes de agencia mensuales; Starter Creator cuesta $79.99 al mes y puedes cancelar cuando quieras desde tu cuenta."),
             ("¿También recibo likes y comentarios?", "Sí, de las mismas personas reales: normalmente 2–3 likes por cada seguidor nuevo y más o menos un comentario por cada 10."),
@@ -707,6 +710,7 @@ DATA = {
             ("callout", "Elige Starter Creator, Rising Influencer o Pro Influencer y empieza a crecer en pocos días."),
         ],
         "faqs": [
+            ("¿Qué pasa si no se alcanza el objetivo de crecimiento mensual?", "El ritmo de crecimiento puede variar de un mes a otro. Por ejemplo, si no alcanzamos el objetivo de 1.000 nuevos seguidores en un mes, registramos la diferencia como crecimiento pendiente para ti. Esa cantidad no se pierde: la completamos en los meses siguientes, además del crecimiento de esos meses, sin coste adicional."),
             ("¿Qué incluye cada paquete?", "Seguidores reales, likes, visualizaciones y comentarios de las mismas personas, repartidos en 30 días. Cuanto mayor es el paquete, más personas descubren tu perfil."),
             ("¿Puedo comprar visualizaciones y likes de TikTok por separado?", "No. Somos una agencia y vendemos el crecimiento en paquetes, porque los likes y las visualizaciones que no cuadran con tus seguidores son una señal falsa."),
             ("¿Las cifras son fijas?", "Son rangos mensuales habituales. Las personas reales deciden seguirte y dar like, así que cada mes es un poco distinto."),

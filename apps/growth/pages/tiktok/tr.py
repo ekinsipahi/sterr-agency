@@ -262,6 +262,7 @@ DATA = {
             ("callout", "En iyi takipçi satın alma sitesini mi arıyorsunuz? Ajans paketinizi seçin: gerçek takipçi, beğeni ve yorum, aylık $79.99'dan başlayan fiyatlarla."),
         ],
         "faqs": [
+            ("Aylık büyüme hedefinin altında kalırsak ne olur?", "Büyümenin temposu aydan aya değişebilir. Örneğin, aylık 1.000 yeni takipçi hedefinin altında kalırsak aradaki farkı sizin için devreden büyüme olarak kaydederiz. Bu sayı kaybolmaz; sonraki aylarda o ayın büyümesine ek olarak tamamlanır. Bunun için ek ücret ödemezsiniz."),
             ("Sterr'den TikTok takipçi satın almak güvenli mi?", "Evet. Şifrenizi hiç paylaşmazsınız ve her takipçi sizi takip etmeyi kendisi seçen gerçek bir insandır. Yaptığımız hiçbir şey TikTok'un cezalandırdığı sahte sinyalleri üretmez."),
             ("Takipçiler gerçek mi?", "Evet, her biri gerçek bir insan. Büyümenin bir dakikada değil, ay boyunca gelmesinin sebebi de bu."),
             ("Kaç takipçi kazanırım?", "Genellikle ayda Starter Creator ile 1.000–4.000, Rising Influencer ile 2.000–8.000, Pro Influencer ile 4.000–16.000; her yeni takipçi için 2–3 beğeni ve yaklaşık her 10 takipçiden bir yorum. Gerçek insanlar kendileri karar verir, bu yüzden her ay biraz farklıdır."),
@@ -312,6 +313,7 @@ DATA = {
             ("callout", "Gerçek insanlar için en uygun fiyat, en düşük fiyat: takipçi, beğeni ve yorum, aylık $79.99'dan."),
         ],
         "faqs": [
+            ("Aylık büyüme hedefinin altında kalırsak ne olur?", "Büyümenin temposu aydan aya değişebilir. Örneğin, aylık 1.000 yeni takipçi hedefinin altında kalırsak aradaki farkı sizin için devreden büyüme olarak kaydederiz. Bu sayı kaybolmaz; sonraki aylarda o ayın büyümesine ek olarak tamamlanır. Bunun için ek ücret ödemezsiniz."),
             ("Gerçek takipçinin en ucuz yolu ne?", "Starter Creator: aylık $79.99; genellikle 1.000–4.000 gerçek takipçi, beğeni ve yorum dahil."),
             ("100 ya da 500 takipçi, ya da 50 bin satıyor musunuz?", "Sabit sayı satmıyoruz. Takip edip etmemeye gerçek insanlar karar verir; bu yüzden aylık paketler satıyor ve ne getirdiklerini size gösteriyoruz. Daha büyük hedefler için paketi ay ay sürdürün."),
             ("Abonelik mi?", "Evet, aylık. Hesabınızdan istediğiniz zaman iptal edin; ödenen ay sonuna kadar devam eder."),
@@ -337,6 +339,7 @@ DATA = {
             ("p", "Bir günde 1.000 takipçi satan siteler bot satıyordur. Beğenmez, yorum yapmazlar, dalgalar halinde silinirler; kalanlar da videolarınızın erişimini sessizce düşürür."),
         ],
         "faqs": [
+            ("Aylık büyüme hedefinin altında kalırsak ne olur?", "Büyümenin temposu aydan aya değişebilir. Örneğin, aylık 1.000 yeni takipçi hedefinin altında kalırsak aradaki farkı sizin için devreden büyüme olarak kaydederiz. Bu sayı kaybolmaz; sonraki aylarda o ayın büyümesine ek olarak tamamlanır. Bunun için ek ücret ödemezsiniz."),
             ("1.000 gerçek takipçi ne kadar sürer?", "Starter Creator ile genellikle ilk ay içinde. Gerçek insanlar kendi hızlarında takip eder, bu yüzden her ay biraz farklıdır."),
             ("1000 takipçi satın almak tek seferlik bir paket mi?", "Hayır. Büyümeyi aylık ajans paketleri olarak satıyoruz; Starter Creator aylık $79.99 ve hesabınızdan istediğiniz zaman iptal edebilirsiniz."),
             ("Beğeni ve yorum da gelir mi?", "Evet, aynı gerçek insanlardan: genellikle her yeni takipçi için 2–3 beğeni ve yaklaşık her 10 takipçiden bir yorum."),
@@ -598,6 +601,7 @@ DATA = {
             ("callout", "Starter Creator, Rising Influencer ya da Pro Influencer'ı seçin ve birkaç gün içinde büyümeye başlayın."),
         ],
         "faqs": [
+            ("Aylık büyüme hedefinin altında kalırsak ne olur?", "Büyümenin temposu aydan aya değişebilir. Örneğin, aylık 1.000 yeni takipçi hedefinin altında kalırsak aradaki farkı sizin için devreden büyüme olarak kaydederiz. Bu sayı kaybolmaz; sonraki aylarda o ayın büyümesine ek olarak tamamlanır. Bunun için ek ücret ödemezsiniz."),
             ("Her pakette neler var?", "Aynı insanlardan gerçek takipçi, beğeni, izlenme ve yorum; hepsi 30 güne yayılır. Paket büyüdükçe profilinizi keşfeden insan sayısı da artar."),
             ("TikTok izlenme ve beğeni satın alabilir miyim, tek başına?", "Hayır. Biz bir ajansız ve büyümeyi paketler halinde satıyoruz, çünkü takipçilerinizle uyuşmayan beğeni ve izlenme sahte bir sinyaldir."),
             ("Rakamlar sabit mi?", "Bunlar tipik aylık aralıklardır. Takip etmeyi ve beğenmeyi gerçek insanlar seçer, bu yüzden her ay biraz farklıdır."),

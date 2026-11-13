@@ -41,6 +41,7 @@ DATA = {
             ("callout", "Den bästa influencerbyrån för dig är en som ger dig riktiga människor. Börja på Instagram eller TikTok."),
         ],
         "faqs": [
+            ("Vad händer om månadens tillväxtmål inte nås?", "Tillväxttakten kan variera från månad till månad. Om vi till exempel inte når målet på 1 000 nya följare under en månad, registrerar vi skillnaden som tillväxt att ta igen åt dig. Antalet går inte förlorat: vi tar igen det under kommande månader, utöver de månadernas tillväxt, utan extra kostnad."),
             ("Arbetar ni med små kreatörer?", "Ja. Små kreatörer är precis dem vi finns till för: äkta tillväxt betyder mest när du är i början."),
             ("Skaffar ni varumärkessamarbeten åt mig?", "Nej, vi fungerar inte som din manager. Vi bygger den äkta publik som får varumärken att vilja jobba med dig."),
             ("Måste jag skriva på ett kontrakt?", "Nej. Byråpaketet löper månadsvis och du kan säga upp det när du vill från ditt konto."),

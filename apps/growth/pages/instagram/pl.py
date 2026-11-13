@@ -352,6 +352,7 @@ DATA = {
             ("callout", "Szukasz, gdzie kupić obserwujących? Wybierz pakiet agencyjny: prawdziwi obserwujący, polubienia i komentarze od $79.99 miesięcznie."),
         ],
         "faqs": [
+            ("Co jeśli miesięczny cel wzrostu nie zostanie osiągnięty?", "Tempo wzrostu może się różnić w poszczególnych miesiącach. Jeśli na przykład nie osiągniemy celu 1 000 nowych obserwujących w danym miesiącu, zapisujemy różnicę jako wzrost do uzupełnienia. Ta liczba nie przepada: uzupełniamy ją w kolejnych miesiącach, dodatkowo do wzrostu z tych miesięcy, bez dodatkowych opłat."),
             ("Czy kupowanie obserwujących w Sterr jest bezpieczne?", "Tak. Nigdy nie podajesz hasła, a każdy obserwujący to prawdziwa osoba, która sama zdecydowała się Cię obserwować. Nie tworzymy żadnych fałszywych sygnałów, za które karze Instagram."),
             ("Czy obserwujący na Instagramie od Sterr są prawdziwi?", "Tak, każdy z nich to prawdziwa osoba. Dlatego wzrost rozkłada się na cały miesiąc, a nie pojawia się w minutę."),
             ("Ilu obserwujących dostanę?", "Zwykle 1000–4000 miesięcznie ze Starter Creator, 2000–8000 z Rising Influencer i 4000–16 000 z Pro Influencer, do tego 2–3 polubienia na każdego nowego obserwującego i mniej więcej jeden komentarz na 10. Prawdziwi ludzie decydują sami, więc każdy miesiąc wygląda trochę inaczej."),
@@ -402,6 +403,7 @@ DATA = {
             ("callout", "Najlepsza niska cena za prawdziwych ludzi: obserwujący, polubienia i komentarze od $79.99 miesięcznie."),
         ],
         "faqs": [
+            ("Co jeśli miesięczny cel wzrostu nie zostanie osiągnięty?", "Tempo wzrostu może się różnić w poszczególnych miesiącach. Jeśli na przykład nie osiągniemy celu 1 000 nowych obserwujących w danym miesiącu, zapisujemy różnicę jako wzrost do uzupełnienia. Ta liczba nie przepada: uzupełniamy ją w kolejnych miesiącach, dodatkowo do wzrostu z tych miesięcy, bez dodatkowych opłat."),
             ("Jaki jest najtańszy sposób na prawdziwych obserwujących?", "Starter Creator: $79.99 miesięcznie, zwykle 1000–4000 prawdziwych obserwujących, a polubienia i komentarze są w cenie."),
             ("Sprzedajecie 100 lub 500 obserwujących albo 50k?", "Nie sprzedajemy stałych liczb. Prawdziwi ludzie sami decydują, czy Cię obserwować, więc sprzedajemy miesięczne pakiety i pokazujemy, co przynoszą. Przy większych celach po prostu przedłużaj pakiet miesiąc po miesiącu."),
             ("Czy to subskrypcja?", "Tak, miesięczna. Anulować możesz w dowolnym momencie na swoim koncie; opłacony miesiąc trwa do końca."),
@@ -427,6 +429,7 @@ DATA = {
             ("p", "Strony, które sprzedają 1000 obserwujących w jeden dzień, sprzedają boty. Nie lajkują, nie komentują, są usuwane falami, a te, które zostają, po cichu obniżają zasięg Twoich postów."),
         ],
         "faqs": [
+            ("Co jeśli miesięczny cel wzrostu nie zostanie osiągnięty?", "Tempo wzrostu może się różnić w poszczególnych miesiącach. Jeśli na przykład nie osiągniemy celu 1 000 nowych obserwujących w danym miesiącu, zapisujemy różnicę jako wzrost do uzupełnienia. Ta liczba nie przepada: uzupełniamy ją w kolejnych miesiącach, dodatkowo do wzrostu z tych miesięcy, bez dodatkowych opłat."),
             ("Ile trwa zdobycie 1000 prawdziwych obserwujących?", "Ze Starter Creator zwykle mieści się w pierwszym miesiącu. Prawdziwi ludzie obserwują we własnym tempie, więc każdy miesiąc wygląda trochę inaczej."),
             ("Czy to jednorazowa paczka 1k obserwujących?", "Nie. Sprzedajemy wzrost w miesięcznych pakietach agencyjnych; Starter Creator kosztuje $79.99 miesięcznie i możesz go anulować w dowolnym momencie na swoim koncie."),
             ("Czy dostanę też polubienia i komentarze?", "Tak, od tych samych prawdziwych ludzi: zwykle 2–3 polubienia na każdego nowego obserwującego i mniej więcej jeden komentarz na 10."),
@@ -688,6 +691,7 @@ DATA = {
             ("callout", "Wybierz Starter Creator, Rising Influencer lub Pro Influencer i zacznij rosnąć w ciągu kilku dni."),
         ],
         "faqs": [
+            ("Co jeśli miesięczny cel wzrostu nie zostanie osiągnięty?", "Tempo wzrostu może się różnić w poszczególnych miesiącach. Jeśli na przykład nie osiągniemy celu 1 000 nowych obserwujących w danym miesiącu, zapisujemy różnicę jako wzrost do uzupełnienia. Ta liczba nie przepada: uzupełniamy ją w kolejnych miesiącach, dodatkowo do wzrostu z tych miesięcy, bez dodatkowych opłat."),
             ("Co jest w każdym pakiecie?", "Prawdziwi obserwujący, polubienia, wyświetlenia i komentarze od tych samych ludzi, rozłożone na 30 dni. Im większy pakiet, tym więcej osób odkrywa Twój profil."),
             ("Czy mogę kupić same wyświetlenia i polubienia na Instagramie?", "Nie. Jesteśmy agencją i sprzedajemy wzrost w pakietach, bo polubienia i wyświetlenia, które nie pasują do liczby obserwujących, to fałszywy sygnał."),
             ("Czy liczby są stałe?", "To typowe miesięczne zakresy. Prawdziwi ludzie sami decydują, czy obserwować i lajkować, więc każdy miesiąc wygląda trochę inaczej."),

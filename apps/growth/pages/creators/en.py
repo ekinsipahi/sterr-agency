@@ -43,6 +43,7 @@ DATA = {
             ("callout", "The best influencer agency for you is one that grows real people. Start on Instagram or TikTok."),
         ],
         "faqs": [
+            ("What if growth falls short of the monthly target?", "Growth can vary from month to month. For example, if we fall short of a target of 1,000 new followers in a month, we record the difference as growth carried forward for you. That number is not lost: we make it up in later months, on top of those months’ growth, at no extra charge."),
             ("Do you work with small creators?", "Yes. Small creators are exactly who we're for: real growth matters most when you're starting out."),
             ("Do you get me brand deals?", "No, we don't act as your manager. We grow the real audience that makes brands want to work with you."),
             ("Do I have to sign a contract?", "No. The agency package is monthly and you can cancel it any time from your account."),

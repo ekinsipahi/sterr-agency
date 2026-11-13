@@ -269,6 +269,7 @@ DATA = {
             ("callout", "Vous cherchez où acheter des abonnés Instagram ? Choisissez votre pack agence : de vrais abonnés, des likes et des commentaires, dès $79.99 par mois."),
         ],
         "faqs": [
+            ("Que se passe-t-il si l’objectif de croissance mensuel n’est pas atteint ?", "Le rythme de croissance peut varier d’un mois à l’autre. Par exemple, si nous n’atteignons pas l’objectif de 1 000 nouveaux abonnés sur un mois, nous enregistrons la différence comme une croissance à compléter pour vous. Ce nombre n’est pas perdu : nous le rattrapons les mois suivants, en plus de la croissance de ces mois, sans frais supplémentaires."),
             ("L'achat d'abonnés Instagram chez Sterr est-il sans risque ?", "Oui. Vous ne partagez jamais votre mot de passe, et chaque abonné est une vraie personne qui a choisi de vous suivre. Rien de ce que nous faisons ne crée les faux signaux qu'Instagram pénalise."),
             ("Les abonnés sont-ils réels ?", "Oui, chacun est une vraie personne. C'est pour cela que la croissance s'étale sur le mois au lieu d'arriver en une minute."),
             ("Combien d'abonnés vais-je recevoir ?", "En général 1 000 à 4 000 par mois avec Starter Creator, 2 000 à 8 000 avec Rising Influencer et 4 000 à 16 000 avec Pro Influencer, avec 2 à 3 likes par nouvel abonné et environ un commentaire pour 10. De vraies personnes décident par elles-mêmes, donc chaque mois est un peu différent."),
@@ -319,6 +320,7 @@ DATA = {
             ("callout", "Le meilleur prix bas pour de vraies personnes : abonnés, likes et commentaires, dès $79.99 par mois."),
         ],
         "faqs": [
+            ("Que se passe-t-il si l’objectif de croissance mensuel n’est pas atteint ?", "Le rythme de croissance peut varier d’un mois à l’autre. Par exemple, si nous n’atteignons pas l’objectif de 1 000 nouveaux abonnés sur un mois, nous enregistrons la différence comme une croissance à compléter pour vous. Ce nombre n’est pas perdu : nous le rattrapons les mois suivants, en plus de la croissance de ces mois, sans frais supplémentaires."),
             ("Quelle est la façon la moins chère d'avoir de vrais abonnés ?", "Starter Creator : $79.99 par mois, en général 1 000 à 4 000 vrais abonnés, likes et commentaires inclus."),
             ("Vendez-vous 100 ou 500 abonnés, ou 50k ?", "Nous ne vendons pas de nombres fixes. De vraies personnes décident de vous suivre ou non : nous vendons donc des packs mensuels et vous montrons ce qu'ils apportent. Pour des objectifs plus grands, gardez votre pack actif mois après mois."),
             ("Est-ce un abonnement ?", "Oui, mensuel. Vous pouvez résilier à tout moment dans votre compte ; le mois payé va jusqu'à son terme."),
@@ -344,6 +346,7 @@ DATA = {
             ("p", "Les sites qui vendent 1 000 abonnés en un jour vendent des bots. Ils n'aiment pas, ne commentent pas, sont supprimés par vagues, et ceux qui restent font baisser en silence la portée de vos publications."),
         ],
         "faqs": [
+            ("Que se passe-t-il si l’objectif de croissance mensuel n’est pas atteint ?", "Le rythme de croissance peut varier d’un mois à l’autre. Par exemple, si nous n’atteignons pas l’objectif de 1 000 nouveaux abonnés sur un mois, nous enregistrons la différence comme une croissance à compléter pour vous. Ce nombre n’est pas perdu : nous le rattrapons les mois suivants, en plus de la croissance de ces mois, sans frais supplémentaires."),
             ("Combien de temps pour 1 000 vrais abonnés ?", "Avec Starter Creator, généralement dès le premier mois. De vraies personnes suivent à leur rythme, donc chaque mois est un peu différent."),
             ("Est-ce un pack unique de 1 000 ?", "Non. Nous vendons la croissance sous forme de packs agence mensuels ; Starter Creator coûte $79.99 par mois, résiliable à tout moment depuis votre compte."),
             ("Ai-je aussi des likes et des commentaires ?", "Oui, venant des mêmes vraies personnes : en général 2 à 3 likes par nouvel abonné et environ un commentaire pour 10."),
@@ -605,6 +608,7 @@ DATA = {
             ("callout", "Choisissez Starter Creator, Rising Influencer ou Pro Influencer et commencez à grandir en quelques jours."),
         ],
         "faqs": [
+            ("Que se passe-t-il si l’objectif de croissance mensuel n’est pas atteint ?", "Le rythme de croissance peut varier d’un mois à l’autre. Par exemple, si nous n’atteignons pas l’objectif de 1 000 nouveaux abonnés sur un mois, nous enregistrons la différence comme une croissance à compléter pour vous. Ce nombre n’est pas perdu : nous le rattrapons les mois suivants, en plus de la croissance de ces mois, sans frais supplémentaires."),
             ("Que contient chaque pack ?", "De vrais abonnés, likes, vues et commentaires venant des mêmes personnes, répartis sur 30 jours. Plus le pack est grand, plus de personnes découvrent votre profil."),
             ("Puis-je acheter des vues et des likes Instagram seuls ?", "Non. Nous sommes une agence et nous vendons la croissance en packs, parce que des likes et des vues qui ne correspondent pas à vos abonnés sont un faux signal."),
             ("Les chiffres sont-ils fixes ?", "Ce sont des fourchettes mensuelles habituelles. De vraies personnes choisissent de suivre et d'aimer, donc chaque mois est un peu différent."),

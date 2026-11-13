@@ -263,6 +263,7 @@ DATA = {
             ("callout", "Letar du efter bästa sidan att köpa Instagram-följare? Välj ditt byråpaket: äkta följare, likes och kommentarer från $79.99 i månaden."),
         ],
         "faqs": [
+            ("Vad händer om månadens tillväxtmål inte nås?", "Tillväxttakten kan variera från månad till månad. Om vi till exempel inte når målet på 1 000 nya följare under en månad, registrerar vi skillnaden som tillväxt att ta igen åt dig. Antalet går inte förlorat: vi tar igen det under kommande månader, utöver de månadernas tillväxt, utan extra kostnad."),
             ("Är det säkert att köpa följare på Instagram från Sterr?", "Ja. Du delar aldrig ditt lösenord, och varje följare är en riktig människa som har valt att följa dig. Inget vi gör skapar de falska signaler som Instagram straffar."),
             ("Är följarna äkta?", "Ja, varenda en är en riktig människa. Därför sprids tillväxten ut över månaden i stället för att komma på en minut."),
             ("Hur många följare får jag?", "Oftast 1 000–4 000 i månaden med Starter Creator, 2 000–8 000 med Rising Influencer och 4 000–16 000 med Pro Influencer, med 2–3 likes per ny följare och ungefär en kommentar per 10. Riktiga människor bestämmer själva, så varje månad blir lite olika."),
@@ -313,6 +314,7 @@ DATA = {
             ("callout", "Bästa låga priset för riktiga människor: följare, likes och kommentarer från $79.99 i månaden."),
         ],
         "faqs": [
+            ("Vad händer om månadens tillväxtmål inte nås?", "Tillväxttakten kan variera från månad till månad. Om vi till exempel inte når målet på 1 000 nya följare under en månad, registrerar vi skillnaden som tillväxt att ta igen åt dig. Antalet går inte förlorat: vi tar igen det under kommande månader, utöver de månadernas tillväxt, utan extra kostnad."),
             ("Vilket är billigaste sättet att få äkta följare?", "Starter Creator: $79.99 i månaden, oftast 1 000–4 000 äkta följare med likes och kommentarer inräknade."),
             ("Säljer ni 100 eller 500 följare, eller 50k?", "Vi säljer inga fasta antal. Riktiga människor bestämmer själva om de vill följa, så vi säljer månadspaket och visar vad de ger. För större mål låter du paketet löpa månad efter månad."),
             ("Är det en prenumeration?", "Ja, månadsvis. Säg upp när du vill i ditt konto; den betalda månaden löper till sitt slut."),
@@ -338,6 +340,7 @@ DATA = {
             ("p", "Sajter som säljer 1 000 följare på en dag säljer bottar. De gillar inte och kommenterar inte, de raderas i vågor, och de som blir kvar sänker i tysthet räckvidden för dina inlägg."),
         ],
         "faqs": [
+            ("Vad händer om månadens tillväxtmål inte nås?", "Tillväxttakten kan variera från månad till månad. Om vi till exempel inte når målet på 1 000 nya följare under en månad, registrerar vi skillnaden som tillväxt att ta igen åt dig. Antalet går inte förlorat: vi tar igen det under kommande månader, utöver de månadernas tillväxt, utan extra kostnad."),
             ("Hur lång tid tar 1 000 äkta följare?", "Med Starter Creator oftast inom första månaden. Riktiga människor följer i sin egen takt, så varje månad blir lite olika."),
             ("Är det ett engångspaket med 1 000?", "Nej. Vi säljer tillväxt som månadsvisa byråpaket; Starter Creator kostar $79.99 i månaden och du kan säga upp det när du vill från ditt konto."),
             ("Får jag likes och kommentarer också?", "Ja, från samma riktiga människor: oftast 2–3 likes per ny följare och ungefär en kommentar per 10."),
@@ -599,6 +602,7 @@ DATA = {
             ("callout", "Välj Starter Creator, Rising Influencer eller Pro Influencer och börja växa inom några dagar."),
         ],
         "faqs": [
+            ("Vad händer om månadens tillväxtmål inte nås?", "Tillväxttakten kan variera från månad till månad. Om vi till exempel inte når målet på 1 000 nya följare under en månad, registrerar vi skillnaden som tillväxt att ta igen åt dig. Antalet går inte förlorat: vi tar igen det under kommande månader, utöver de månadernas tillväxt, utan extra kostnad."),
             ("Vad ingår i varje paket?", "Äkta följare, likes, visningar och kommentarer från samma människor, utspritt över 30 dagar. Ju större paket, desto fler människor hittar din profil."),
             ("Kan jag köpa Instagram-visningar och likes separat?", "Nej. Vi är en byrå och säljer tillväxt som paket, eftersom likes och visningar som inte stämmer med dina följare är en falsk signal."),
             ("Är siffrorna fasta?", "Det är typiska intervall per månad. Riktiga människor väljer själva att följa och gilla, så varje månad blir lite olika."),

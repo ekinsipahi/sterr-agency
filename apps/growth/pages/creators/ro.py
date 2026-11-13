@@ -43,6 +43,7 @@ DATA = {
             ("callout", "Cea mai bună agenție de influenceri pentru tine este cea care te crește cu oameni reali. Începe pe Instagram sau TikTok."),
         ],
         "faqs": [
+            ("Ce se întâmplă dacă nu este atins obiectivul lunar de creștere?", "Ritmul de creștere poate varia de la o lună la alta. De exemplu, dacă nu atingem obiectivul de 1.000 de urmăritori noi într-o lună, înregistrăm diferența ca o creștere de completat pentru tine. Numărul nu se pierde: îl completăm în lunile următoare, în plus față de creșterea acelor luni, fără costuri suplimentare."),
             ("Lucrați cu creatori mici?", "Da. Creatorii mici sunt exact cei pentru care existăm: creșterea reală contează cel mai mult la început."),
             ("Îmi aduceți colaborări cu branduri?", "Nu, nu acționăm ca manager. Creștem publicul real care face brandurile să vrea să lucreze cu tine."),
             ("Trebuie să semnez un contract?", "Nu. Pachetul de agenție este lunar și îl poți anula oricând din contul tău."),

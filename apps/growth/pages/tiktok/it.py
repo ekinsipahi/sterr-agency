@@ -267,6 +267,7 @@ DATA = {
             ("callout", "Ti chiedi dove comprare follower TikTok? Scegli il tuo pacchetto agenzia: follower reali, like e commenti, da $79.99 al mese."),
         ],
         "faqs": [
+            ("Cosa succede se non si raggiunge l’obiettivo di crescita mensile?", "Il ritmo di crescita può variare da un mese all’altro. Ad esempio, se non raggiungiamo l’obiettivo di 1.000 nuovi follower in un mese, registriamo la differenza come crescita da recuperare per te. Quel numero non va perso: lo recuperiamo nei mesi successivi, in aggiunta alla crescita di quei mesi, senza costi aggiuntivi."),
             ("È sicuro acquistare follower TikTok da Sterr?", "Sì. Non condividi mai la tua password e ogni follower è una persona reale che ha scelto di seguirti. Niente di ciò che facciamo crea i segnali falsi che TikTok penalizza."),
             ("I follower sono reali?", "Sì, ognuno è una persona reale. Per questo la crescita si distribuisce lungo il mese invece di arrivare in un minuto."),
             ("Quanti follower ricevo?", "Di solito 1.000–4.000 al mese con Starter Creator, 2.000–8.000 con Rising Influencer e 4.000–16.000 con Pro Influencer, con 2–3 like per ogni nuovo follower e circa un commento ogni 10. Le persone reali decidono da sole, quindi ogni mese è un po' diverso."),
@@ -317,6 +318,7 @@ DATA = {
             ("callout", "Il miglior prezzo basso per persone reali: follower, like e commenti, da $79.99 al mese."),
         ],
         "faqs": [
+            ("Cosa succede se non si raggiunge l’obiettivo di crescita mensile?", "Il ritmo di crescita può variare da un mese all’altro. Ad esempio, se non raggiungiamo l’obiettivo di 1.000 nuovi follower in un mese, registriamo la differenza come crescita da recuperare per te. Quel numero non va perso: lo recuperiamo nei mesi successivi, in aggiunta alla crescita di quei mesi, senza costi aggiuntivi."),
             ("Qual è il modo più economico per avere follower reali?", "Starter Creator: $79.99 al mese, di solito 1.000–4.000 follower reali con like e commenti inclusi."),
             ("Vendete 100 o 500 follower, o 50k?", "Non vendiamo quantità fisse. Sono le persone reali a decidere se seguirti, quindi vendiamo pacchetti mensili e ti mostriamo cosa portano. Per obiettivi più grandi, tieni il pacchetto attivo mese dopo mese."),
             ("È un abbonamento?", "Sì, mensile. Disdici quando vuoi dal tuo account; il mese pagato prosegue fino alla fine."),
@@ -342,6 +344,7 @@ DATA = {
             ("p", "I siti che vendono 1.000 follower in un giorno vendono bot. Non mettono like né commentano, vengono eliminati a ondate, e quelli che restano abbassano in silenzio la copertura dei tuoi video."),
         ],
         "faqs": [
+            ("Cosa succede se non si raggiunge l’obiettivo di crescita mensile?", "Il ritmo di crescita può variare da un mese all’altro. Ad esempio, se non raggiungiamo l’obiettivo di 1.000 nuovi follower in un mese, registriamo la differenza come crescita da recuperare per te. Quel numero non va perso: lo recuperiamo nei mesi successivi, in aggiunta alla crescita di quei mesi, senza costi aggiuntivi."),
             ("Quanto ci vuole per 1.000 follower reali?", "Con Starter Creator, di solito entro il primo mese. Le persone reali seguono con i loro tempi, quindi ogni mese è un po' diverso."),
             ("È un pacchetto unico da 1.000?", "No. Vendiamo la crescita in pacchetti agenzia mensili; Starter Creator costa $79.99 al mese e puoi disdirlo quando vuoi dal tuo account."),
             ("Ricevo anche like e commenti?", "Sì, dalle stesse persone reali: di solito 2–3 like per ogni nuovo follower e circa un commento ogni 10."),
@@ -603,6 +606,7 @@ DATA = {
             ("callout", "Scegli Starter Creator, Rising Influencer o Pro Influencer e inizia a crescere in pochi giorni."),
         ],
         "faqs": [
+            ("Cosa succede se non si raggiunge l’obiettivo di crescita mensile?", "Il ritmo di crescita può variare da un mese all’altro. Ad esempio, se non raggiungiamo l’obiettivo di 1.000 nuovi follower in un mese, registriamo la differenza come crescita da recuperare per te. Quel numero non va perso: lo recuperiamo nei mesi successivi, in aggiunta alla crescita di quei mesi, senza costi aggiuntivi."),
             ("Cosa c'è in ogni pacchetto?", "Follower, like, visualizzazioni e commenti reali dalle stesse persone, distribuiti su 30 giorni. Più grande è il pacchetto, più persone scoprono il tuo profilo."),
             ("Posso comprare solo visualizzazioni e like TikTok?", "No. Siamo un'agenzia e vendiamo la crescita in pacchetti, perché like e visualizzazioni che non corrispondono ai tuoi follower sono un segnale falso."),
             ("I numeri sono fissi?", "Sono intervalli mensili tipici. Le persone reali scelgono di seguirti e di mettere like, quindi ogni mese è un po' diverso."),

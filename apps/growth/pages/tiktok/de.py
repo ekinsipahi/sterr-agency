@@ -265,6 +265,7 @@ DATA = {
             ("callout", "Wo TikTok Follower kaufen? Wählen Sie Ihr Agenturpaket: echte Follower, Likes und Kommentare, ab $79.99 im Monat."),
         ],
         "faqs": [
+            ("Was passiert, wenn das monatliche Wachstumsziel nicht erreicht wird?", "Das Wachstum kann von Monat zu Monat schwanken. Wenn wir beispielsweise das Ziel von 1.000 neuen Followern in einem Monat nicht erreichen, halten wir die Differenz als ausstehendes Wachstum für Sie fest. Diese Zahl geht nicht verloren: Wir holen sie in den folgenden Monaten zusätzlich zum jeweiligen Monatswachstum nach. Dafür entstehen Ihnen keine zusätzlichen Kosten."),
             ("Ist es sicher, bei Sterr TikTok Follower zu kaufen?", "Ja. Sie geben nie Ihr Passwort heraus, und jeder Follower ist ein echter Mensch, der sich fürs Folgen entschieden hat. Nichts, was wir tun, erzeugt die falschen Signale, die TikTok bestraft."),
             ("Sind die Follower echt?", "Ja, jeder einzelne ist ein echter Mensch. Deshalb verteilt sich das Wachstum über den Monat, statt in einer Minute zu landen."),
             ("Wie viele Follower bekomme ich?", "Typischerweise 1.000–4.000 im Monat mit Starter Creator, 2.000–8.000 mit Rising Influencer und 4.000–16.000 mit Pro Influencer, dazu 2–3 Likes pro neuem Follower und etwa ein Kommentar pro 10. Echte Menschen entscheiden selbst, deshalb ist jeder Monat etwas anders."),
@@ -315,6 +316,7 @@ DATA = {
             ("callout", "Ein niedriger Preis für echte Menschen: Follower, Likes und Kommentare, ab $79.99 im Monat."),
         ],
         "faqs": [
+            ("Was passiert, wenn das monatliche Wachstumsziel nicht erreicht wird?", "Das Wachstum kann von Monat zu Monat schwanken. Wenn wir beispielsweise das Ziel von 1.000 neuen Followern in einem Monat nicht erreichen, halten wir die Differenz als ausstehendes Wachstum für Sie fest. Diese Zahl geht nicht verloren: Wir holen sie in den folgenden Monaten zusätzlich zum jeweiligen Monatswachstum nach. Dafür entstehen Ihnen keine zusätzlichen Kosten."),
             ("Wie komme ich am günstigsten an echte Follower?", "Mit Starter Creator: $79.99 im Monat, typischerweise 1.000–4.000 echte Follower, Likes und Kommentare inklusive."),
             ("Verkaufen Sie 100 oder 500 Follower, oder 50k?", "Wir verkaufen keine festen Zahlen. Echte Menschen entscheiden selbst, ob sie folgen, deshalb verkaufen wir Monatspakete und zeigen Ihnen, was sie bringen. Für größere Ziele lassen Sie das Paket Monat für Monat weiterlaufen."),
             ("Ist das ein Abo?", "Ja, monatlich. Sie können jederzeit in Ihrem Konto kündigen; der bezahlte Monat läuft bis zu seinem Ende."),
@@ -340,6 +342,7 @@ DATA = {
             ("p", "Seiten, die 1.000 Follower an einem Tag verkaufen, verkaufen Bots. Sie liken und kommentieren nicht, sie werden in Wellen gelöscht, und die übrigen senken leise die Reichweite Ihrer Videos."),
         ],
         "faqs": [
+            ("Was passiert, wenn das monatliche Wachstumsziel nicht erreicht wird?", "Das Wachstum kann von Monat zu Monat schwanken. Wenn wir beispielsweise das Ziel von 1.000 neuen Followern in einem Monat nicht erreichen, halten wir die Differenz als ausstehendes Wachstum für Sie fest. Diese Zahl geht nicht verloren: Wir holen sie in den folgenden Monaten zusätzlich zum jeweiligen Monatswachstum nach. Dafür entstehen Ihnen keine zusätzlichen Kosten."),
             ("Wie lange dauern 1.000 echte Follower?", "Mit Starter Creator meist nicht länger als den ersten Monat. Echte Menschen folgen in ihrem eigenen Tempo, deshalb ist jeder Monat etwas anders."),
             ("Ist das ein einmaliges Paket mit 1.000?", "Nein. Wir verkaufen Wachstum als monatliche Agenturpakete; Starter Creator kostet $79.99 im Monat und ist jederzeit in Ihrem Konto kündbar."),
             ("Bekomme ich auch Likes und Kommentare?", "Ja, von denselben echten Menschen: typischerweise 2–3 Likes pro neuem Follower und etwa ein Kommentar pro 10."),
@@ -601,6 +604,7 @@ DATA = {
             ("callout", "Wählen Sie Starter Creator, Rising Influencer oder Pro Influencer und wachsen Sie schon nach wenigen Tagen."),
         ],
         "faqs": [
+            ("Was passiert, wenn das monatliche Wachstumsziel nicht erreicht wird?", "Das Wachstum kann von Monat zu Monat schwanken. Wenn wir beispielsweise das Ziel von 1.000 neuen Followern in einem Monat nicht erreichen, halten wir die Differenz als ausstehendes Wachstum für Sie fest. Diese Zahl geht nicht verloren: Wir holen sie in den folgenden Monaten zusätzlich zum jeweiligen Monatswachstum nach. Dafür entstehen Ihnen keine zusätzlichen Kosten."),
             ("Was ist in jedem Paket?", "Echte Follower, Likes, Views und Kommentare von denselben Menschen, verteilt über 30 Tage. Je größer das Paket, desto mehr Menschen entdecken Ihr Profil."),
             ("Kann ich TikTok Views und Likes einzeln kaufen?", "Nein. Wir sind eine Agentur und verkaufen Wachstum als Pakete, weil Likes und Views, die nicht zu Ihren Followern passen, ein falsches Signal sind."),
             ("Sind die Zahlen fest?", "Es sind typische Monatswerte. Echte Menschen entscheiden selbst, ob sie folgen und liken, deshalb ist jeder Monat etwas anders."),

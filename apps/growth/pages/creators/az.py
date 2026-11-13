@@ -43,6 +43,7 @@ DATA = {
             ("callout", "Sizin üçün ən yaxşı influencer agentliyi real insanlarla böyüdən agentlikdir. Instagram və ya TikTok-da başlayın."),
         ],
         "faqs": [
+            ("Aylıq artım hədəfinə çatmasaq, nə baş verir?", "Artımın tempi aydan aya dəyişə bilər. Məsələn, bir ayda 1.000 yeni izləyici hədəfinə çatmasaq, aradakı fərqi sizin üçün növbəti aylara keçirilən artım kimi qeydə alırıq. Bu say itmir: sonrakı aylarda həmin ayların artımına əlavə olaraq tamamlanır. Bunun üçün əlavə ödəniş etmirsiniz."),
             ("Kiçik yaradıcılarla işləyirsiniz?", "Bəli. Biz məhz kiçik yaradıcılar üçün varıq: real böyümə ən çox yeni başlayanda önəmlidir."),
             ("Mənə brend sövdələşmələri tapırsınız?", "Xeyr, menecer kimi çalışmırıq. Brendlərin sizinlə işləmək istəməsini təmin edən real auditoriyanı böyüdürük."),
             ("Müqavilə imzalamalıyam?", "Xeyr. Agentlik paketi aylıqdır və onu istənilən vaxt hesabınızdan ləğv edə bilərsiniz."),

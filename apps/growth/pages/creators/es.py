@@ -42,6 +42,7 @@ DATA = {
             ("callout", "La mejor agencia de influencers para ti es la que te hace crecer con personas reales. Empieza en Instagram o TikTok."),
         ],
         "faqs": [
+            ("¿Qué pasa si no se alcanza el objetivo de crecimiento mensual?", "El ritmo de crecimiento puede variar de un mes a otro. Por ejemplo, si no alcanzamos el objetivo de 1.000 nuevos seguidores en un mes, registramos la diferencia como crecimiento pendiente para ti. Esa cantidad no se pierde: la completamos en los meses siguientes, además del crecimiento de esos meses, sin coste adicional."),
             ("¿Trabajáis con cuentas pequeñas?", "Sí. Las cuentas pequeñas son justo para quienes trabajamos: el crecimiento real importa más cuando estás empezando."),
             ("¿Me conseguís acuerdos con marcas?", "No, no hacemos de representantes. Hacemos crecer el público real que hace que las marcas quieran trabajar contigo."),
             ("¿Tengo que firmar un contrato?", "No. El paquete de agencia es mensual y puedes cancelarlo cuando quieras desde tu cuenta."),

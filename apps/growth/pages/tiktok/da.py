@@ -259,6 +259,7 @@ DATA = {
             ("callout", "Leder du efter den bedste side at købe TikTok-følgere på? Vælg din bureaupakke: ægte følgere, likes og kommentarer fra $79.99 om måneden."),
         ],
         "faqs": [
+            ("Hvad sker der, hvis månedens vækstmål ikke nås?", "Væksten kan variere fra måned til måned. Hvis vi for eksempel ikke når målet om 1.000 nye følgere på en måned, registrerer vi forskellen som vækst, vi har til gode at levere til dig. Antallet går ikke tabt: vi indhenter det i de følgende måneder ud over de måneders vækst, uden ekstra betaling."),
             ("Er det sikkert at købe følgere på TikTok hos Sterr?", "Ja. Du deler aldrig din adgangskode, og hver følger er et rigtigt menneske, der har valgt at følge dig. Intet, vi gør, skaber de falske signaler, som TikTok straffer."),
             ("Er følgerne ægte?", "Ja, hver eneste er et rigtigt menneske. Derfor er væksten fordelt over hele måneden i stedet for at lande på et minut."),
             ("Hvor mange følgere får jeg?", "Typisk 1.000–4.000 om måneden med Starter Creator, 2.000–8.000 med Rising Influencer og 4.000–16.000 med Pro Influencer, med 2–3 likes pr. ny følger og cirka én kommentar pr. 10. Rigtige mennesker bestemmer selv, så hver måned er lidt forskellig."),
@@ -309,6 +310,7 @@ DATA = {
             ("callout", "Rigtige mennesker til en lav pris: følgere, likes og kommentarer fra $79.99 om måneden."),
         ],
         "faqs": [
+            ("Hvad sker der, hvis månedens vækstmål ikke nås?", "Væksten kan variere fra måned til måned. Hvis vi for eksempel ikke når målet om 1.000 nye følgere på en måned, registrerer vi forskellen som vækst, vi har til gode at levere til dig. Antallet går ikke tabt: vi indhenter det i de følgende måneder ud over de måneders vækst, uden ekstra betaling."),
             ("Hvad er den billigste måde at få ægte følgere på?", "Starter Creator: $79.99 om måneden, typisk 1.000–4.000 ægte følgere med likes og kommentarer inkluderet."),
             ("Sælger I 100 eller 500 følgere, eller 50k?", "Vi sælger ikke faste antal. Rigtige mennesker bestemmer selv, om de vil følge, så vi sælger månedlige pakker og viser dig, hvad de giver. Til større mål lader du pakken køre måned efter måned."),
             ("Er det et abonnement?", "Ja, månedligt. Du kan opsige når som helst på din konto; den betalte måned kører til ende."),
@@ -334,6 +336,7 @@ DATA = {
             ("p", "Sider, der sælger 1.000 følgere på én dag, sælger bots. De liker ikke og kommenterer ikke, de slettes i bølger, og dem, der bliver, sænker stille og roligt rækkevidden af dine videoer."),
         ],
         "faqs": [
+            ("Hvad sker der, hvis månedens vækstmål ikke nås?", "Væksten kan variere fra måned til måned. Hvis vi for eksempel ikke når målet om 1.000 nye følgere på en måned, registrerer vi forskellen som vækst, vi har til gode at levere til dig. Antallet går ikke tabt: vi indhenter det i de følgende måneder ud over de måneders vækst, uden ekstra betaling."),
             ("Hvor lang tid tager 1.000 ægte følgere?", "Med Starter Creator som regel inden for den første måned. Rigtige mennesker følger i deres eget tempo, så hver måned er lidt forskellig."),
             ("Er det en engangspakke med 1.000?", "Nej. Vi sælger vækst som månedlige bureaupakker; Starter Creator koster $79.99 om måneden, og du kan opsige når som helst fra din konto."),
             ("Får jeg også likes og kommentarer?", "Ja, fra de samme rigtige mennesker: typisk 2–3 likes pr. ny følger og cirka én kommentar pr. 10."),
@@ -595,6 +598,7 @@ DATA = {
             ("callout", "Vælg Starter Creator, Rising Influencer eller Pro Influencer, og begynd at vokse inden for få dage. Køb TikTok-likes og visninger, der kommer fra rigtige mennesker."),
         ],
         "faqs": [
+            ("Hvad sker der, hvis månedens vækstmål ikke nås?", "Væksten kan variere fra måned til måned. Hvis vi for eksempel ikke når målet om 1.000 nye følgere på en måned, registrerer vi forskellen som vækst, vi har til gode at levere til dig. Antallet går ikke tabt: vi indhenter det i de følgende måneder ud over de måneders vækst, uden ekstra betaling."),
             ("Hvad er der i hver pakke?", "Ægte følgere, likes, visninger og kommentarer fra de samme mennesker, fordelt over 30 dage. Jo større pakke, jo flere mennesker opdager din profil."),
             ("Kan jeg købe TikTok-visninger og likes for sig?", "Nej. Vi er et bureau og sælger vækst som pakker, fordi likes og visninger, der ikke passer til dine følgere, er et falsk signal."),
             ("Er tallene faste?", "Det er typiske månedlige intervaller. Rigtige mennesker vælger selv at følge og like, så hver måned er lidt forskellig."),

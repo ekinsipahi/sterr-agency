@@ -261,6 +261,7 @@ DATA = {
             ("callout", "Cauți cel mai bun site de urmăritori TikTok? Alege-ți un pachet de agenție: urmăritori reali, like-uri și comentarii, de la $79.99 pe lună."),
         ],
         "faqs": [
+            ("Ce se întâmplă dacă nu este atins obiectivul lunar de creștere?", "Ritmul de creștere poate varia de la o lună la alta. De exemplu, dacă nu atingem obiectivul de 1.000 de urmăritori noi într-o lună, înregistrăm diferența ca o creștere de completat pentru tine. Numărul nu se pierde: îl completăm în lunile următoare, în plus față de creșterea acelor luni, fără costuri suplimentare."),
             ("Este sigur să cumpăr urmăritori TikTok de la Sterr?", "Da. Nu îți dai niciodată parola, iar fiecare urmăritor este un om real care a ales să te urmărească. Nimic din ce facem nu creează semnalele false pe care TikTok le penalizează."),
             ("Urmăritorii sunt reali?", "Da, fiecare este un om real. De aceea creșterea se întinde pe toată luna, în loc să apară într-un minut."),
             ("Câți urmăritori primesc?", "De obicei 1.000–4.000 pe lună cu Starter Creator, 2.000–8.000 cu Rising Influencer și 4.000–16.000 cu Pro Influencer, cu 2–3 like-uri de la fiecare urmăritor nou și cam un comentariu la fiecare 10. Oamenii reali decid singuri, așa că fiecare lună e puțin diferită."),
@@ -311,6 +312,7 @@ DATA = {
             ("callout", "Cel mai bun preț mic pentru oameni reali: urmăritori, like-uri și comentarii, de la $79.99 pe lună."),
         ],
         "faqs": [
+            ("Ce se întâmplă dacă nu este atins obiectivul lunar de creștere?", "Ritmul de creștere poate varia de la o lună la alta. De exemplu, dacă nu atingem obiectivul de 1.000 de urmăritori noi într-o lună, înregistrăm diferența ca o creștere de completat pentru tine. Numărul nu se pierde: îl completăm în lunile următoare, în plus față de creșterea acelor luni, fără costuri suplimentare."),
             ("Care este cel mai ieftin mod de a avea urmăritori reali?", "Starter Creator: $79.99 pe lună, de obicei 1.000–4.000 de urmăritori reali, cu like-uri și comentarii incluse."),
             ("Vindeți 100 sau 500 de urmăritori, ori 50k?", "Nu vindem numere fixe. Oamenii reali decid dacă te urmăresc, așa că vindem pachete lunare și îți arătăm ce aduc. Pentru obiective mai mari, lasă pachetul activ lună de lună."),
             ("Este un abonament?", "Da, lunar. Anulezi oricând din contul tău; luna plătită continuă până la final."),
@@ -336,6 +338,7 @@ DATA = {
             ("p", "Site-urile care vând 1.000 de urmăritori într-o zi vând boți. Nu dau like, nu comentează, sunt șterși în valuri, iar cei care rămân îți scad pe tăcute acoperirea videoclipurilor."),
         ],
         "faqs": [
+            ("Ce se întâmplă dacă nu este atins obiectivul lunar de creștere?", "Ritmul de creștere poate varia de la o lună la alta. De exemplu, dacă nu atingem obiectivul de 1.000 de urmăritori noi într-o lună, înregistrăm diferența ca o creștere de completat pentru tine. Numărul nu se pierde: îl completăm în lunile următoare, în plus față de creșterea acelor luni, fără costuri suplimentare."),
             ("Cât durează până la 1.000 de urmăritori reali?", "Cu Starter Creator, de obicei în prima lună. Oamenii reali urmăresc în ritmul lor, așa că fiecare lună e puțin diferită."),
             ("Este un pachet unic de 1.000?", "Nu. Vindem creșterea sub formă de pachete lunare de agenție; Starter Creator costă $79.99 pe lună și îl poți anula oricând din contul tău."),
             ("Primesc și like-uri și comentarii?", "Da, de la aceiași oameni reali: de obicei 2–3 like-uri de la fiecare urmăritor nou și cam un comentariu la fiecare 10."),
@@ -597,6 +600,7 @@ DATA = {
             ("callout", "Alege Starter Creator, Rising Influencer sau Pro Influencer și începi să crești în câteva zile."),
         ],
         "faqs": [
+            ("Ce se întâmplă dacă nu este atins obiectivul lunar de creștere?", "Ritmul de creștere poate varia de la o lună la alta. De exemplu, dacă nu atingem obiectivul de 1.000 de urmăritori noi într-o lună, înregistrăm diferența ca o creștere de completat pentru tine. Numărul nu se pierde: îl completăm în lunile următoare, în plus față de creșterea acelor luni, fără costuri suplimentare."),
             ("Ce conține fiecare pachet?", "Urmăritori reali, like-uri, vizualizări și comentarii de la aceiași oameni, pe parcursul a 30 de zile. Cu cât pachetul e mai mare, cu atât mai mulți oameni îți descoperă profilul."),
             ("Pot cumpăra doar vizualizări și like-uri TikTok?", "Nu. Suntem o agenție și vindem creșterea sub formă de pachete, pentru că like-urile și vizualizările care nu se potrivesc cu urmăritorii sunt un semnal fals."),
             ("Cifrele sunt fixe?", "Sunt intervale lunare obișnuite. Oamenii reali aleg să te urmărească și să dea like, așa că fiecare lună e puțin diferită."),

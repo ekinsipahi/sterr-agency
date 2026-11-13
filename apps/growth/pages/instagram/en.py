@@ -263,6 +263,7 @@ DATA = {
             ("callout", "Looking for the best site to buy Instagram followers? Choose your agency package: real followers, likes and comments, from $79.99 a month."),
         ],
         "faqs": [
+            ("What if growth falls short of the monthly target?", "Growth can vary from month to month. For example, if we fall short of a target of 1,000 new followers in a month, we record the difference as growth carried forward for you. That number is not lost: we make it up in later months, on top of those months’ growth, at no extra charge."),
             ("Is it safe to purchase Instagram followers from Sterr?", "Yes. You never share your password, and every follower is a real person who chose to follow you. Nothing we do creates the fake signals Instagram penalizes."),
             ("Are the followers real?", "Yes, every one is a real person. That's why growth is spread across the month instead of landing in a minute."),
             ("How many followers do I get?", "Typically 1,000–4,000 a month with Starter Creator, 2,000–8,000 with Rising Influencer and 4,000–16,000 with Pro Influencer, with 2–3 likes per new follower and about one comment for every 10. Real people decide for themselves, so every month is a little different."),
@@ -313,6 +314,7 @@ DATA = {
             ("callout", "The best low price for real people: followers, likes and comments, from $79.99 a month."),
         ],
         "faqs": [
+            ("What if growth falls short of the monthly target?", "Growth can vary from month to month. For example, if we fall short of a target of 1,000 new followers in a month, we record the difference as growth carried forward for you. That number is not lost: we make it up in later months, on top of those months’ growth, at no extra charge."),
             ("What's the cheapest way to get real followers?", "Starter Creator: $79.99 a month, typically 1,000–4,000 real followers with likes and comments included."),
             ("Do you sell 100 or 500 followers, or 50k?", "We don't sell fixed numbers. Real people decide whether to follow, so we sell monthly packages and show you what they bring. For bigger goals, keep it running month after month."),
             ("Is it a subscription?", "Yes, monthly. Cancel any time in your account; the paid month runs to its end."),
@@ -338,6 +340,7 @@ DATA = {
             ("p", "Sites that sell 1,000 followers in a day are selling bots. They don't like or comment, they get deleted in waves, and the ones that stay quietly lower the reach of your posts."),
         ],
         "faqs": [
+            ("What if growth falls short of the monthly target?", "Growth can vary from month to month. For example, if we fall short of a target of 1,000 new followers in a month, we record the difference as growth carried forward for you. That number is not lost: we make it up in later months, on top of those months’ growth, at no extra charge."),
             ("How long do 1,000 real followers take?", "With Starter Creator, usually within the first month. Real people follow at their own pace, so every month is a little different."),
             ("Is it a one-time pack of 1,000?", "No. We sell growth as monthly agency packages; Starter Creator is $79.99 a month and you can cancel any time from your account."),
             ("Do I get likes and comments too?", "Yes, from the same real people: typically 2–3 likes per new follower and about one comment for every 10."),
@@ -599,6 +602,7 @@ DATA = {
             ("callout", "Choose Starter Creator, Rising Influencer or Pro Influencer and start growing within days."),
         ],
         "faqs": [
+            ("What if growth falls short of the monthly target?", "Growth can vary from month to month. For example, if we fall short of a target of 1,000 new followers in a month, we record the difference as growth carried forward for you. That number is not lost: we make it up in later months, on top of those months’ growth, at no extra charge."),
             ("What's in each package?", "Real followers, likes, views and comments from the same people, spread over 30 days. The bigger the package, the more people discover your profile."),
             ("Can I buy Instagram views and likes on their own?", "No. We're an agency and we sell growth as packages, because likes and views that don't match your followers are a fake signal."),
             ("Are the numbers fixed?", "They're typical monthly ranges. Real people choose to follow and like, so every month is a little different."),

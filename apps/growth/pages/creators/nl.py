@@ -42,6 +42,7 @@ DATA = {
             ("callout", "Het beste influencer bureau voor u is er een dat echte mensen brengt. Begin op Instagram of TikTok."),
         ],
         "faqs": [
+            ("Wat als het maandelijkse groeidoel niet wordt gehaald?", "De groei kan per maand verschillen. Halen we bijvoorbeeld het doel van 1.000 nieuwe volgers in een maand niet, dan houden we het verschil voor u bij als groei die nog volgt. Dat aantal gaat niet verloren: we vullen het in latere maanden aan, boven op de groei van die maanden. Daar betaalt u niets extra voor."),
             ("Werkt u met kleine creators?", "Ja. Kleine creators zijn precies voor wie we er zijn: echte groei telt het meest als u net begint."),
             ("Regelt u merkdeals voor mij?", "Nee, we treden niet op als uw management. We bouwen het echte publiek op waardoor merken met u willen werken."),
             ("Moet ik een contract tekenen?", "Nee. Het bureaupakket is maandelijks en u kunt het altijd opzeggen in uw account."),

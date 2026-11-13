@@ -42,6 +42,7 @@ DATA = {
             ("callout", "Die beste Influencer Agentur für Sie ist eine, die echte Menschen bringt. Starten Sie auf Instagram oder TikTok."),
         ],
         "faqs": [
+            ("Was passiert, wenn das monatliche Wachstumsziel nicht erreicht wird?", "Das Wachstum kann von Monat zu Monat schwanken. Wenn wir beispielsweise das Ziel von 1.000 neuen Followern in einem Monat nicht erreichen, halten wir die Differenz als ausstehendes Wachstum für Sie fest. Diese Zahl geht nicht verloren: Wir holen sie in den folgenden Monaten zusätzlich zum jeweiligen Monatswachstum nach. Dafür entstehen Ihnen keine zusätzlichen Kosten."),
             ("Arbeiten Sie auch mit kleinen Accounts?", "Ja. Kleine Creator sind genau die, für die wir da sind: Echtes Wachstum zählt am meisten, wenn man gerade anfängt."),
             ("Bekomme ich durch Sie Markendeals?", "Nein, wir treten nicht als Ihr Management auf. Wir bauen das echte Publikum auf, mit dem Marken zusammenarbeiten wollen."),
             ("Muss ich einen Vertrag unterschreiben?", "Nein. Das Agenturpaket ist monatlich, und Sie können es jederzeit in Ihrem Konto kündigen."),

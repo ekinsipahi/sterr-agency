@@ -262,6 +262,7 @@ DATA = {
             ("callout", "Instagram izləyici almaq üçün ən yaxşı saytı axtarırsınız? Agentlik paketinizi seçin: real izləyicilər, bəyənmə və şərhlər, ayda $79.99-dan. Bəziləri bunu Instagram takipçi almaq kimi axtarır; mahiyyət eynidir."),
         ],
         "faqs": [
+            ("Aylıq artım hədəfinə çatmasaq, nə baş verir?", "Artımın tempi aydan aya dəyişə bilər. Məsələn, bir ayda 1.000 yeni izləyici hədəfinə çatmasaq, aradakı fərqi sizin üçün növbəti aylara keçirilən artım kimi qeydə alırıq. Bu say itmir: sonrakı aylarda həmin ayların artımına əlavə olaraq tamamlanır. Bunun üçün əlavə ödəniş etmirsiniz."),
             ("Sterr-dən Instagram izləyici almaq təhlükəsizdirmi?", "Bəli. Şifrənizi heç vaxt paylaşmırsınız və hər izləyici sizi izləməyi özü seçən real insandır. Etdiyimiz heç nə Instagram-ın cəzalandırdığı saxta siqnallar yaratmır."),
             ("İzləyicilər realdırmı?", "Bəli, hər biri real insandır. Böyümənin bir dəqiqəyə yox, bütün aya yayılmasının səbəbi də budur."),
             ("Neçə izləyici alıram?", "Adətən Starter Creator ilə ayda 1.000–4.000, Rising Influencer ilə 2.000–8.000, Pro Influencer ilə 4.000–16.000; hər yeni izləyiciyə 2–3 bəyənmə və təxminən hər 10 izləyicidən bir şərh. Real insanlar özləri qərar verir, ona görə hər ay bir az fərqli olur."),
@@ -312,6 +313,7 @@ DATA = {
             ("callout", "Real insanlar üçün ən yaxşı aşağı qiymət: izləyici, bəyənmə və şərhlər, ayda $79.99-dan."),
         ],
         "faqs": [
+            ("Aylıq artım hədəfinə çatmasaq, nə baş verir?", "Artımın tempi aydan aya dəyişə bilər. Məsələn, bir ayda 1.000 yeni izləyici hədəfinə çatmasaq, aradakı fərqi sizin üçün növbəti aylara keçirilən artım kimi qeydə alırıq. Bu say itmir: sonrakı aylarda həmin ayların artımına əlavə olaraq tamamlanır. Bunun üçün əlavə ödəniş etmirsiniz."),
             ("Real izləyici əldə etməyin ən ucuz yolu hansıdır?", "Starter Creator: ayda $79.99, adətən 1.000–4.000 real izləyici, bəyənmə və şərhlər daxil."),
             ("100 və ya 500 izləyici, ya da 50 min satırsınız?", "Sabit say satmırıq. İzləyib-izləməməyə real insanlar özləri qərar verir, ona görə aylıq paketlər satırıq və onların nə gətirdiyini sizə göstəririk. Daha böyük hədəflər üçün paketi aydan-aya davam etdirin."),
             ("Abunəlikdir?", "Bəli, aylıq. Hesabınızdan istənilən vaxt ləğv edin; ödənilmiş ay sonuna qədər davam edir."),
@@ -337,6 +339,7 @@ DATA = {
             ("p", "Bir günə 1.000 izləyici satan saytlar bot satır. Onlar bəyənmir, şərh yazmır, dalğa-dalğa silinir, qalanlar isə paylaşımlarınızın əhatəsini səssizcə aşağı salır."),
         ],
         "faqs": [
+            ("Aylıq artım hədəfinə çatmasaq, nə baş verir?", "Artımın tempi aydan aya dəyişə bilər. Məsələn, bir ayda 1.000 yeni izləyici hədəfinə çatmasaq, aradakı fərqi sizin üçün növbəti aylara keçirilən artım kimi qeydə alırıq. Bu say itmir: sonrakı aylarda həmin ayların artımına əlavə olaraq tamamlanır. Bunun üçün əlavə ödəniş etmirsiniz."),
             ("1.000 real izləyici nə qədər çəkir?", "Starter Creator ilə adətən ilk ay ərzində. Real insanlar öz tempində izləyir, ona görə hər ay bir az fərqli olur."),
             ("Bu, birdəfəlik 1.000 izləyici paketidir?", "Xeyr. Böyüməni aylıq agentlik paketləri ilə satırıq; Starter Creator ayda $79.99-dır və istənilən vaxt hesabınızdan ləğv edə bilərsiniz."),
             ("Bəyənmə və şərh də gəlir?", "Bəli, eyni real insanlardan: adətən hər yeni izləyiciyə 2–3 bəyənmə və təxminən hər 10 izləyicidən bir şərh."),
@@ -598,6 +601,7 @@ DATA = {
             ("callout", "Starter Creator, Rising Influencer və ya Pro Influencer seçin və bir neçə gün ərzində böyüməyə başlayın."),
         ],
         "faqs": [
+            ("Aylıq artım hədəfinə çatmasaq, nə baş verir?", "Artımın tempi aydan aya dəyişə bilər. Məsələn, bir ayda 1.000 yeni izləyici hədəfinə çatmasaq, aradakı fərqi sizin üçün növbəti aylara keçirilən artım kimi qeydə alırıq. Bu say itmir: sonrakı aylarda həmin ayların artımına əlavə olaraq tamamlanır. Bunun üçün əlavə ödəniş etmirsiniz."),
             ("Hər paketdə nə var?", "30 gün ərzində eyni insanlardan real izləyici, bəyənmə, baxış və şərhlər. Paket nə qədər böyükdürsə, profilinizi o qədər çox insan kəşf edir."),
             ("Instagram baxış və bəyənməni ayrıca ala bilərəmmi?", "Xeyr. Biz agentliyik və böyüməni paketlərlə satırıq, çünki izləyicilərinizə uyğun gəlməyən bəyənmə və baxışlar saxta siqnaldır."),
             ("Rəqəmlər sabitdirmi?", "Bunlar adi aylıq aralıqlardır. İzləməyi və bəyənməyi real insanlar özləri seçir, ona görə hər ay bir az fərqli olur."),

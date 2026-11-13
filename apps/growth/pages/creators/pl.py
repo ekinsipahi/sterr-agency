@@ -42,6 +42,7 @@ DATA = {
             ("callout", "Najlepsza agencja influencerów to taka, która sprowadza prawdziwych ludzi. Sterr to agencja dla twórców: zacznij na Instagramie albo TikToku."),
         ],
         "faqs": [
+            ("Co jeśli miesięczny cel wzrostu nie zostanie osiągnięty?", "Tempo wzrostu może się różnić w poszczególnych miesiącach. Jeśli na przykład nie osiągniemy celu 1 000 nowych obserwujących w danym miesiącu, zapisujemy różnicę jako wzrost do uzupełnienia. Ta liczba nie przepada: uzupełniamy ją w kolejnych miesiącach, dodatkowo do wzrostu z tych miesięcy, bez dodatkowych opłat."),
             ("Czy pracujecie z małymi twórcami?", "Tak. Mali twórcy to dokładnie ci, dla których jesteśmy: prawdziwy wzrost liczy się najbardziej na starcie."),
             ("Czy załatwiacie współprace z markami?", "Nie, nie działamy jako manager. Rozwijamy prawdziwą publiczność, dzięki której marki chcą z Tobą współpracować."),
             ("Czy muszę podpisać umowę?", "Nie. Pakiet agencyjny jest miesięczny i możesz go anulować w dowolnym momencie na swoim koncie."),
