@@ -32,7 +32,7 @@ class DisputeInline(admin.TabularInline):
 
 @admin.register(AgencySubscription)
 class AgencySubscriptionAdmin(admin.ModelAdmin):
-    list_display = ("pk", "account", "platform", "status", "renews", "projection_text", "location", "email", "amount",
+    list_display = ("pk", "account", "platform", "status", "renews", "projection_text", "location", "email", "phone", "amount",
                     "created_at", "panel")
     list_filter = ("status", "platform", "cancel_at_period_end", "lang", "created_at")
     search_fields = ("handle", "email", "phone", "location", "stripe_subscription_id", "stripe_customer_id", "stripe_checkout_session_id")

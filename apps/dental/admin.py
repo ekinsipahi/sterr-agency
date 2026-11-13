@@ -5,7 +5,7 @@ from .models import DentalInquiry
 
 @admin.register(DentalInquiry)
 class DentalInquiryAdmin(admin.ModelAdmin):
-    list_display = ("created_at", "name", "kind", "lang", "country", "treatment", "status", "notified")
+    list_display = ("created_at", "name", "phone", "kind", "lang", "country", "treatment", "status", "notified")
     list_filter = ("status", "kind", "lang", "treatment")
     list_editable = ("status",)
     search_fields = ("name", "email", "phone", "country", "company", "message")

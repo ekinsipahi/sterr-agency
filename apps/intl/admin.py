@@ -28,7 +28,7 @@ class FxRateAdmin(admin.ModelAdmin):
 
 @admin.register(IntlLead)
 class IntlLeadAdmin(admin.ModelAdmin):
-    list_display = ("created_at", "name", "lang", "country", "interest", "company", "status", "notified")
+    list_display = ("created_at", "name", "phone", "lang", "country", "interest", "company", "status", "notified")
     list_filter = ("status", "lang", "interest")
     list_editable = ("status",)
     search_fields = ("name", "email", "phone", "company", "country", "message")

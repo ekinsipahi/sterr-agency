@@ -9,7 +9,7 @@ from .models import Lead
 
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
-    list_display = ("created_at", "name", "tier_badge", "sector", "budget", "city", "status", "contact_links")
+    list_display = ("created_at", "name", "phone", "tier_badge", "sector", "budget", "city", "status", "contact_links")
     list_display_links = ("created_at", "name")
     list_editable = ("status",)
     list_filter = ("status", "budget", "sector", "goal", "timeline", "has_content", "created_at")
