@@ -5,7 +5,7 @@
   <div class="container container--narrow">
     <p class="eyebrow">Yasal</p>
     <h1 class="h1">{% block legal_title %}{% endblock %}</h1>
-    <p class="muted">Son güncelleme: {{ company.legal_updated }}</p>
+    <p class="muted">Son güncelleme: {% block legal_updated %}{{ company.legal_updated }}{% endblock %}</p>
   </div>
 </section>
 <section class="section--tight">

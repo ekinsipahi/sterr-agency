@@ -46,6 +46,11 @@ PAID_BODY = (
     "(it isn't refunded).\n\n"
     "Your account: {account}\n\n"
     "Questions? Message us on WhatsApp: {whatsapp}"
+    "\n\nGrowth may fall below the monthly target. Any verified shortfall for paid periods is recorded and "
+    "completed at no extra charge, in addition to later months' normal growth. This obligation remains even "
+    "if you cancel your subscription or remove your Stripe payment method; no new subscription or payment "
+    "is needed. Removing a payment method alone does not cancel your subscription. Your profile must remain "
+    "public and accessible for completion. Mandatory consumer and payment dispute rights remain unchanged."
 )
 PAYMENT_FAILED_SUBJECT = "We couldn't take your payment, so your campaign is paused"
 PAYMENT_FAILED_BODY = (
@@ -78,6 +83,9 @@ CANCELED_BODY = (
     "No further payments will be taken.\n\n"
     "Your package keeps running until {renews}. Changed your mind? You can keep it from your account "
     "before then: {account}\n\n"
+    "Any verified outstanding follower balance for paid periods remains due after cancellation. "
+    "We complete it at no extra charge without a new subscription or payment, while your profile remains "
+    "public and accessible.\n\n"
     "Questions? Message us on WhatsApp: {whatsapp}"
 )
 RESET_SUBJECT = "Reset your password"

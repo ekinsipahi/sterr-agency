@@ -193,7 +193,7 @@ def order(request):
     cache.set(rate_key, cache.get(rate_key, 0) + 1, RATE_WINDOW)
 
     pending = {"platform": platform, "lang": code, "page": page_key, "ip": ip,
-               "terms_at": timezone.now().isoformat(), "user_agent": request.META.get("HTTP_USER_AGENT", "")[:300],
+               "terms_at": timezone.now().isoformat(), "terms_version": TERMS_VERSION, "user_agent": request.META.get("HTTP_USER_AGENT", "")[:300],
                **{f: form.cleaned_data[f] for f in ORDER_FIELDS},
                **{f: request.POST.get(f, "")[:300 if f == "source_page" else 150] for f in SOURCE_FIELDS}}
     if via_google:
@@ -221,7 +221,7 @@ def place_order(request, user, pending):
               "ip": pending.get("ip"), **{f: pending.get(f, "") for f in SOURCE_FIELDS},
               # The terms box is required on the order form: when, which version, from which browser.
               "terms_accepted_at": parse_datetime(pending.get("terms_at") or "") or timezone.now(),
-              "terms_version": TERMS_VERSION, "user_agent": pending.get("user_agent", "")}
+              "terms_version": pending.get("terms_version", ""), "user_agent": pending.get("user_agent", "")}
     # Trying again for the same account (e.g. after a canceled checkout) reuses the unpaid one.
     sub = AgencySubscription.objects.filter(user=user, platform=platform, handle=pending["handle"], status="pending").first()
     if sub is None:

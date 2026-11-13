@@ -575,6 +575,56 @@ class DisputeTests(FreshCache, TestCase):
         self.assertEqual(Dispute.objects.get().status, "won")
         self.assertIn("KAZANILDI", [m for m in mail.outbox if "itirazı sonuçlandı" in m.subject][0].body)
 
+    def test_unreconciled_shortfall_is_not_claimed_as_delivered(self):
+        from .evidence import build
+
+        self.sub.refresh_from_db()
+        result = build(self.sub)
+        self.assertIn("not yet reconciled", result["uncategorized_text"])
+        self.assertIn("not a zero balance", result["uncategorized_text"])
+        self.assertIn("do not assert full delivery", result["refund_refusal_explanation"])
+        self.assertIn("no new subscription or payment is required", result["cancellation_rebuttal"])
+
+    def test_canceled_subscription_keeps_reconciled_shortfall_in_stripe_evidence(self):
+        self.sub.reconciled_target = 2000
+        self.sub.reconciled_delivered = 1450
+        self.sub.reconciled_at = timezone.now()
+        self.sub.reconciliation_note = "Two paid periods, invoice records checked; verified delivery export."
+        self.sub.cancel_requested_at = timezone.now()
+        self.sub.cancel_source = "stripe"
+        self.sub.save()
+        from .views import sync
+        sync(stripe_sub("canceled"))
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.status, "canceled")
+        self.assertEqual(self.sub.outstanding_followers, 550)
+        stage = self.dispute("evt_carryover")
+        result = stage.call_args.args[1]
+        self.assertIn("outstanding follower balance 550", result["uncategorized_text"])
+        self.assertIn("Cancellation does not clear", result["cancellation_rebuttal"])
+        self.assertIn("verified delivery allocated to those targets 1,450", result["uncategorized_text"])
+        self.assertNotIn("was delivered every day", result["refund_refusal_explanation"])
+
+    def test_balance_floors_at_zero_and_partial_reconciliation_is_rejected(self):
+        from django.core.exceptions import ValidationError
+
+        self.sub.reconciled_target = 1000
+        with self.assertRaises(ValidationError):
+            self.sub.clean()
+        self.sub.reconciled_delivered = 1200
+        self.sub.reconciled_at = timezone.now()
+        with self.assertRaises(ValidationError):
+            self.sub.clean()
+        self.sub.reconciliation_note = "Paid period and verified delivery checked."
+        self.sub.clean()
+        self.assertEqual(self.sub.outstanding_followers, 0)
+
+    def test_terms_explain_carryover_after_cancellation(self):
+        response = self.client.get(reverse("core:terms"))
+        self.assertContains(response, "Devreden büyüme ve iptal sonrası tamamlama")
+        self.assertContains(response, "you do not need to subscribe again or make another payment")
+        self.assertContains(response, "13 Kasım 2026")
+
     def test_another_sites_dispute_is_skipped(self):
         stage = self.dispute("evt_d3", traced=("sub_x", "cus_x"))
         stage.assert_not_called()

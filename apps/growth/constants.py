@@ -44,4 +44,4 @@ ACCOUNT_NAV = {
 }
 
 # Version of the terms a customer accepts on the order form (Terms 2a); bump it when 2a changes.
-TERMS_VERSION = "2026-11-06"
+TERMS_VERSION = "2026-11-13"

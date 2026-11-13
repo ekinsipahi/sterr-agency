@@ -33,12 +33,12 @@ class DisputeInline(admin.TabularInline):
 @admin.register(AgencySubscription)
 class AgencySubscriptionAdmin(admin.ModelAdmin):
     list_display = ("pk", "account", "platform", "status", "renews", "projection_text", "location", "email", "phone", "amount",
-                    "created_at", "panel")
+                    "created_at", "outstanding_balance", "panel")
     list_filter = ("status", "platform", "cancel_at_period_end", "lang", "created_at")
     search_fields = ("handle", "email", "phone", "location", "stripe_subscription_id", "stripe_customer_id", "stripe_checkout_session_id")
     readonly_fields = ("user", "amount", "started_at", "current_period_end", "cancel_at_period_end", "canceled_at",
                        "cancel_requested_at", "cancel_source", "reminded_for", "terms_accepted_at", "terms_version",
-                       "user_agent", "evidence_link", "panel", "projection_text",
+                       "user_agent", "evidence_link", "panel", "projection_text", "outstanding_balance",
                        "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id", "notified", "mail_error",
                        "ip", "source_page", "utm_source", "utm_medium", "utm_campaign", "gclid", "created_at", "updated_at")
     fieldsets = (
@@ -48,6 +48,10 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
                                  "cancel_source", "canceled_at", "reminded_for",
                                  "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id")}),
         ("Veriler", {"fields": ("start_followers", "current_followers", "projection_text", "stats_at")}),
+        ("Devreden büyüme", {
+            "description": "İptal bu bakiyeyi silmez. Hesabı ödeme ve doğrulanmış teslimat kayıtlarından kontrol ederek girin. Bu alanlar otomatik hesaplanan günlük tahminlerden ayrıdır.",
+            "fields": ("reconciled_target", "reconciled_delivered", "reconciled_at", "reconciliation_note", "outstanding_balance"),
+        }),
         ("E-posta", {"fields": ("notified", "mail_error")}),
         ("Kaynak", {"classes": ("collapse",), "fields": ("ip", "source_page", "utm_source", "utm_medium", "utm_campaign",
                                                        "gclid", "created_at", "updated_at")}),
@@ -88,6 +92,10 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
     @admin.display(description="Müşteri paneli")
     def panel(self, obj):
         return _panel_link(obj.user_id, obj.lang)
+
+    @admin.display(description="Kalan takipçi")
+    def outstanding_balance(self, obj):
+        return obj.outstanding_followers if obj.outstanding_followers is not None else "Henüz doğrulanmadı"
 
     @admin.display(description="30 gün tahmini")
     def projection_text(self, obj):

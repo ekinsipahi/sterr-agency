@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.core.exceptions import ValidationError
 
 from .constants import PLATFORM_NAMES
 from .plan import CHOICES as PLAN_CHOICES
@@ -143,6 +144,16 @@ class AgencySubscription(models.Model):
     # Linksterr's estimate for the next 30 days at today's pace:
     # {"days": 30, "new_followers": 1230, "low": 1160, "high": 1290, "per_day": 41.0}
     projection = models.JSONField("30 gün tahmini", null=True, blank=True)
+    reconciled_target = models.PositiveIntegerField(
+        "Ödenmiş dönemlerin toplam takipçi hedefi", null=True, blank=True,
+        help_text="Biten ödenmiş dönemleri ve iptalde kesinleşen kapsamı ödeme kayıtlarıyla doğrulayın; tahmini aralık üst sınırı değildir.")
+    reconciled_delivered = models.PositiveIntegerField(
+        "Bu hedefe karşı doğrulanmış toplam teslimat", null=True, blank=True,
+        help_text="Önceki eksiklerin tamamlanması dahil. Günlük tahminleri doğrulanmış teslimat olarak kabul etmeyin.")
+    reconciled_at = models.DateTimeField("Bakiye doğrulama zamanı", null=True, blank=True)
+    reconciliation_note = models.TextField(
+        "Bakiye hesabının dayanağı", blank=True,
+        help_text="Dönemleri, ödenmiş faturaları ve doğrulanmış teslimat kaynağını belirtin; güncel ayın normal hedefini telafiye saymayın.")
     notified = models.BooleanField("Bildirim gönderildi", default=False)
     mail_error = models.TextField("E-posta hatası", blank=True)
     note = models.TextField("Not", blank=True)
@@ -162,6 +173,20 @@ class AgencySubscription(models.Model):
 
     def __str__(self):
         return f"#{self.pk} @{self.handle} {self.platform_name} {self.get_plan_display()} · {self.get_status_display()}"
+
+    def clean(self):
+        super().clean()
+        values = (self.reconciled_target, self.reconciled_delivered, self.reconciled_at)
+        if any(v is not None for v in values) and not all(v is not None for v in values):
+            raise ValidationError("Bakiye için toplam hedef, doğrulanmış teslimat ve doğrulama zamanını birlikte girin.")
+        if all(v is not None for v in values) and not self.reconciliation_note.strip():
+            raise ValidationError({"reconciliation_note": "Hesabın dayanağını belirtin."})
+
+    @property
+    def outstanding_followers(self):
+        if self.reconciled_target is None or self.reconciled_delivered is None or self.reconciled_at is None:
+            return None
+        return max(self.reconciled_target - self.reconciled_delivered, 0)
 
     @property
     def platform_name(self):

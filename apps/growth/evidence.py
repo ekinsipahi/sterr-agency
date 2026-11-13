@@ -52,6 +52,33 @@ def activity_log(sub):
 
 
 
+
+CARRYOVER_POLICY = (
+    "Current merchant commitment (terms section 2a.1, effective 2026-11-13): monthly growth can fall below "
+    "the applicable target (for example 1,000 followers). Verified shortfalls for paid periods are recorded "
+    "and completed in addition to later months' normal growth, at no extra charge. Canceling the subscription, "
+    "stopping Stripe automatic payments or removing the payment method does not erase this obligation; no new "
+    "subscription or payment is required. The profile must remain public and accessible. This commitment is "
+    "not proof of completed delivery and does not restrict mandatory consumer, refund or payment dispute rights. "
+    "It does not establish that a customer accepted a later terms version."
+)
+
+
+def carryover_record(sub):
+    if sub.outstanding_followers is None:
+        return ("Outstanding follower balance: not yet reconciled. Paid-period targets and verified delivery "
+                "must be reviewed before stating a number; missing data is not a zero balance. "
+                "Daily delivery estimates below are not a verified reconciliation.")
+    return (
+        f"Reconciliation as of {_utc(sub.reconciled_at)}: total applicable target for paid periods "
+        f"{_n(sub.reconciled_target)} followers; verified delivery allocated to those targets "
+        f"{_n(sub.reconciled_delivered)}; outstanding follower balance {_n(sub.outstanding_followers)} "
+        f"(max(target - delivery, 0)). Basis: {sub.reconciliation_note}. "
+        "This is a staff-reviewed snapshot, not an automatically verified total or proof of full delivery "
+        "for the disputed invoice. Cancellation does not clear the recorded balance."
+    )
+
+
 def build(sub):
     """Stripe dispute evidence fields for this subscription (text only; files are added by hand)."""
     package = PLAN_BY_KEY[sub.plan]
@@ -61,6 +88,7 @@ def build(sub):
     delivery = delivery_log(sub)
     activity = activity_log(sub)
     reports = sub.stats.count()
+    carryover = carryover_record(sub)
 
     product = (
         f"Sterr Agency {sub.get_plan_display()}: a monthly growth-agency subscription (${sub.amount:.2f} a month) for the "
@@ -80,14 +108,17 @@ def build(sub):
     )
     if sub.cancel_requested_at:
         rebuttal = (f"The customer canceled the renewal on {_utc(sub.cancel_requested_at)} through "
-                    f"{CANCEL_WAYS.get(sub.cancel_source, 'Stripe')}. No payment was taken after that; the package ran to "
-                    f"the end of the period already paid for, as the terms say.")
+                    f"{CANCEL_WAYS.get(sub.cancel_source, 'Stripe')}. Cancellation stops future renewals; the paid service period is recorded through "
+                    f"{_utc(sub.current_period_end)}. This does not establish that all delivery is complete.")
     else:
         rebuttal = ("The customer never canceled: there is no cancellation from the Cancel button in the account "
                     "or the billing portal on record, although canceling takes one click.")
     if sub.reminded_for:
         rebuttal += f" The renewal reminder, saying how to cancel, was emailed to {sub.email} before the renewal of {_utc(sub.reminded_for)}."
+    disclosure += " " + CARRYOVER_POLICY
+    rebuttal += " " + CARRYOVER_POLICY + " " + carryover
     summary = [
+        CARRYOVER_POLICY, carryover, "",
         f"Subscription started {_utc(sub.started_at)}; status {sub.status}; current period ends {_utc(sub.current_period_end)}.",
         f"Welcome email with the terms sent to {sub.email} on activation.",
         f"Account followers at the start: {_n(sub.start_followers)}; latest: {_n(sub.current_followers)}"
@@ -108,8 +139,10 @@ def build(sub):
         "refund_policy_disclosure": ("Paid months are not refunded: the service starts with the payment and is delivered "
                                      "across the month. Shown on the order form, in Stripe Checkout, in the welcome email "
                                      f"and in the terms (section 2a): {terms_url}"),
-        "refund_refusal_explanation": ("The service for the disputed period was delivered every day, as the delivery log "
-                                       "shows, and the customer could cancel the next renewal at any time in one click."),
+        "refund_refusal_explanation": (
+            "Delivery records and the reviewed balance are supplied for assessment. We do not assert full "
+            "delivery solely because a subscription existed or a shortfall is scheduled for completion. "
+            + carryover + " " + CARRYOVER_POLICY),
         "access_activity_log": "\n".join(activity) or "No sign-ins on record.",
         "uncategorized_text": "\n".join(summary),
     }
