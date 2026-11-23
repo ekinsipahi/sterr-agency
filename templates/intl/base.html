@@ -12,13 +12,14 @@
       {% if site.logo %}<img src="{{ site.logo.url }}" alt="Sterr Agency" width="140" height="30">{% else %}<span class="brand__mark">{% include "partials/icons/mark.svg" %}</span>sterr<span class="brand__sub">agency</span>{% endif %}
     </a>
     <nav class="nav__links" aria-label="Menu">
-      <a href="{{ urls.home }}#services"{% if key|slice:':8' == 'cluster:' %} aria-current="page"{% endif %}>{{ ui.nav_services }}</a>
+      {# agency is False in a language whose agency pages are retired: its follower pages keep this shell without those links. #}
+      {% if agency %}<a href="{{ urls.home }}#services"{% if key|slice:':8' == 'cluster:' %} aria-current="page"{% endif %}>{{ ui.nav_services }}</a>
       <a href="{{ urls.sectors }}"{% if key|slice:':6' == 'sector' %} aria-current="page"{% endif %}>{{ ui.nav_sectors }}</a>
       <a href="{{ urls.guides }}"{% if key|slice:':5' == 'guide' %} aria-current="page"{% endif %}>{{ ui.nav_guides }}</a>
-      <a href="{{ urls.home }}#pricing">{{ ui.nav_pricing }}</a>
+      <a href="{{ urls.home }}#pricing">{{ ui.nav_pricing }}</a>{% endif %}
       {% if followers_menu %}<details class="nav-drop"><summary{% if followers_active %} aria-current="page"{% endif %}>{{ followers_nav }}</summary><div class="nav-drop__menu">{% for label, url in followers_menu %}<a href="{{ url }}">{{ label }}</a>{% endfor %}</div></details>{% endif %}
       <a href="{{ urls.dental }}">{{ ui.nav_dental }}</a>
-      <a href="{{ urls.about }}"{% if key == 'about' %} aria-current="page"{% endif %}>{{ ui.nav_about }}</a>
+      {% if agency %}<a href="{{ urls.about }}"{% if key == 'about' %} aria-current="page"{% endif %}>{{ ui.nav_about }}</a>{% endif %}
     </nav>
     <div class="nav__cta">
       {% include "partials/lang_menu.html" with lang_label=ui.lang_label %}
@@ -38,7 +39,7 @@
         <a href="{{ urls.home }}" class="brand">{% if site.logo %}<img src="{{ site.logo.url }}" alt="Sterr Agency" width="140" height="30">{% else %}<span class="brand__mark">{% include "partials/icons/mark.svg" %}</span>sterr<span class="brand__sub">agency</span>{% endif %}</a>
         <p class="muted mt-s" style="max-width:340px;font-size:15px">{{ ui.footer_tagline }}</p>
       </div>
-      <div>
+      {% if agency %}<div>
         <h4>{{ ui.nav_services }}</h4>
         <ul>{% for cl, url in urls.clusters %}<li><a href="{{ url }}">{{ cl.name }}</a></li>{% endfor %}
           <li><a href="{{ urls.dental }}">{{ ui.nav_dental }}</a></li></ul>
@@ -46,14 +47,14 @@
       <div>
         <h4>{{ ui.nav_sectors }}</h4>
         <ul>{% for s, url in urls.sector_list %}<li><a href="{{ url }}">{{ s.name }}</a></li>{% endfor %}</ul>
-      </div>
+      </div>{% endif %}
       <div>
         <h4>{{ ui.contact }}</h4>
         <ul>
           <li><a href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp: {{ whatsapp_display }}</a></li>
           <li><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
-          <li><a href="{{ urls.guides }}">{{ ui.nav_guides }}</a></li>
-          <li><a href="{{ urls.about }}">{{ ui.nav_about }}</a></li>
+          {% if agency %}<li><a href="{{ urls.guides }}">{{ ui.nav_guides }}</a></li>
+          <li><a href="{{ urls.about }}">{{ ui.nav_about }}</a></li>{% else %}<li><a href="{{ urls.dental }}">{{ ui.nav_dental }}</a></li>{% endif %}
           {% for label, url in followers_menu %}<li><a href="{{ url }}">{{ label }}</a></li>{% endfor %}
           <li><a href="{{ instagram_link }}" target="_blank" rel="noopener">Instagram</a></li>
           {% if site.linkedin_url %}<li><a href="{{ site.linkedin_url }}" target="_blank" rel="noopener">LinkedIn</a></li>{% endif %}

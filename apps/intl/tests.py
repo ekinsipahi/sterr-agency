@@ -6,7 +6,7 @@ from django.test import TestCase, override_settings
 
 from apps.core.languages import INTL_CODES
 
-from .content import CONTENT, PAGE_KEYS, alternates, page_path, resolve
+from .content import CONTENT, PAGE_KEYS, active_codes, alternates, page_path, resolve
 from .models import FxRate, IntlLead, Market
 from .pricing import fmt, nice_round, price_for
 
@@ -57,7 +57,13 @@ class ContentTests(TestCase):
         alts = dict(alternates("cluster:sosyal-medya-ajansi"))
         self.assertEqual(alts["tr"], "/sosyal-medya-ajansi/")
         self.assertEqual(alts["x-default"], alts["en"])
-        self.assertEqual(len(alts), 17)
+        self.assertEqual(set(alts), {"tr", "en", "x-default"})   # the public languages only
+
+    def test_only_english_is_public_besides_turkish(self):
+        self.assertEqual(active_codes(), ["en"])
+        with override_settings(AGENCY_LANGS=["en", "de"]):
+            self.assertEqual(active_codes(), ["en", "de"])
+            self.assertEqual(set(dict(alternates("home"))), {"tr", "en", "de", "x-default"})
 
 
 class PricingTests(TestCase):
@@ -82,8 +88,8 @@ class PricingTests(TestCase):
 
 
 class PageTests(TestCase):
-    def test_all_300_pages_render(self):
-        for code in INTL_CODES:
+    def test_public_pages_render(self):
+        for code in active_codes():
             for key in PAGE_KEYS:
                 url = page_path(code, key)
                 with self.subTest(url=url):
@@ -91,8 +97,39 @@ class PageTests(TestCase):
                     self.assertEqual(r.status_code, 200)
                     html = r.content.decode()
                     self.assertIn(f'<html lang="{code}"', html)
-                    self.assertEqual(len(re.findall(r'<link rel="alternate" hreflang=', html)), 17)
+                    self.assertEqual(len(re.findall(r'<link rel="alternate" hreflang=', html)), 3)   # tr, en, x-default
                     self.assertNotIn("{price}", html)
+
+    def test_retired_languages_redirect_to_the_english_page(self):
+        retired = [code for code in INTL_CODES if code not in active_codes()]
+        self.assertEqual(len(retired), 14)
+        for code in retired:
+            for key in PAGE_KEYS:
+                url = page_path(code, key)
+                with self.subTest(url=url):
+                    r = self.client.get(url)
+                    self.assertEqual(r.status_code, 301)
+                    self.assertEqual(r["Location"], page_path("en", key))
+        r = self.client.get(page_path("de", "home") + "?utm_source=x")
+        self.assertEqual(r["Location"], "/en/?utm_source=x")
+
+    def test_a_language_can_be_brought_back(self):
+        with override_settings(AGENCY_LANGS=["en", "de"]):
+            r = self.client.get(page_path("de", "cluster:sosyal-medya-ajansi"))
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(len(re.findall(r'<link rel="alternate" hreflang=', r.content.decode())), 4)
+
+    def test_follower_pages_of_a_retired_language_do_not_link_to_its_agency_pages(self):
+        from apps.growth.content import page_path as growth_path
+
+        hub = growth_path("de", "main", "instagram")
+        html = self.client.get(hub).content.decode()
+        self.assertIn(f'<a href="{hub}" class="brand"', html)          # the logo stays in the language
+        for key in PAGE_KEYS:
+            self.assertNotIn(f'href="{page_path("de", key)}"', html)   # no link into a redirect
+        english = self.client.get(growth_path("en", "main", "instagram")).content.decode()
+        self.assertIn('<a href="/en/" class="brand"', english)
+        self.assertIn(f'href="{page_path("en", "about")}"', english)
 
     def test_unknown_slug_404(self):
         self.assertEqual(self.client.get("/de/nope/").status_code, 404)
@@ -100,12 +137,17 @@ class PageTests(TestCase):
 
     def test_turkish_pages_link_to_translations(self):
         html = self.client.get("/rehber/sosyal-medya-ajans-sozlesmesi/").content.decode()
-        self.assertIn(f'hreflang="de" href="{page_path("de", "guide:sosyal-medya-ajans-sozlesmesi")}"', html.replace("https://sterragency.com", "").replace("http://localhost:8000", ""))
-        self.assertIn(f'href="{page_path("de", "guide:sosyal-medya-ajans-sozlesmesi")}" hreflang="de"', html)
+        self.assertIn(f'hreflang="en" href="{page_path("en", "guide:sosyal-medya-ajans-sozlesmesi")}"', html.replace("https://sterragency.com", "").replace("http://localhost:8000", ""))
+        self.assertIn(f'href="{page_path("en", "guide:sosyal-medya-ajans-sozlesmesi")}" hreflang="en"', html)
+        self.assertNotIn('hreflang="de"', html)
 
     def test_sitemap_has_intl_pages(self):
         body = self.client.get("/sitemaps/agency.xml").content.decode()
-        self.assertIn(f"{page_path('ar', 'guide:sosyal-medya-ajans-sozlesmesi')}</loc>", body)
+        self.assertIn(f"{page_path('en', 'guide:sosyal-medya-ajans-sozlesmesi')}</loc>", body)
+        self.assertEqual(body.count("<loc>"), len(PAGE_KEYS))                  # English only
+        for code in INTL_CODES:
+            if code != "en":
+                self.assertNotIn(f"/{code}/", body)                            # no retired language, in loc or hreflang
 
 
 @override_settings(LEAD_NOTIFY_EMAILS=["owner@example.com"],

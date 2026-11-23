@@ -188,9 +188,11 @@ keywords/    keyword haritası + CSV'ler
 - **Çalışmalar:** linksterr.com, dentaltourism.tr, drdevrim.com, devrimbirikensipahi.com.tr ekran görüntüleriyle
   migration ile eklendi (admin → Çalışmalar). Search Console, ciro ve hasta sayısı görsellerini her çalışmanın altına ekleyin.
 
-## Uluslararası ajans (15 dil)
+## Uluslararası ajans (yalnızca İngilizce yayında)
 
-- `/<dil>/` altında her dil için ana sayfa, 4 hizmet kümesi, sektörler ve rehberler (285 sayfa). İçerik `apps/intl/locales/<dil>.py`.
+- **23 Kasım 2026'dan beri ajans sayfaları yalnızca Türkçe (ana site) ve İngilizce (`/en/`) yayında.** Diğer 14 dilde müşteriye hizmet verilemediği için o dillerin ajans adresleri İngilizce karşılığına kalıcı (301) yönlenir; sitemap, hreflang ve dil menüsünde yer almazlar. O dillerin takipçi ve diş turizmi sayfaları yerinde durur, menülerinde ajans linki çıkmaz.
+- Bir dili geri açmak için: `AGENCY_LANGS=en,de` (ortam değişkeni). İçerikler silinmedi.
+- `/<dil>/` altında her dil için ana sayfa, 4 hizmet kümesi, sektörler ve rehberler (dil başına 20 sayfa). İçerik `apps/intl/locales/<dil>.py`.
 - **Fiyatlar:** admin → *Pazar fiyatları* üzerinden her pazarın USD başlangıç fiyatı (varsayılan 1000, Polonya/Rusya/Ukrayna/Romanya/Azerbaycan 900).
   Yerel para birimine güncel kurla çevrilir; kurlar günde bir kez otomatik yenilenir. Sunucuda cron ile de çalıştırılabilir:
   `python manage.py update_fx_rates`

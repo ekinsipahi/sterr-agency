@@ -72,7 +72,14 @@ class PageTests(TestCase):
     def test_language_menu_on_turkish_site(self):
         html = self.client.get("/").content.decode()
         self.assertIn('class="lang-menu"', html)
-        self.assertIn('href="/de/" hreflang="de"', html)
+        self.assertIn('href="/en/" hreflang="en"', html)
+        self.assertNotIn('hreflang="de"', html)   # agency pages are public in Turkish and English only
+
+    def test_logo_leads_to_a_live_agency_home(self):
+        """Where the agency pages of a language are retired, the dental pages link to the English agency home."""
+        self.assertIn('href="/en/" class="brand"', self.client.get(page_path("de", "hub")).content.decode())
+        self.assertIn('href="/en/" class="brand"', self.client.get(page_path("en", "hub")).content.decode())
+        self.assertIn('href="/" class="brand"', self.client.get(page_path("tr", "hub")).content.decode())
 
 
 @override_settings(LEAD_NOTIFY_EMAILS=["owner@example.com"],

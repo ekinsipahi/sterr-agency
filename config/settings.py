@@ -191,6 +191,13 @@ LINKSTERR_API_URL = env("LINKSTERR_API_URL", default="https://linksterr.com")
 # Tests never call Linksterr; the ones about it set their own token.
 LINKSTERR_AGENCY_TOKEN = "" if "test" in sys.argv[1:2] else env("LINKSTERR_AGENCY_TOKEN", default="")
 
+# --- Agency pages by language -----------------------------------------------
+# The agency pages (home, services, industries, guides, about) are public in Turkish, the main
+# site, and in these languages under /<code>/. In every other language their URLs redirect to the
+# English page and leave the sitemap, hreflang and menus; the follower and dental tourism pages
+# of those languages stay. Clients are served in Turkish and English only (2026-11-23).
+AGENCY_LANGS = env.list("AGENCY_LANGS", default=["en"])
+
 # --- Contact ----------------------------------------------------------------
 WHATSAPP_NUMBER = env("WHATSAPP_NUMBER", default="905414487561")
 WHATSAPP_DISPLAY = env("WHATSAPP_DISPLAY", default="+90 541 448 75 61")

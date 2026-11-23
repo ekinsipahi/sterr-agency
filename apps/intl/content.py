@@ -1,12 +1,18 @@
 """International agency pages: content loading, URLs and hreflang.
 
 Page keys are shared with the Turkish site so every page links to its equivalent
-in all 16 languages:
+in the other languages:
     home · cluster:<tr-slug> · sectors · sector:<tr-slug> · guides · guide:<tr-slug> · about
-Turkish versions are the existing Turkish pages; the other 15 languages live under
+Turkish versions are the existing Turkish pages; the other languages live under
 /<code>/ with localized slugs from apps/intl/locales/<code>.py.
+
+Only the languages in settings.AGENCY_LANGS (plus Turkish) are public: active_codes(). The
+content of the other languages stays loaded, because their follower pages use its menus and
+their old URLs must resolve to a page key to redirect to the English page.
 """
 from importlib import import_module
+
+from django.conf import settings
 
 from apps.core.languages import DEFAULT, INTL_CODES, LANGS
 
@@ -55,14 +61,25 @@ def page_path(code, key):
     return f"/{code}/{c['slugs'][group]}/{c[group][slug]['slug']}/"
 
 
+def active_codes():
+    """The /<code>/ languages whose agency pages are public (settings.AGENCY_LANGS)."""
+    return [code for code in INTL_CODES if code in settings.AGENCY_LANGS]
+
+
+def is_active(code):
+    """Whether the agency pages are public in this language (Turkish is the main site)."""
+    return code == "tr" or code in settings.AGENCY_LANGS
+
+
 def alternates(key):
-    """[(hreflang, path)] for all 16 languages plus x-default (English)."""
-    return [(lang.code, page_path(lang.code, key)) for lang in LANGS] + [("x-default", page_path(DEFAULT, key))]
+    """[(hreflang, path)] for the public languages plus x-default (English)."""
+    return ([(lang.code, page_path(lang.code, key)) for lang in LANGS if is_active(lang.code)]
+            + [("x-default", page_path(DEFAULT, key))])
 
 
 def lang_links(key):
-    """Language menu rows (Lang, url) pointing at the same page in every language."""
-    return [(lang, page_path(lang.code, key)) for lang in LANGS]
+    """Language menu rows (Lang, url) pointing at the same page in every public language."""
+    return [(lang, page_path(lang.code, key)) for lang in LANGS if is_active(lang.code)]
 
 
 def resolve(code, first=None, second=None):

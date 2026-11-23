@@ -5,10 +5,10 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 
-from apps.core.languages import INTL_CODES
 from apps.dental.languages import LANGS, PAGES, alternates, page_path
 from apps.intl.about import ABOUT, FOUNDER_INSTAGRAM
 from apps.intl.content import PAGE_KEYS as INTL_PAGE_KEYS
+from apps.intl.content import active_codes as intl_active_codes
 from apps.intl.content import alternates as intl_alternates
 from apps.intl.content import page_path as intl_path
 from apps.seo.cities import CITIES_ALPHA
@@ -109,11 +109,11 @@ def dental_sitemap_urls():
 
 
 def intl_sitemap_urls():
-    """(path, priority, alternates) for the 15-language agency pages."""
+    """(path, priority, alternates) for the agency pages of the public languages (settings.AGENCY_LANGS)."""
     prio = {"home": "1.0", "cluster": "0.9", "sectors": "0.7", "sector": "0.7", "guides": "0.6", "guide": "0.6", "about": "0.5"}
     return [
         (intl_path(code, key), prio[key.partition(":")[0]], intl_alternates(key))
-        for key in INTL_PAGE_KEYS for code in INTL_CODES
+        for key in INTL_PAGE_KEYS for code in intl_active_codes()
     ]
 
 

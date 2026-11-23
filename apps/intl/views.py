@@ -2,22 +2,24 @@ from urllib.parse import quote
 
 from django.conf import settings
 from django.core.cache import cache
-from django.http import Http404
+from django.http import Http404, HttpResponsePermanentRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import translation
 from django.views.decorators.http import require_POST
 
-from apps.core.languages import LANG_BY_CODE
+from apps.core.languages import DEFAULT, LANG_BY_CODE
 from apps.core.models import Testimonial
 from apps.dental.languages import page_path as dental_path
+from apps.growth.content import CONTENT as GROWTH_CONTENT
 from apps.growth.content import FOLLOWERS_NAV, followers_menu
+from apps.growth.content import page_path as growth_path
 from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
 from .about import FOUNDER_INSTAGRAM
-from .content import (CLUSTER_KEYS, CONTENT, GUIDE_KEYS, PAGE_KEYS, SECTOR_KEYS, alternates, fill, lang_links,
-                      page_path, resolve)
+from .content import (CLUSTER_KEYS, CONTENT, GUIDE_KEYS, PAGE_KEYS, SECTOR_KEYS, alternates, fill, is_active,
+                      lang_links, page_path, resolve)
 from .forms import IntlLeadForm
 from .notifications import notify_intl_lead
 from .pricing import price_for
@@ -32,6 +34,17 @@ WORK = [
 ]
 
 
+def _home(code):
+    """Where the logo leads: the agency home, or, in a language whose agency pages are retired,
+    that language's follower pages (which keep this shell)."""
+    if is_active(code):
+        return page_path(code, "home")
+    for platform, langs in GROWTH_CONTENT.items():
+        if code in langs:
+            return growth_path(code, "main", platform)
+    return page_path(DEFAULT, "home")
+
+
 def _base_context(code, key, form=None):
     price = price_for(code)
     data = fill(CONTENT[code], price=price["display"], currency=price["currency"])
@@ -42,6 +55,7 @@ def _base_context(code, key, form=None):
         form.localize(ui)
     return {
         "L": LANG_BY_CODE[code],
+        "agency": is_active(code),   # False: the shell shows no links to this language's agency pages
         "key": key,
         "c": data,
         "ui": ui,
@@ -54,7 +68,7 @@ def _base_context(code, key, form=None):
         "og_locale": LANG_BY_CODE[code].og_locale,
         "whatsapp_url": f"https://wa.me/{settings.WHATSAPP_NUMBER}?text={quote(ui['wa_text'])}",
         "urls": {
-            "home": page_path(code, "home"),
+            "home": _home(code),
             "sectors": page_path(code, "sectors"),
             "guides": page_path(code, "guides"),
             "about": page_path(code, "about"),
@@ -100,6 +114,10 @@ def intl_page(request, lang, first=None, second=None):
     key = resolve(lang, first, second)
     if key is None:
         raise Http404
+    if not is_active(lang):
+        # A retired language: the same page in English, for good.
+        query = request.META.get("QUERY_STRING", "")
+        return HttpResponsePermanentRedirect(page_path(DEFAULT, key) + (f"?{query}" if query else ""))
     return _render(request, lang, key)
 
 

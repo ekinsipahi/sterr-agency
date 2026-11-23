@@ -9,6 +9,8 @@ from django.utils import translation
 from django.views.decorators.http import require_POST
 
 from apps.core.models import Testimonial
+from apps.intl.content import is_active as agency_active
+from apps.intl.content import page_path as agency_path
 from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
@@ -47,7 +49,9 @@ def _context(request, code, page, form=None):
         "lang_links": lang_links(page),
         "current_lang": LANG_BY_CODE[code],
         "alternates": alternates(page),
-        "urls": {**{pg: page_path(code, pg) for pg in PAGES}, "agency": "/" if code == "tr" else f"/{code}/"},
+        # The agency home in this language, or the English one where the agency pages are retired.
+        "urls": {**{pg: page_path(code, pg) for pg in PAGES},
+                 "agency": agency_path(code if agency_active(code) else DEFAULT, "home")},
         "canonical_url": settings.SITE_URL + path,
         "og_locale": LANG_BY_CODE[code].og_locale,
         "whatsapp_url": f"https://wa.me/{settings.WHATSAPP_NUMBER}?text={quote(ui['wa_text'])}",
