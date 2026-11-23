@@ -1,10 +1,14 @@
 import csv
 
 from django.contrib import admin
+from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.utils.html import format_html
 
-from .models import Lead
+from . import phonebook
+from .models import Lead, PhoneBook
 
 
 @admin.register(Lead)
@@ -60,3 +64,40 @@ class LeadAdmin(admin.ModelAdmin):
         for lead in queryset.exclude(status="contacted"):  # save() so GA4 gets working_lead
             lead.status = "contacted"
             lead.save(update_fields=["status"])
+
+
+@admin.register(PhoneBook)
+class PhoneBookAdmin(admin.ModelAdmin):
+    """One read-only page: every phone number the forms collected, whose it is and why it was asked for."""
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        if not self.has_view_permission(request):
+            raise PermissionDenied
+        source = request.GET.get("source", "")
+        if source not in phonebook.SOURCES:
+            source = ""
+        q = request.GET.get("q", "").strip()
+        rows = phonebook.rows(source, q)
+        counts = {key: 0 for key in phonebook.SOURCES}
+        for row in rows:
+            counts[row["source"]] += 1
+        page = Paginator(rows, 100).get_page(request.GET.get("p"))
+        return render(request, "admin/leads/phonebook.html", {
+            **self.admin_site.each_context(request),
+            "title": "Telefon rehberi",
+            "opts": self.model._meta,
+            "page": page,
+            "total": len(rows),
+            "q": q,
+            "source": source,
+            "sources": [(key, info["label"], info["why"], counts[key]) for key, info in phonebook.SOURCES.items()],
+        })

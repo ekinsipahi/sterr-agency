@@ -131,3 +131,15 @@ class Lead(models.Model):
         elif not digits.startswith("90") and len(digits) == 10:
             digits = "90" + digits
         return f"https://wa.me/{digits}"
+
+
+class PhoneBook(models.Model):
+    """Not a table: the admin page that lists every phone number the site's forms collected,
+    with whose it is and why it was asked for (apps.leads.phonebook). The model gives that page
+    its place in the admin and its permission (leads.view_phonebook)."""
+
+    class Meta:
+        managed = False
+        default_permissions = ("view",)
+        verbose_name = "Telefon numarası"
+        verbose_name_plural = "Telefon rehberi (tüm formlar)"

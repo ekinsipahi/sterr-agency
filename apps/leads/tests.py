@@ -104,3 +104,66 @@ class HashedUserDataTests(SimpleTestCase):
         data = hashed_user_data(" Ali@Example.COM ", "0151 2345678")
         self.assertEqual(data, {"sha256_email_address": hashlib.sha256(b"ali@example.com").hexdigest()})
         self.assertIn("sha256_phone_number", hashed_user_data("", "+49 151 2345678"))
+
+
+class PhoneBookTests(TestCase):
+    """The admin page that lists every phone number the forms collected."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from django.contrib.auth import get_user_model
+
+        from apps.dental.models import DentalInquiry
+        from apps.growth.models import AgencySubscription
+        from apps.intl.models import IntlLead
+
+        User = get_user_model()
+        cls.admin = User.objects.create_superuser("boss", "boss@example.com", "x")
+        cls.staff = User.objects.create_user("helper", "helper@example.com", "x", is_staff=True)
+        cls.lead = Lead.objects.create(name="Ayşe Yılmaz", company="Yılmaz Fizik", phone="0541 000 00 00",
+                                       email="ayse@example.com", sector="ozel-ders", goal="musteri", budget="100-250",
+                                       has_content="yok", timeline="hemen", city="ankara")
+        IntlLead.objects.create(lang="en", name="John Smith", email="john@example.com", phone="+44 20 7946 0958",
+                                country="UK", interest="sosyal-medya-ajansi")
+        DentalInquiry.objects.create(lang="de", name="Anna Müller", email="anna@example.com", phone="+49 151 2345678",
+                                     country="Deutschland", treatment="implants")
+        cls.sub = AgencySubscription.objects.create(email="creator@example.com", platform="tiktok", handle="creator.one",
+                                                    plan="rising", amount="149.99", phone="+4915123456789")
+        AgencySubscription.objects.create(email="old@example.com", handle="no.phone", plan="starter", amount="79.99")
+        cls.url = reverse("admin:leads_phonebook_changelist")
+
+    def test_lists_every_form_with_whose_number_and_why(self):
+        self.client.force_login(self.admin)
+        html = self.client.get(self.url).content.decode()
+        for text in ("0541 000 00 00", "+44 20 7946 0958", "+49 151 2345678", "+4915123456789",   # the four numbers
+                     "Ayşe Yılmaz", "John Smith", "Anna Müller", "@creator.one",                    # whose
+                     "Influencer ile iletişimde kalmak", "Ajans başvurusuna telefonla",            # why
+                     "https://wa.me/905410000000", "https://wa.me/4915123456789",
+                     reverse("admin:growth_agencysubscription_change", args=[self.sub.pk]),
+                     reverse("admin:leads_lead_change", args=[self.lead.pk])):
+            self.assertIn(text, html)
+        self.assertIn("<b>4</b> numara", html)
+        self.assertNotIn("no.phone", html)   # a subscription from before the phone field has no row
+
+    def test_search_and_form_filter(self):
+        self.client.force_login(self.admin)
+        html = self.client.get(self.url, {"q": "creator"}).content.decode()
+        self.assertIn("@creator.one", html)
+        self.assertNotIn("Ayşe Yılmaz", html)
+        html = self.client.get(self.url, {"source": "dental"}).content.decode()
+        self.assertIn("Anna Müller", html)
+        self.assertNotIn("John Smith", html)
+        self.assertIn("Ayşe Yılmaz", self.client.get(self.url, {"q": "0541 000"}).content.decode())   # by phone digits
+
+    def test_only_staff_with_the_permission(self):
+        self.assertEqual(self.client.get(self.url).status_code, 302)           # not signed in: to the admin login
+        self.client.force_login(self.staff)
+        self.assertEqual(self.client.get(self.url).status_code, 403)           # staff without the permission
+        from django.contrib.auth.models import Permission
+
+        self.staff.user_permissions.add(Permission.objects.get(codename="view_phonebook"))
+        self.assertEqual(self.client.get(self.url).status_code, 200)
+
+    def test_shown_in_the_admin_index(self):
+        self.client.force_login(self.admin)
+        self.assertIn("Telefon rehberi (tüm formlar)", self.client.get(reverse("admin:index")).content.decode())

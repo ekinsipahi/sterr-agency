@@ -1,0 +1,56 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">Anasayfa</a> &rsaquo; {{ title }}</div>{% endblock %}
+{% block content %}
+<div id="content-main">
+  <p>Sitedeki dört formun topladığı bütün telefon numaraları. Her satırda numaranın kime ait olduğu, hangi formda istendiği ve neden istendiği yazar. Kayıt bağlantısı o başvurunun ya da aboneliğin kendi sayfasını açar.</p>
+
+  <form method="get" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0">
+    <input type="search" name="q" value="{{ q }}" placeholder="Ad, e-posta, telefon, işletme ya da kullanıcı adı" style="min-width:300px">
+    <select name="source">
+      <option value="">Bütün formlar</option>
+      {% for key, label, why, count in sources %}<option value="{{ key }}"{% if key == source %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <input type="submit" value="Ara">
+    {% if q or source %}<a href="?">Temizle</a>{% endif %}
+  </form>
+
+  <table style="margin-bottom:18px">
+    <thead><tr><th>Form</th><th>Telefon neden isteniyor</th><th>Bu listede</th></tr></thead>
+    <tbody>
+      {% for key, label, why, count in sources %}
+      <tr><td><a href="?source={{ key }}{% if q %}&amp;q={{ q|urlencode }}{% endif %}">{{ label }}</a></td><td>{{ why }}</td><td>{{ count }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p><b>{{ total }}</b> numara{% if page.paginator.num_pages > 1 %}, sayfa {{ page.number }} / {{ page.paginator.num_pages }}{% endif %}.</p>
+  <div class="results" style="overflow-x:auto">
+  <table id="result_list" style="width:100%">
+    <thead><tr><th>Tarih</th><th>Kimin</th><th>Telefon</th><th>Hangi formdan</th><th>Neden istendi</th><th>Durum</th><th>Kayıt</th></tr></thead>
+    <tbody>
+      {% for row in page %}
+      <tr>
+        <td style="white-space:nowrap">{{ row.date|date:"d.m.Y H:i" }}</td>
+        <td><b>{{ row.who }}</b>{% if row.detail %}<br>{{ row.detail }}{% endif %}<br><a href="mailto:{{ row.email }}">{{ row.email }}</a></td>
+        <td style="white-space:nowrap"><b>{{ row.phone }}</b><br>{% if row.whatsapp %}<a href="{{ row.whatsapp }}" target="_blank" rel="noopener">WhatsApp</a> · {% endif %}<a href="tel:{{ row.phone|cut:" " }}">Ara</a></td>
+        <td>{{ row.source_label }}</td>
+        <td>{{ row.why }}</td>
+        <td>{{ row.status }}</td>
+        <td style="white-space:nowrap"><a href="{{ row.url }}">Kaydı aç</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7">Bu aramaya uyan numara yok.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  {% if page.paginator.num_pages > 1 %}
+  <p class="paginator" style="margin-top:12px">
+    {% if page.has_previous %}<a href="?p={{ page.previous_page_number }}{% if q %}&amp;q={{ q|urlencode }}{% endif %}{% if source %}&amp;source={{ source }}{% endif %}">&lsaquo; Önceki</a>{% endif %}
+    <span class="this-page">{{ page.number }}</span>
+    {% if page.has_next %}<a href="?p={{ page.next_page_number }}{% if q %}&amp;q={{ q|urlencode }}{% endif %}{% if source %}&amp;source={{ source }}{% endif %}">Sonraki &rsaquo;</a>{% endif %}
+  </p>
+  {% endif %}
+</div>
+{% endblock %}
