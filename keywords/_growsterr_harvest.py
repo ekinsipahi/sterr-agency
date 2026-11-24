@@ -7,6 +7,8 @@ For every keyword in growsterr's docs/keywords/page-plan.csv decide:
   HAVE  the page already carries it (exact phrase, or all of its meaningful words)
   NEW   the intent has no page on Sterr Agency (a page or section would have to be opened)
   SKIP  not to be moved (rule-breaking, not sold, spam variant, thin)
+Keywords written into the pages are recorded in keywords/growsterr_added.csv (keyword, page, date):
+once a page carries them they turn into HAVE here, and the report keeps the list of what was added.
 Reads the growsterr repo next to this one (or $GROWSTERR). No Django, no database."""
 import csv
 import os
@@ -287,6 +289,15 @@ def coverage(section, page, kw):
     return ("words", [], page) if not miss else ("missing", miss, page)
 
 
+def added_record():
+    """{(keyword, growsterr page): date} for the keywords this harvest wrote into the pages."""
+    path = HERE / "growsterr_added.csv"
+    if not path.exists():
+        return {}
+    with open(path, encoding="utf-8") as fh:
+        return {(r["keyword"], r["grow_page"]): r["added"] for r in csv.DictReader(fh)}
+
+
 def volumes():
     out = {}
     for name in ("instagram", "youtube", "agency"):
@@ -320,8 +331,11 @@ def main():
                     continue
                 if r["file"] == "articles_agency_countries":
                     if kw in AGENCY_GEO_KEEP:
-                        row.update(decision="ADD", section="creators", page="main", url=url("creators", "main"),
-                                   coverage="eksik", reason="tek 'nerede çalışıyoruz' cümlesi: ülke adları bir arada")
+                        state, miss, _ = coverage("creators", "main", kw)
+                        row.update(decision="HAVE" if state != "missing" else "ADD", section="creators", page="main",
+                                   url=url("creators", "main"), missing_words=" ".join(miss),
+                                   coverage={"exact": "aynen geçiyor", "words": "kelimeleri geçiyor", "missing": "eksik"}[state],
+                                   reason="tek 'nerede çalışıyoruz' cümlesi: ülke adları bir arada")
                     else:
                         row.update(decision="SKIP", reason="şehir/ülke × ajans: ince sayfa (yurt dışında şehir sayfası açmıyoruz)")
                     continue
@@ -394,6 +408,9 @@ def main():
         if row["decision"] == "ADD":
             miss = set(row["missing_words"].split())
             row["priority"] = "küçük" if miss and miss <= MINOR else "ana"
+    added = added_record()
+    for row in out:
+        row["added"] = added.get((row["keyword"], row["grow_page"]), "") if row["decision"] == "HAVE" else ""
     with open(HERE / "growsterr_harvest.csv", "w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(out[0]))
         w.writeheader()
@@ -477,6 +494,7 @@ def write_report(out, clusters):
     for r in out:
         by[r["decision"]].append(r)
     add, new, skip, have = by["ADD"], by["NEW"], by["SKIP"], by["HAVE"]
+    written = [r for r in have if r.get("added")]
 
     def kw(r):
         return r["keyword"] + (f" ({r['volume']})" if r["volume"] else "")
@@ -494,7 +512,8 @@ def write_report(out, clusters):
         "|---|---|---|",
         f"| Mevcut sayfaya eklenecek | {len(add)} | Niyeti bir sayfamızla tutuyor ama o sayfada geçmiyor |",
         f"| Sayfası yok | {len(new)} | Niyetin karşılığı olan sayfa ya da bölüm bizde yok |",
-        f"| Zaten karşılanıyor | {len(have)} | İlgili sayfada aynen ya da bütün kelimeleriyle geçiyor |",
+        f"| Zaten karşılanıyor | {len(have)} | İlgili sayfada aynen ya da bütün kelimeleriyle geçiyor"
+        + (f" ({len(written)} tanesi bu çalışmayla eklendi, bölüm 1)" if written else "") + " |",
         f"| Taşınmayacak | {len(skip)} | Kural dışı, satmadığımız bir şey, spam varyasyonu ya da ince sayfa |",
         "",
         "## Şu an hedeflediğimiz ana keyword'ler nerede duruyor",
@@ -511,7 +530,20 @@ def write_report(out, clusters):
     pages = defaultdict(list)
     for r in add:
         pages[(r["section"], r["page"], r["url"])].append(r)
-    order = {"instagram": 0, "tiktok": 1, "creators": 2, "agency (intl)": 3}
+    order = {"instagram": 0, "tiktok": 1, "youtube": 2, "creators": 3, "agency (intl)": 4}
+    if written:
+        dates = sorted({r["added"] for r in written})
+        lines += [f"### Eklenenler ({len(written)})", "",
+                  f"Bu keyword'ler sayfalara içerikleriyle birlikte yazıldı ({', '.join(dates)}) ve artık 'zaten karşılanıyor' sayılıyor. "
+                  "Yalnızca İngilizce sayfalara eklendi.", "",
+                  "| Sayfa | Keyword | Eklenenler |", "|---|---|---|"]
+        done = defaultdict(list)
+        for r in written:
+            done[(r["section"], r["url"])].append(r)
+        for (section, link), rs in sorted(done.items(), key=lambda x: (order.get(x[0][0], 9), -len(x[1]))):
+            rs.sort(key=lambda r: -int(r["volume"] or 0))
+            lines.append(f"| `{link}` | {len(rs)} | {'; '.join(kw(r) for r in rs)} |")
+        lines.append("")
     for (section, page, link), rs in sorted(pages.items(), key=lambda x: (order.get(x[0][0], 9), -len(x[1]))):
         lines += [f"### `{link}` ({len(rs)})", "",
                   "**Nasıl:** " + HOW.get((section, page), "İlgili paragrafa doğal cümleyle."), "",

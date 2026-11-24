@@ -180,7 +180,7 @@ DATA = {
             "why_title": "Social media is a sales channel, not a showcase",
             "why_text": "Likes do not pay invoices. Messages, bookings and orders do. We build your social media as a channel that sells: content earns attention, ads scale what works, and every conversation is steered towards a qualified enquiry.",
             "faqs": [
-                ("Which platforms do you manage?", "Instagram, TikTok, Facebook, YouTube and LinkedIn, depending on where your customers are."),
+                ("Which platforms do you manage?", "Instagram, TikTok, Facebook, YouTube and LinkedIn, depending on where your customers are. Looking for an Instagram marketing agency or an Instagram advertising agency? That is this service: content, community and paid campaigns on Instagram, with the other platforms added where your customers are."),
                 ("How much does a social media agency cost?", "Our plans start at {price} per month, including content production, ad management, strategy and reporting. Ad spend is separate."),
                 ("Do I have to send you content?", "No. Our content team produces it. You approve before anything is published."),
                 ("Who owns the accounts?", "You do. Accounts, ad accounts and data are always in your name; we only work as authorised users."),
@@ -203,7 +203,7 @@ DATA = {
                 ("Reporting", "Monthly figures on messages, bookings and sales."),
             ],
             "why_title": "What management really includes",
-            "why_text": "Many offers called social media management only mean posting. Real management means a plan, production, ads and answering every message, with one person responsible for results. That is what we take on.",
+            "why_text": "Many offers called social media management only mean posting. Real management means a plan, production, ads and answering every message, with one person responsible for results. That is what we take on. On Instagram, that one team covers what is often split between several suppliers: the look and voice of the account (the work of an Instagram branding agency), the photos and designs (an Instagram creative agency), the videos (an Instagram Reels agency) and the ads and reporting (an Instagram digital agency). For founders and professionals who are the face of their business, we do the same as an Instagram personal branding agency.",
             "faqs": [
                 ("Do I approve the content?", "Yes. Every month's plan and every post can be approved before it goes live."),
                 ("How much does social media management cost?", "Plans start at {price} per month. Ad spend is separate and paid directly to the platforms."),
@@ -485,7 +485,7 @@ DATA = {
             "lede": "One offer is a few hundred a month, another several thousand. Both say \"social media management\", but they describe very different work.",
             "minutes": 5,
             "body": [
-                ("p", "Social media agency prices differ hugely depending on what is in the package. Before comparing numbers, compare what you actually get."),
+                ("p", "Social media agency prices differ hugely depending on what is in the package, and Instagram marketing agency pricing is no exception: one quote covers three posts a week, another covers filming, ads and every message. Before comparing numbers, compare what you actually get."),
                 ("h2", "What sets social media agency fees?"),
                 ("table", [
                     ["Item", "Low-budget offer", "Results-focused offer"],

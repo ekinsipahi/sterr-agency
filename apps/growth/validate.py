@@ -1,5 +1,7 @@
 """Checks a language's growth copy against the English source: same keys and shapes,
 meta lengths, wording rules, and that every keyword assigned to a page appears on it.
+Body sections, FAQ counts and keyword lists are each language's own: English carries
+sections and questions for English-only searches that the other languages don't have.
 Used by the tests and by `manage.py check_growth_copy <code>` (which only imports the
 files of the languages it checks, so a half-written translation elsewhere can't break it)."""
 import json
@@ -25,7 +27,7 @@ def load(code):
     return ui, pages
 
 
-def shape(value, skip=("body", "keywords", "geo", "subs")):
+def shape(value, skip=("body", "faqs", "keywords", "geo", "subs")):
     if isinstance(value, dict):
         return {k: shape(v, skip) for k, v in value.items() if k not in skip}
     if isinstance(value, (list, tuple)):
@@ -88,6 +90,9 @@ def check(code):
             for field in ("body", "faqs"):
                 if field in ref[page] and not p.get(field):
                     problems.append(f"{where}/{page}: empty {field}")
+            if any(not (isinstance(qa, (list, tuple)) and len(qa) == 2 and all(isinstance(x, str) and x.strip() for x in qa))
+                   for qa in p.get("faqs", [])):
+                problems.append(f"{where}/{page}: every FAQ must be a (question, answer) pair")
             if len(p["title"]) > TITLE_MAX:
                 problems.append(f"{where}/{page}: title {len(p['title'])} > {TITLE_MAX}: {p['title']}")
             if len(p["description"]) > DESCRIPTION_MAX:
