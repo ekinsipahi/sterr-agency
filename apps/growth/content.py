@@ -6,10 +6,14 @@
 
 Turkish lives at the site root, the other languages under /<code>/. The main page is the
 hub: it links to every other page of its platform, and they all link back.
+
+The follower pages are public in every language they are written in. The creators hub is an
+agency page: public only in the languages of apps.core.languages.is_public(); its URLs in the
+other languages redirect to the English page (views.creators).
 """
 from importlib import import_module
 
-from apps.core.languages import DEFAULT, LANGS
+from apps.core.languages import DEFAULT, LANGS, is_public, public_langs
 
 from .constants import ACCOUNT_NAV, CREATOR_PAGES, FOLLOWERS_NAV, GROUPS, GUIDES, PACKAGE_PAGES, PAGE_PLAN, PAGES, PLATFORM_NAMES, PLATFORMS, PROFILE_URL  # noqa: F401
 
@@ -112,8 +116,13 @@ def creator_routes():
     return [(creator_path(code, page)[1:], code, page) for code in CREATORS for page in CREATOR_PAGES]
 
 
+def creator_lang_links(page):
+    """Language menu rows (Lang, url) of a creators page: the public languages only."""
+    return [(lang, creator_path(lang.code, page)) for lang in public_langs() if lang.code in CREATORS]
+
+
 def creator_alternates(page):
-    alts = [(lang.code, creator_path(lang.code, page)) for lang in LANGS if lang.code in CREATORS]
+    alts = [(lang.code, url) for lang, url in creator_lang_links(page)]
     return alts + [("x-default", creator_path(DEFAULT, page))] if DEFAULT in CREATORS else alts
 
 
@@ -130,7 +139,7 @@ def followers_menu(code):
             navs = data.get("navs", {})
             items += [(navs[page], page_path(code, page, p)) for page in ("packages", "likes", "views", "comments")
                       if page in navs and has_page(code, page, p)]
-    if code in CREATORS:
+    if code in CREATORS and is_public(code):
         items.append((CREATORS[code]["nav"], creator_path(code, "main")))
     if items:
         items.append((ACCOUNT_NAV.get(code, ACCOUNT_NAV["en"]), f"{reverse('growth:account')}?lang={code}"))

@@ -1,6 +1,13 @@
 """The 16 site languages. Turkish = the main site at /, the other 15 have their own
-international pages (/<code>/) and dental tourism pages (/dental-tourism/<code>/)."""
+international pages (/<code>/) and dental tourism pages (/dental-tourism/<code>/).
+
+Only the follower pages (Instagram, TikTok, YouTube) are public in every language they are
+written in. Everything else (agency, dental tourism, the creators hub) is public in Turkish
+and the languages of settings.AGENCY_LANGS: is_public(). The other languages' URLs redirect
+to the English page; their content stays in the repo, so a language comes back with the setting."""
 from dataclasses import dataclass
+
+from django.conf import settings
 
 
 @dataclass(frozen=True)
@@ -41,3 +48,13 @@ LANGS = [
 DEFAULT = "en"  # x-default
 LANG_BY_CODE = {lang.code: lang for lang in LANGS}
 INTL_CODES = [lang.code for lang in LANGS if lang.code != "tr"]
+
+
+def is_public(code):
+    """Whether the agency, dental tourism and creators pages are public in this language."""
+    return code == "tr" or code in settings.AGENCY_LANGS
+
+
+def public_langs():
+    """The languages of is_public(), in menu order."""
+    return [lang for lang in LANGS if is_public(lang.code)]

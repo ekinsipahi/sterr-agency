@@ -178,9 +178,9 @@ keywords/    keyword haritası + CSV'ler
 ```
 
 
-## Diş turizmi (16 dil) ve yorumlar
+## Diş turizmi (Türkçe ve İngilizce yayında) ve yorumlar
 
-- `/dental-tourism/` altında 2 sayfa × 16 dil (acente + iş birliği); yalnızca "dental tourism agency" tipi aramaları hedefler. İçerik `apps/dental/locales/<dil>.py`.
+- `/dental-tourism/` altında 2 sayfa (acente + iş birliği); yalnızca "dental tourism agency" tipi aramaları hedefler. İçerik 16 dilde yazılı (`apps/dental/locales/<dil>.py`) ama 24 Kasım 2026'dan beri yalnızca Türkçe ve İngilizce yayında; diğer dillerin adresleri İngilizce sayfaya 301 yönlenir (bkz. `AGENCY_LANGS`).
   Gelen talepler admin → **Diş turizmi talepleri**; bildirim aynı Resend ayarıyla gider.
 - Navbar'daki bayraklı dil menüsü bayrakları `static/img/flags/` (PNG, @2x).
 - **Google yorumları:** admin → Site ayarları → "Google'da yorum yazma linki" alanına Google İşletme Profili'ndeki
@@ -190,8 +190,8 @@ keywords/    keyword haritası + CSV'ler
 
 ## Uluslararası ajans (yalnızca İngilizce yayında)
 
-- **23 Kasım 2026'dan beri ajans sayfaları yalnızca Türkçe (ana site) ve İngilizce (`/en/`) yayında.** Diğer 14 dilde müşteriye hizmet verilemediği için o dillerin ajans adresleri İngilizce karşılığına kalıcı (301) yönlenir; sitemap, hreflang ve dil menüsünde yer almazlar. O dillerin takipçi ve diş turizmi sayfaları yerinde durur, menülerinde ajans linki çıkmaz.
-- Bir dili geri açmak için: `AGENCY_LANGS=en,de` (ortam değişkeni). İçerikler silinmedi.
+- **Takipçi sayfaları dışındaki her şey yalnızca Türkçe ve İngilizce yayında.** Ajans sayfaları 23 Kasım 2026'dan, diş turizmi ve creators (influencer ajansı) sayfaları 24 Kasım 2026'dan beri böyle. Diğer 14 dilde müşteriye hizmet verilemediği için o dillerin bu adresleri İngilizce karşılığına kalıcı (301) yönlenir; sitemap, hreflang ve dil menüsünde yer almazlar. O dillerde yalnızca takipçi sayfaları (Instagram, TikTok) durur; menülerinde ajans, diş turizmi ve creators linki çıkmaz.
+- Bir dili geri açmak için: `AGENCY_LANGS=en,de` (ortam değişkeni; ajans, diş turizmi ve creators sayfalarını birlikte açar). İçerikler silinmedi. Kural tek yerde: `apps/core/languages.py` → `is_public()`.
 - `/<dil>/` altında her dil için ana sayfa, 4 hizmet kümesi, sektörler ve rehberler (dil başına 20 sayfa). İçerik `apps/intl/locales/<dil>.py`.
 - **Fiyatlar:** admin → *Pazar fiyatları* üzerinden her pazarın USD başlangıç fiyatı (varsayılan 1000, Polonya/Rusya/Ukrayna/Romanya/Azerbaycan 900).
   Yerel para birimine güncel kurla çevrilir; kurlar günde bir kez otomatik yenilenir. Sunucuda cron ile de çalıştırılabilir:

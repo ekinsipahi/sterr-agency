@@ -191,11 +191,13 @@ LINKSTERR_API_URL = env("LINKSTERR_API_URL", default="https://linksterr.com")
 # Tests never call Linksterr; the ones about it set their own token.
 LINKSTERR_AGENCY_TOKEN = "" if "test" in sys.argv[1:2] else env("LINKSTERR_AGENCY_TOKEN", default="")
 
-# --- Agency pages by language -----------------------------------------------
-# The agency pages (home, services, industries, guides, about) are public in Turkish, the main
-# site, and in these languages under /<code>/. In every other language their URLs redirect to the
-# English page and leave the sitemap, hreflang and menus; the follower and dental tourism pages
-# of those languages stay. Clients are served in Turkish and English only (2026-11-23).
+# --- Languages of everything except the follower pages ------------------------
+# The agency pages (home, services, industries, guides, about), the dental tourism pages and the
+# creators hub are public in Turkish, the main site, and in these languages. In every other
+# language their URLs redirect to the English page and leave the sitemap, hreflang and menus
+# (apps.core.languages.is_public). Only the follower pages (Instagram, TikTok, YouTube) stay in
+# every language. Clients are served in Turkish and English only (agency 2026-11-23; dental
+# tourism and creators 2026-11-24).
 AGENCY_LANGS = env.list("AGENCY_LANGS", default=["en"])
 
 # --- Contact ----------------------------------------------------------------

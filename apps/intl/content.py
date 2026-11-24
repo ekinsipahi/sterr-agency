@@ -14,7 +14,7 @@ from importlib import import_module
 
 from django.conf import settings
 
-from apps.core.languages import DEFAULT, INTL_CODES, LANGS
+from apps.core.languages import DEFAULT, INTL_CODES, is_public, public_langs
 
 from .about import ABOUT
 
@@ -66,20 +66,18 @@ def active_codes():
     return [code for code in INTL_CODES if code in settings.AGENCY_LANGS]
 
 
-def is_active(code):
-    """Whether the agency pages are public in this language (Turkish is the main site)."""
-    return code == "tr" or code in settings.AGENCY_LANGS
+is_active = is_public   # whether the agency pages are public in this language (Turkish is the main site)
 
 
 def alternates(key):
     """[(hreflang, path)] for the public languages plus x-default (English)."""
-    return ([(lang.code, page_path(lang.code, key)) for lang in LANGS if is_active(lang.code)]
+    return ([(lang.code, page_path(lang.code, key)) for lang in public_langs()]
             + [("x-default", page_path(DEFAULT, key))])
 
 
 def lang_links(key):
     """Language menu rows (Lang, url) pointing at the same page in every public language."""
-    return [(lang, page_path(lang.code, key)) for lang in LANGS if is_active(lang.code)]
+    return [(lang, page_path(lang.code, key)) for lang in public_langs()]
 
 
 def resolve(code, first=None, second=None):

@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, get_user_model, login
 from django.core import signing
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
-from django.http import Http404, HttpResponse, HttpResponseBadRequest
+from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponsePermanentRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -15,12 +15,12 @@ from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from apps.core.languages import LANG_BY_CODE
+from apps.core.languages import DEFAULT, LANG_BY_CODE, is_public
 from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
 from . import billing, evidence, linksterr
-from .content import has_page, ACCOUNT_NAV, CONTENT, CREATOR_PAGES, CREATORS, GROUPS, GUIDES, PAGE_PLAN, UI, PAGES, PLATFORM_NAMES, PLATFORMS, alternates, creator_alternates, creator_path, lang_links, page_path, ui_for
+from .content import has_page, ACCOUNT_NAV, CONTENT, CREATOR_PAGES, CREATORS, GROUPS, GUIDES, PAGE_PLAN, UI, PAGES, PLATFORM_NAMES, PLATFORMS, alternates, creator_alternates, creator_lang_links, creator_path, lang_links, page_path, ui_for
 from .constants import TERMS_VERSION
 from .forms import OrderForm
 from . import plan
@@ -89,7 +89,8 @@ def _context(request, code, page, platform="instagram", form=None):
             {"url": page_path(code, k, platform), "p": data[k], "here": k == kind} for k in keys if has_page(code, k, platform)])],
         "other_platform": [{"name": PLATFORM_NAMES[q], "url": page_path(code, "main", q), "p": CONTENT[q][code]["main"],
                             "label": ui_for(code, q)["other_platform"]} for q in other],
-        "creators_link": {"url": creator_path(code, "main"), "p": CREATORS[code]["main"], "label": CREATORS[code]["nav"]} if code in CREATORS else None,
+        "creators_link": ({"url": creator_path(code, "main"), "p": CREATORS[code]["main"], "label": CREATORS[code]["nav"]}
+                          if code in CREATORS and is_public(code) else None),
         "blocks": [(gu["engagement_title"], gu["engagement_text"]), (gu["instant_title"], gu["instant_text"]),
                    (gu["bots_title"], gu["bots_text"])],
         "signed_in": gu["signed_in_as"].replace("{email}", request.user.email) if request.user.is_authenticated else "",
@@ -111,7 +112,11 @@ def page(request, lang, page, platform="instagram"):
 
 
 def creators(request, lang, page):
-    """The 'influencer agency for creators' hub and its guides."""
+    """The 'influencer agency for creators' hub and its guides. An agency page: in a language
+    that is not public (apps.core.languages.is_public) it redirects to the English page for good."""
+    if not is_public(lang):
+        query = request.META.get("QUERY_STRING", "")
+        return HttpResponsePermanentRedirect(creator_path(DEFAULT, page) + (f"?{query}" if query else ""))
     data = CREATORS[lang]
     p = data[page]
     gu = ui_for(lang, "instagram")
@@ -119,7 +124,7 @@ def creators(request, lang, page):
     ctx.update({
         "page": page, "kind": page, "p": p, "g": data, "gu": gu, "faqs": p.get("faqs"), "is_guide": page != "main",
         "followers_active": True,
-        "lang_links": [(lang_obj, creator_path(lang_obj.code, page)) for lang_obj in LANG_BY_CODE.values() if lang_obj.code in CREATORS],
+        "lang_links": creator_lang_links(page),
         "alternates": creator_alternates(page),
         "canonical_url": settings.SITE_URL + creator_path(lang, page),
         "platform_links": [{"name": PLATFORM_NAMES[q], "label": ui_for(lang, q)["see_packages"], "url": page_path(lang, "main", q),

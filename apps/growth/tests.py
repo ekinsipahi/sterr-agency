@@ -119,6 +119,29 @@ class PageTests(TestCase):
             self.assertIn(f'href="{page_path("en", "agency", platform)}"', html)
         self.assertIn(f'href="{creator_path("en", "main")}"', self.client.get(page_path("en", "main")).content.decode())
 
+    def test_creators_hub_is_public_in_turkish_and_english_only(self):
+        """An agency page: the other languages redirect to English and leave the sitemap, the
+        hreflang set and the menus; their follower pages stay and don't link to it."""
+        from .content import CREATOR_PAGES, creator_path
+        for page in CREATOR_PAGES:
+            for code in ("de", "ar"):
+                with self.subTest(code=code, page=page):
+                    self.assertRedirects(self.client.get(creator_path(code, page)), creator_path("en", page),
+                                         status_code=301, fetch_redirect_response=False)
+        for code in ("en", "tr"):
+            html = self.client.get(creator_path(code, "main")).content.decode()
+            self.assertEqual(len(re.findall(r'<link rel="alternate" hreflang=', html)), 3)   # tr, en, x-default
+            self.assertNotIn('hreflang="de"', html)
+        body = self.client.get("/sitemaps/creators.xml").content.decode()
+        self.assertEqual(body.count("<loc>"), 2 * len(CREATOR_PAGES))
+        self.assertNotIn(creator_path("de", "main"), body)
+        german = self.client.get(page_path("de", "main")).content.decode()
+        self.assertNotIn(f'href="{creator_path("de", "main")}"', german)
+        self.assertNotIn(CREATORS["de"]["nav"], [label for label, url in followers_menu("de")])
+        self.assertIn(CREATORS["tr"]["nav"], [label for label, url in followers_menu("tr")])
+        with override_settings(AGENCY_LANGS=["en", "de"]):
+            self.assertEqual(self.client.get(creator_path("de", "main")).status_code, 200)
+
     def test_sitemap_index_and_follower_sections(self):
         index = self.client.get("/sitemap.xml").content.decode()
         for section in ("instagram-followers", "tiktok-followers", "creators"):

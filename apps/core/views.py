@@ -5,7 +5,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 
-from apps.dental.languages import LANGS, PAGES, alternates, page_path
+from apps.core.languages import is_public
+from apps.dental.languages import PAGES, alternates, page_path, public_langs
 from apps.intl.about import ABOUT, FOUNDER_INSTAGRAM
 from apps.intl.content import PAGE_KEYS as INTL_PAGE_KEYS
 from apps.intl.content import active_codes as intl_active_codes
@@ -101,10 +102,10 @@ def sitemap_urls():
 
 
 def dental_sitemap_urls():
-    """(path, priority, alternates) for every language version of the dental tourism pages."""
+    """(path, priority, alternates) for the dental tourism pages of the public languages."""
     return [
         (page_path(lang.code, page), "0.9" if page == "hub" else "0.8", alternates(page))
-        for page in PAGES for lang in LANGS
+        for page in PAGES for lang in public_langs()
     ]
 
 
@@ -118,7 +119,8 @@ def intl_sitemap_urls():
 
 
 def growth_sitemap_urls():
-    """(path, priority, alternates, section) for the follower pages and the creators hub in every language."""
+    """(path, priority, alternates, section) for the follower pages in every language and the
+    creators hub in the public languages."""
     from apps.growth.content import alternates as growth_alternates, routes as growth_routes
     prio = {"main": "0.9", "packages": "0.9", "likes": "0.9", "views": "0.9", "comments": "0.8", "real": "0.8", "pricing": "0.8",
             "views_reels": "0.8", "likes_monthly": "0.8", "agency": "0.7", "geo": "0.7"}
@@ -126,7 +128,7 @@ def growth_sitemap_urls():
     rows = [("/" + route, prio.get(page.partition(":")[0], "0.6"), growth_alternates(page, platform), platform)
             for route, code, page, platform in growth_routes()]
     return rows + [("/" + route, "0.8" if page == "main" else "0.6", creator_alternates(page), "creators")
-                   for route, code, page in creator_routes()]
+                   for route, code, page in creator_routes() if is_public(code)]
 
 
 def _url(site, path, prio, alts=None):

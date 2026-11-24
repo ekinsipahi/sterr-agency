@@ -3,7 +3,7 @@ import re
 from django.core import mail
 from django.test import TestCase, override_settings
 
-from .languages import CONTENT, LANGS, PAGES, page_path
+from .languages import CONTENT, LANGS, PAGES, page_path, public_langs
 from .models import DentalInquiry
 
 
@@ -42,8 +42,10 @@ class ContentTests(TestCase):
 
 
 class PageTests(TestCase):
-    def test_all_32_pages_render_with_hreflang(self):
-        for lang in LANGS:
+    def test_public_pages_render_with_hreflang(self):
+        """Turkish and English only: 2 pages each, hreflang tr + en + x-default."""
+        self.assertEqual([lang.code for lang in public_langs()], ["en", "tr"])
+        for lang in public_langs():
             for page in PAGES:
                 url = page_path(lang.code, page)
                 with self.subTest(url=url):
@@ -51,11 +53,27 @@ class PageTests(TestCase):
                     self.assertEqual(r.status_code, 200)
                     html = r.content.decode()
                     self.assertIn(f'<html lang="{lang.code}"', html)
-                    self.assertEqual(len(re.findall(r'<link rel="alternate" hreflang=', html)), 17)
+                    self.assertEqual(len(re.findall(r'<link rel="alternate" hreflang=', html)), 3)
                     self.assertIn(CONTENT[lang.code][page]["h1"].replace("'", "&#x27;"), html)
+                    self.assertNotIn('hreflang="de"', html)   # neither in the head nor in the language menu
 
-    def test_arabic_is_rtl(self):
-        self.assertIn('dir="rtl"', self.client.get("/dental-tourism/ar/").content.decode())
+    def test_other_languages_redirect_to_the_english_page(self):
+        retired = [lang.code for lang in LANGS if lang not in public_langs()]
+        self.assertEqual(len(retired), 14)
+        for code in retired:
+            for page in PAGES:
+                url = page_path(code, page)
+                with self.subTest(url=url):
+                    self.assertRedirects(self.client.get(url), page_path("en", page), status_code=301,
+                                         fetch_redirect_response=False)
+        r = self.client.get("/dental-tourism/de/?utm_source=x")
+        self.assertEqual((r.status_code, r["Location"]), (301, "/dental-tourism/?utm_source=x"))
+
+    @override_settings(AGENCY_LANGS=["en", "ar"])
+    def test_a_language_can_be_brought_back(self):
+        html = self.client.get("/dental-tourism/ar/").content.decode()
+        self.assertIn('dir="rtl"', html)
+        self.assertEqual(len(re.findall(r'<link rel="alternate" hreflang=', html)), 4)
 
     def test_english_prefix_redirects_and_unknown_404(self):
         self.assertRedirects(self.client.get("/dental-tourism/en/partners/"), "/dental-tourism/partners/",
@@ -63,10 +81,13 @@ class PageTests(TestCase):
         self.assertEqual(self.client.get("/dental-tourism/xx/").status_code, 404)
         self.assertEqual(self.client.get("/dental-tourism/de/partners/").status_code, 404)  # German slug is "partner"
 
-    def test_sitemap_lists_dental_pages_with_alternates(self):
+    def test_sitemap_lists_only_the_public_languages(self):
         body = self.client.get("/sitemaps/dental-tourism.xml").content.decode()
-        for lang in LANGS:
-            self.assertIn(f"{page_path(lang.code, 'partners')}</loc>", body)
+        self.assertEqual(body.count("<loc>"), 2 * len(PAGES))
+        for code in ("en", "tr"):
+            self.assertIn(f"{page_path(code, 'partners')}</loc>", body)
+        self.assertNotIn("/dental-tourism/de/", body)
+        self.assertNotIn('hreflang="de"', body)
         self.assertIn('hreflang="x-default"', body)
 
     def test_language_menu_on_turkish_site(self):
@@ -75,11 +96,15 @@ class PageTests(TestCase):
         self.assertIn('href="/en/" hreflang="en"', html)
         self.assertNotIn('hreflang="de"', html)   # agency pages are public in Turkish and English only
 
-    def test_logo_leads_to_a_live_agency_home(self):
-        """Where the agency pages of a language are retired, the dental pages link to the English agency home."""
-        self.assertIn('href="/en/" class="brand"', self.client.get(page_path("de", "hub")).content.decode())
+    def test_logo_leads_to_the_agency_home_of_the_language(self):
         self.assertIn('href="/en/" class="brand"', self.client.get(page_path("en", "hub")).content.decode())
         self.assertIn('href="/" class="brand"', self.client.get(page_path("tr", "hub")).content.decode())
+
+    def test_follower_pages_of_a_retired_language_do_not_link_to_dental_pages(self):
+        """German follower pages stay; their shell has no link into the retired German dental pages."""
+        html = self.client.get("/de/instagram-follower/").content.decode()
+        self.assertNotIn("/dental-tourism/", html)
+        self.assertIn("/dental-tourism/", self.client.get("/en/instagram-followers/").content.decode())
 
 
 @override_settings(LEAD_NOTIFY_EMAILS=["owner@example.com"],

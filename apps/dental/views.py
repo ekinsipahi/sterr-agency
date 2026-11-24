@@ -2,7 +2,7 @@ from urllib.parse import quote
 
 from django.conf import settings
 from django.core.cache import cache
-from django.http import Http404
+from django.http import Http404, HttpResponsePermanentRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import translation
@@ -15,7 +15,7 @@ from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
 from .forms import InquiryForm
-from .languages import CONTENT, DEFAULT, LANG_BY_CODE, LANGS, PAGES, alternates, page_path, resolve
+from .languages import CONTENT, DEFAULT, LANG_BY_CODE, PAGES, alternates, is_public, page_path, public_langs, resolve
 from .notifications import notify_inquiry
 
 RATE_LIMIT, RATE_WINDOW = 5, 60 * 60
@@ -30,8 +30,8 @@ WORK = [
 
 
 def lang_links(page):
-    """Language menu rows for `page`: (Lang, url). Shared with the Turkish main site."""
-    return [(lang, page_path(lang.code, page)) for lang in LANGS]
+    """Language menu rows for `page`: (Lang, url), the public languages only."""
+    return [(lang, page_path(lang.code, page)) for lang in public_langs()]
 
 
 def _context(request, code, page, form=None):
@@ -70,6 +70,10 @@ def dental_page(request, lang=None, slug=None):
     if found is None:
         raise Http404
     code, page = found
+    if not is_public(code):
+        # A language that is no longer public: the same page in English, for good.
+        query = request.META.get("QUERY_STRING", "")
+        return HttpResponsePermanentRedirect(page_path(DEFAULT, page) + (f"?{query}" if query else ""))
     return render(request, TEMPLATES[page], _context(request, code, page))
 
 
