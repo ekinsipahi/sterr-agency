@@ -146,6 +146,7 @@ def _sections():
         "dental-tourism": dental_sitemap_urls,
         "instagram-followers": lambda: [row for row in growth if row[3] == "instagram"],
         "tiktok-followers": lambda: [row for row in growth if row[3] == "tiktok"],
+        "youtube-subscribers": lambda: [row for row in growth if row[3] == "youtube"],
         "creators": lambda: [row for row in growth if row[3] == "creators"],
     }
 

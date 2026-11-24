@@ -1,5 +1,6 @@
 """Emails for the influencer packages and accounts: Turkish notes to the team, English for the
-customer whatever language the page was in. Failures are logged, never raised."""
+customer whatever language the page was in. Failures are logged, never raised. {audience},
+{one}, {profile}, {acct} and {joins} are the platform's words (followers, or subscribers on YouTube)."""
 import logging
 import math
 
@@ -35,11 +36,11 @@ PAID_SUBJECT = "Your campaign has started: {package} for @{handle} on {platform}
 PAID_BODY = (
     "Thanks for starting the {package} package for @{handle} on {platform} ({location}). We've received your "
     "payment of ${amount}, and your campaign has started.\n\n"
-    "From today, real people discover your profile every day. Those who like it follow you, like your posts "
-    "and comment, all on their own. Your package is spread over every 30 days; a typical month brings {followers} new followers, 2-3 likes for every "
-    "new follower and about one comment for every 10. Every follower is a real person, so every month is a "
-    "little different, and nothing arrives instantly: instant followers are bots.\n\n"
-    "You'll see your numbers in your account. We will never ask for your password; keep your account public "
+    "From today, real people discover your {profile} every day. Those who like it {joins}, "
+    "all on their own. Your package is spread over every 30 days; a typical month brings {followers} new {audience}, 2-3 likes for every "
+    "new {one} and about one comment for every 10. Every {one} is a real person, so every month is a "
+    "little different, and nothing arrives instantly: instant {audience} are bots.\n\n"
+    "You'll see your numbers in your account. We will never ask for your password; keep your {acct} public "
     "while the package runs.\n\n"
     "Billed monthly: the next payment is on {renews}. We'll email you 3 days before every renewal. Cancel any "
     "time in your account; canceling stops the next payment and the month you've paid for runs to its end "
@@ -49,7 +50,7 @@ PAID_BODY = (
     "\n\nGrowth may fall below the monthly target. Any verified shortfall for paid periods is recorded and "
     "completed at no extra charge, in addition to later months' normal growth. This obligation remains even "
     "if you cancel your subscription or remove your Stripe payment method; no new subscription or payment "
-    "is needed. Removing a payment method alone does not cancel your subscription. Your profile must remain "
+    "is needed. Removing a payment method alone does not cancel your subscription. Your {profile} must remain "
     "public and accessible for completion. Mandatory consumer and payment dispute rights remain unchanged."
 )
 PAYMENT_FAILED_SUBJECT = "We couldn't take your payment, so your campaign is paused"
@@ -83,8 +84,8 @@ CANCELED_BODY = (
     "No further payments will be taken.\n\n"
     "Your package keeps running until {renews}. Changed your mind? You can keep it from your account "
     "before then: {account}\n\n"
-    "Any verified outstanding follower balance for paid periods remains due after cancellation. "
-    "We complete it at no extra charge without a new subscription or payment, while your profile remains "
+    "Any verified outstanding {one} balance for paid periods remains due after cancellation. "
+    "We complete it at no extra charge without a new subscription or payment, while your {profile} remains "
     "public and accessible.\n\n"
     "Questions? Message us on WhatsApp: {whatsapp}"
 )
@@ -131,9 +132,15 @@ def _date(value):
         return formats.date_format(value, "F j, Y")
 
 
+JOINS = {"followers": "follow you, like your posts and comment",
+         "subscribers": "subscribe, watch your videos, like them and comment"}
+
+
 def _values(sub):
+    w = sub.words
     return {"platform": sub.platform_name, "handle": sub.handle, "location": sub.location, "amount": f"{sub.amount:.2f}",
             "package": sub.get_plan_display(),
+            "audience": w["audience"], "one": w["one"], "profile": w["profile"], "acct": w["account"], "joins": JOINS[w["audience"]],
             "followers": "{:,}-{:,}".format(*plan.PLAN_BY_KEY[sub.plan]["followers"]),
             "renews": _date(sub.current_period_end) if sub.current_period_end else "the same day next month",
             "account": f"{settings.SITE_URL}{reverse('growth:account')}?lang={sub.lang}",

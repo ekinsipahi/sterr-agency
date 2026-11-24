@@ -1,5 +1,6 @@
 """English UI for the follower pages and the account area. {platform} becomes
-Instagram or TikTok. This is the source every other language mirrors key by key."""
+Instagram, TikTok or YouTube. UI is the source every other language mirrors key by key;
+YOUTUBE holds the strings that differ on YouTube (subscribers, a channel, the video link)."""
 
 UI = {
     # Hero and page chrome
@@ -149,7 +150,7 @@ UI = {
     "login_submit": "Sign in",
     "login_error": "Wrong email or password.",
     "signup_title": "Create your account",
-    "signup_lead": "One account for your Instagram and TikTok subscriptions.",
+    "signup_lead": "One account for your Instagram, TikTok and YouTube subscriptions.",
     "signup_submit": "Create account",
     "signup_exists": "There's already an account with this email. Sign in instead.",
     "no_account": "No account yet?",
@@ -163,4 +164,53 @@ UI = {
     "new_password": "New password",
     "reset_save": "Save new password",
     "reset_done": "Your password has been changed.",
+}
+
+# What changes on YouTube. Everything not listed here is the same as in UI.
+YOUTUBE = {
+    "nav_cta": "Get subscribers",
+    "groups": {"followers": "Subscribers", "packages": "Influencer packages", "likes": "Likes", "views": "Views",
+               "comments": "Comments", "guides": "Guides"},
+    "compare_title": ("Instant subscribers vs ", "real people."),
+    "compare_cols": ("", "Instant / bot subscribers", "Sterr real subscribers"),
+    "packages_title": ("Influencer packages. ", "Subscribers, views, likes and comments in one."),
+    "packages_lead": "We sell growth as packages, the way an agency works. Every package brings real people who subscribe, watch, like and comment, spread over 30 days. Monthly, cancel any time.",
+    "plan_starter_for": "For new and small channels",
+    "plan_items": [
+        "{followers} new subscribers",
+        "{likes} likes: 2–3 per new subscriber",
+        "{comments} comments written by real people",
+        "Views on your videos from the same people",
+        "Spread over 30 days, from the location you choose",
+    ],
+    "plan_rising_extra": ["You choose which videos get the attention"],
+    "plan_pro_extra": ["You choose which videos get the attention", "Priority placement and a direct WhatsApp line"],
+    "plan_followers": "{followers} subscribers / month",
+    "estimate_note": "Typical monthly numbers, not a fixed count: every subscriber is a real person who chooses to subscribe, so every month is a little different. Views aren't counted in advance.",
+    "f_handle": "YouTube channel handle",
+    "f_handle_ph": "@yourchannel",
+    "f_handle_help": "Your channel's @handle, or its link: youtube.com/@yourchannel.",
+    "f_video": "Video to send viewers to (optional)",
+    "f_video_ph": "https://www.youtube.com/watch?v=...",
+    "f_video_help": "New viewers subscribe first, then watch this video. Leave it empty and they land on your channel page.",
+    "f_location": "Where should your new subscribers be from?",
+    "f_location_help": "We'll mostly try to bring your subscribers from here; wherever the best-matching audience is, more of them may come from there.",
+    "err_handle": "Enter your channel's @handle, or its link with the @ in it (youtube.com/@yourchannel).",
+    "err_video": "Paste a link to a YouTube video (a watch, Shorts or youtu.be link).",
+    "public_warning": "Your channel and its videos must be public. We can't grow a channel people can't open: keep it public for as long as your package runs.",
+    "engagement_title": ("Views, likes and comments come with it. ", "From the same real people."),
+    "engagement_text": "We don't sell views, likes or comments on their own. Anything that doesn't happen naturally gets filtered out by YouTube: you may not notice it, but YouTube has already put a value on your channel, so don't create a value that isn't real. In our packages, views, likes and comments come from the real people who subscribe: typically 2–3 likes for every new subscriber and about one comment for every 10. Views aren't counted in advance, because real people watch what interests them.",
+    "instant_text": "No real person subscribes to a channel seconds after a payment. When subscribers land instantly, they are bots. Our growth is spread across the month because every subscriber is a real person who saw your channel and chose to subscribe.",
+    "bots_title": ("The hidden penalty ", "for fake subscribers."),
+    "bots_text": "Bots don't watch, like or buy. Every one of them drags down the share of your subscribers who watch, and YouTube reads that as videos nobody wants. It doesn't tell you: your videos are just recommended less, quietly. YouTube also removes fake subscribers in sweeps, so the number drops, but the damage to your channel's standing stays. Climbing back out can take months, sometimes years. Real people are the only subscribers that never cost you that.",
+    "success_text": "Your {package} package for @{handle} is active. Real people start discovering your channel now; you'll see your new subscribers and channel visits in your account. A receipt is on its way to your inbox.",
+    "acc_gained": "New subscribers",
+    "acc_now": "Your channel now: {count} subscribers",
+    "acc_sum_gained": "New subscribers so far",
+    "acc_sum_visits": "Channel visits so far",
+    "acc_sum_now": "Your subscribers now",
+    "acc_chart": "New subscribers per day",
+    "acc_visits": "Channel visits",
+    "acc_count_note": "These numbers come from our delivery system: new subscribers are the real people we brought who subscribed, counted from their visits to your channel; channel visits are the people who opened your channel from our network. Your channel's own total also changes with your other growth and with people who unsubscribe.",
+    "acc_projection": "Next 30 days at today's pace: on average about {count} new subscribers ({low}–{high}). An estimate, not a promise.",
 }

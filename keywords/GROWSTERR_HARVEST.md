@@ -7,8 +7,8 @@ Parantez içindeki sayılar aylık arama hacmidir (growsterr'ın listesinde olan
 | Karar | Keyword | Anlamı |
 |---|---|---|
 | Mevcut sayfaya eklenecek | 0 | Niyeti bir sayfamızla tutuyor ama o sayfada geçmiyor |
-| Sayfası yok | 167 | Niyetin karşılığı olan sayfa ya da bölüm bizde yok |
-| Zaten karşılanıyor | 453 | İlgili sayfada aynen ya da bütün kelimeleriyle geçiyor (110 tanesi bu çalışmayla eklendi, bölüm 1) |
+| Sayfası yok | 34 | Niyetin karşılığı olan sayfa ya da bölüm bizde yok |
+| Zaten karşılanıyor | 586 | İlgili sayfada aynen ya da bütün kelimeleriyle geçiyor (243 tanesi bu çalışmayla eklendi, bölüm 1) |
 | Taşınmayacak | 800 | Kural dışı, satmadığımız bir şey, spam varyasyonu ya da ince sayfa |
 
 ## Şu an hedeflediğimiz ana keyword'ler nerede duruyor
@@ -21,13 +21,16 @@ Parantez içindeki sayılar aylık arama hacmidir (growsterr'ın listesinde olan
 | tiktok followers | `/en/tiktok-followers/` sayfasında geçiyor; toplam 15 İngilizce sayfada var. |
 | buy followers | `/en/instagram-followers/` sayfasında geçiyor; toplam 6 İngilizce sayfada var. |
 | follower bot | Bu kalıpla geçmiyor. Konu ('bot' kelimesi) 61 İngilizce sayfada işleniyor; en yakın sayfa `/en/instagram-instant-vs-gradual/`. Guest post bu aramayı karşılıyor. |
-| youtube subscribers | **Yok.** Sterr Agency'de YouTube bölümü yok; bu listenin en büyük boşluğu (bölüm 2). |
+| buy youtube subscribers | `/en/youtube-subscribers/` sayfasında geçiyor; toplam 6 İngilizce sayfada var. |
+| youtube subscribers | `/en/youtube-subscribers/` sayfasında geçiyor; toplam 10 İngilizce sayfada var. |
+| buy subscribers for youtube | `/en/youtube-subscribers/` sayfasında geçiyor; toplam 1 İngilizce sayfada var. |
+| buy youtube views | `/en/youtube-views-packages/` sayfasında geçiyor; toplam 6 İngilizce sayfada var. |
 
 ## 1. Mevcut sayfalara ekleyeceklerim (0)
 
 Yıldızlı (*) olanlar yeni bir niyet değil, küçük bir kelime farkı: cümle içine tek kelimeyle girer.
 
-### Eklenenler (110)
+### Eklenenler (243)
 
 Bu keyword'ler sayfalara içerikleriyle birlikte yazıldı (2026-11-24) ve artık 'zaten karşılanıyor' sayılıyor. Yalnızca İngilizce sayfalara eklendi.
 
@@ -51,6 +54,20 @@ Bu keyword'ler sayfalara içerikleriyle birlikte yazıldı (2026-11-24) ve artı
 | `/en/tiktok-followers/buy-1000-tiktok-followers/` | 5 | tiktok followers 1000 to go live; how many followers do you need to go live on tiktok; buy tiktok followers to go live; buy 1000 tiktok followers to go live; buy 1000 tiktok followers cheap |
 | `/en/tiktok-followers/` | 5 | buy tiktok shop followers; tiktok shop followers; buy followers for tiktok shop; buy tiktok followers 2026; buy tiktok followers viral |
 | `/en/tiktok-packages/` | 1 | buy tiktok engagement |
+| `/en/youtube-views-packages/` | 44 | buy youtube video views (880); buy views on youtube cheap (720); buy views for youtube video (590); buy 1000 youtube views (320); buy 1 million youtube views cheap (70); buy youtube views by country; buy views on youtube; buy youtube premium views; buy youtube views; buy youtube views 2026; buy youtube views best; buy youtube views sites; buy youtube views viral; buy youtube views website; buy youtube playlist views; buy youtube music views; buy youtube views slow; buy youtube views high retention; buy youtube views retention; buy youtube views with retention; buy youtube views for multiple videos; buy youtube views over time; buy real youtube views non drop; buy youtube views no drop; buy youtube views non drop; buy youtube views that don t drop; buy youtube targeted views; buy youtube views organic; buy quality youtube views; buy real views on youtube; buy youtube views high quality; buy youtube views real; buy youtube views legit; buy youtube views safe; buy youtube views cheap; buy youtube views cheap price; buy youtube views cost; buy youtube views for cheap; buy youtube views package; buy youtube views price; buy youtube views very cheap; buy 1000 youtube views cheap; buy youtube views 1 million; buy 5000 youtube views |
+| `/en/youtube-subscribers/` | 15 | buy subscribers for youtube (22200); buy subscribers for youtube channel (110); buy youtube subscribers online (90); buy subscribers on youtube; buy youtube channel subscribers; buy youtube subscribers; buy youtube subscribers 2026; buy youtube subscribers best; buy youtube subscribers viral; buy youtube subscribers website; buy youtube subscribers australia; buy real youtube subscribers uk; buy youtube subscribers uk; buy youtube subscribers in usa; buy youtube subscribers usa |
+| `/en/youtube-instant-vs-gradual/` | 11 | buy youtube subscribers slow; buy youtube subscribers slowly; buy youtube subscribers fast; buy youtube subscribers instant; buy youtube subscribers instantly; buy youtube views fast; buy youtube views fast delivery; buy youtube views instant; buy youtube views instant delivery; buy youtube views quick; buy youtube premiere views |
+| `/en/youtube-packages/` | 9 | buy likes and views on youtube (480); buy views and subscribers on youtube; buy youtube subscribers views; buy youtube views and likes and comments; buy youtube views and subscribers cheap; buy youtube views comments; buy youtube views comments and likes; buy youtube views likes subscribers; buy youtube views subscribers |
+| `/en/youtube-likes-packages/` | 9 | buy youtube community post likes (210); buy likes on youtube; buy likes youtube video; buy youtube likes; buy youtube community likes; buy youtube post likes; buy youtube music likes; buy 100 youtube likes; buy 1000 youtube likes |
+| `/en/youtube-subscribers/pricing/` | 8 | buy youtube views apple pay; buy youtube views with apple pay; buy youtube views google pay; buy youtube subscribers monthly; buy youtube subscribers cost; buy youtube subscribers low price; buy youtube subscribers price; buy youtube subscribers very cheap |
+| `/en/youtube-shorts-views/` | 7 | buy likes youtube shorts; buy youtube shorts likes; buy youtube reel views; buy youtube shorts views cheap; buy youtube views for shorts; buy youtube views on shorts; buy youtube views shorts |
+| `/en/youtube-subscribers/real-active-subscribers/` | 7 | buy youtube subscribers real (590); buy youtube subscribers no drop; buy youtube subscribers organic; buy high quality youtube subscribers; buy real subscribers on youtube; buy real youtube subscribers online; buy youtube subscribers genuine |
+| `/en/youtube-subscribers/is-sterr-legit/` | 6 | buy youtube subscribers legit (70); buy youtube subscribers safe (70); buy youtube subscribers reviews; buy youtube views best sites; buy youtube views reviews; buy youtube subs legit |
+| `/en/youtube-subscribers/should-you-buy-youtube-subscribers/` | 6 | buy youtube views legal; can u buy youtube likes; can u buy youtube views; do people buy youtube subscribers; do people buy youtube views; where can i buy youtube views |
+| `/en/youtube-subscribers/buy-1000-youtube-subscribers/` | 4 | buy 1 000 youtube subscribers (260); buy 1000 subscribers on youtube (210); buy 1000 youtube subscribers cheap; buy 1000 youtube subscribers for |
+| `/en/youtube-subscribers/buy-10k-youtube-subscribers/` | 4 | buy 10 000 youtube subscribers; buy 100 000 youtube subscribers; buy youtube subscribers 100k; buy 50k youtube subscribers |
+| `/en/youtube-comments-packages/` | 2 | buy youtube comment likes (320); buy youtube likes on comments |
+| `/en/youtube-subscribers/youtube-monetization-requirements/` | 1 | buying youtube subscribers for monetization (90) |
 | `/en/influencer-agency/` | 10 | influencer agency micro; influencer agency global; influencer agency fashion; influencer agency uae; influencer talent agency australia; influencer agency canada; influencer agency europe; influencer agency in uk; influencer agency in usa; influencer agency usa |
 | `/en/influencer-agency/how-to-get-signed/` | 3 | influencer agency apply; influencer marketing gigs; influencer recruitment agency |
 | `/en/influencer-agency/what-does-an-influencer-agency-do/` | 1 | influencer agency revenue |
@@ -58,38 +75,9 @@ Bu keyword'ler sayfalara içerikleriyle birlikte yazıldı (2026-11-24) ve artı
 | `/en/social-media-agency/` | 2 | instagram marketing agency (1600); instagram advertising agency (390) |
 | `/en/guides/social-media-agency-pricing/` | 1 | instagram marketing agency pricing |
 
-## 2. Sayfası olmayanlar (167)
+## 2. Sayfası olmayanlar (34)
 
 Bunların niyeti hiçbir sayfamızla tutmuyor. Eklemek için sayfa ya da bölüm açmak gerekir.
-
-### YouTube bölümü (133)
-
-Sterr Agency'de YouTube yok (yalnız Instagram ve TikTok). Açılırsa aynı sayfa şablonu kullanılır; sipariş formuna ve Linksterr teslimatına YouTube eklenmesi gerekir. Karar senin.
-
-| Açılacak sayfa (şablondaki karşılığı) | Keyword | Örnekler |
-|---|---|---|
-| views | 44 | buy youtube video views (880); buy views on youtube cheap (720); buy views for youtube video (590); buy 1000 youtube views (320); buy 1 million youtube views cheap (70) |
-| main | 10 | buy subscribers for youtube (22200); buy subscribers for youtube channel (110); buy youtube subscribers online (90); buy subscribers on youtube; buy youtube channel subscribers |
-| packages | 9 | buy likes and views on youtube (480); buy views and subscribers on youtube; buy youtube subscribers views; buy youtube views and likes and comments; buy youtube views and subscribers cheap |
-| likes | 9 | buy youtube community post likes (210); buy likes on youtube; buy likes youtube video; buy youtube likes; buy youtube community likes |
-| instant | 9 | buy youtube subscribers fast; buy youtube subscribers instant; buy youtube subscribers instantly; buy youtube views fast; buy youtube views fast delivery |
-| pricing | 8 | buy youtube views apple pay; buy youtube views with apple pay; buy youtube views google pay; buy youtube subscribers monthly; buy youtube subscribers cost |
-| legit | 6 | buy youtube subscribers legit (70); buy youtube subscribers safe (70); buy youtube subscribers reviews; buy youtube views best sites; buy youtube views reviews |
-| guide_buy | 6 | buy youtube views legal; can u buy youtube likes; can u buy youtube views; do people buy youtube subscribers; do people buy youtube views |
-| real | 6 | buy youtube subscribers real (590); buy youtube subscribers organic; buy high quality youtube subscribers; buy real subscribers on youtube; buy real youtube subscribers online |
-| views_reels | 5 | buy youtube reel views; buy youtube shorts views cheap; buy youtube views for shorts; buy youtube views on shorts; buy youtube views shorts |
-| pack_1k | 4 | buy 1 000 youtube subscribers (260); buy 1000 subscribers on youtube (210); buy 1000 youtube subscribers cheap; buy 1000 youtube subscribers for |
-| comments | 2 | buy youtube comment likes (320); buy youtube likes on comments |
-| likes_reels | 2 | buy likes youtube shorts; buy youtube shorts likes |
-| guide_speed | 2 | buy youtube subscribers slow; buy youtube subscribers slowly |
-| geo:uk | 2 | buy real youtube subscribers uk; buy youtube subscribers uk |
-| geo:usa | 2 | buy youtube subscribers in usa; buy youtube subscribers usa |
-| pack_100000 | 2 | buy 100 000 youtube subscribers; buy youtube subscribers 100k |
-| blog_views_money | 1 | buying youtube subscribers for monetization (90) |
-| non_drop | 1 | buy youtube subscribers no drop |
-| geo:australia | 1 | buy youtube subscribers australia |
-| pack_10k | 1 | buy 10 000 youtube subscribers |
-| pack_50000 | 1 | buy 50k youtube subscribers |
 
 ### TikTok paylaşım, kaydetme, repost sayfası (10)
 
@@ -151,7 +139,7 @@ Instagram'da olan 5 ülke sayfasının (ABD, İngiltere, Avustralya, Avrupa, BAE
 | ücretsiz paket yok | 1 | get instagram followers no login |
 | reklam ürünü araması (AdWords vb.) | 1 | buy youtube adwords views |
 
-## 4. Zaten karşılananlar (453)
+## 4. Zaten karşılananlar (586)
 
 Bu keyword'ler ilgili sayfada geçiyor; bir şey eklemek gerekmiyor.
 
@@ -159,5 +147,6 @@ Bu keyword'ler ilgili sayfada geçiyor; bir şey eklemek gerekmiyor.
 |---|---|---|
 | instagram | 39 | 120 |
 | tiktok | 67 | 185 |
+| youtube | 28 | 105 |
 | creators | 8 | 20 |
 | agency (intl) | 8 | 6 |

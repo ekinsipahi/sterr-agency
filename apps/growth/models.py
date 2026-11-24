@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 
-from .constants import PLATFORM_NAMES
+from .constants import PLATFORM_NAMES, words
 from .plan import CHOICES as PLAN_CHOICES
 
 
@@ -100,7 +100,8 @@ class OrderProgress(models.Model):
 
 
 class AgencySubscription(models.Model):
-    """A monthly influencer package for one Instagram or TikTok account (see plan.py)."""
+    """A monthly influencer package for one Instagram, TikTok or YouTube account (see plan.py).
+    Field names say "followers" for every platform; on YouTube they are subscribers."""
 
     STATUS = [
         ("pending", "Ödeme bekleniyor"),
@@ -109,12 +110,16 @@ class AgencySubscription(models.Model):
         ("past_due", "Ödeme başarısız"),
         ("canceled", "İptal edildi"),
     ]
-    PLATFORMS = [("instagram", "Instagram"), ("tiktok", "TikTok")]
+    PLATFORMS = [("instagram", "Instagram"), ("tiktok", "TikTok"), ("youtube", "YouTube")]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="growth_subscriptions")
     email = models.EmailField("E-posta")
     platform = models.CharField("Platform", max_length=12, choices=PLATFORMS, default="instagram")
-    handle = models.CharField("Kullanıcı adı", max_length=30, help_text="@ olmadan")
+    handle = models.CharField("Kullanıcı adı", max_length=30, help_text="@ olmadan (YouTube: kanalın @adı)")
+    # YouTube only: the video new viewers are sent to (they subscribe first, then watch). Empty:
+    # the channel page. Linksterr reads it from the subscriptions API and sets it on the campaign.
+    video_url = models.CharField("YouTube videosu", max_length=300, blank=True,
+                                 help_text="Yalnız YouTube: izleyicilerin gönderileceği video (boş = kanal sayfası)")
     location = models.CharField("Hedef konum", max_length=120)
     phone = models.CharField("Telefon", max_length=20, blank=True, help_text="Influencer ile iletişim için (sipariş formu)")
     plan = models.CharField("Paket", max_length=12, choices=PLAN_CHOICES, default="starter")
@@ -191,6 +196,11 @@ class AgencySubscription(models.Model):
     @property
     def platform_name(self):
         return PLATFORM_NAMES[self.platform]
+
+    @property
+    def words(self):
+        """English words for this platform: followers/follow/profile or subscribers/subscribe/channel."""
+        return words(self.platform)
 
     def daily(self):
         """[{date, followers, likes, comments, visits, countries}] per day, oldest first, only

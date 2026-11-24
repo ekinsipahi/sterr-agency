@@ -1,6 +1,7 @@
 """Dispute evidence for a subscription, in the shape of Stripe's dispute `evidence` fields
 (English, for the card issuer). Staged on Stripe when a dispute opens (views._on_dispute)
-and shown in the admin (Kanıt paketi) to print or check before pressing Submit."""
+and shown in the admin (Kanıt paketi) to print or check before pressing Submit. The wording
+follows the platform (sub.words): followers and a profile, or subscribers and a channel."""
 from django.conf import settings
 from django.urls import reverse
 
@@ -25,21 +26,22 @@ def _n(value):
 def delivery_log(sub):
     """One line per day the growth system reported, newest first."""
     stats = {s.date: s for s in sub.stats.all()}
+    w = sub.words
     lines = []
     for day in reversed(sub.daily()):
         stat = stats[day["date"]]
         reach = []
         if stat.impressions is not None:
-            reach.append(f"follow step shown {_n(stat.impressions)} times")
+            reach.append(f"{w['follow']} step shown {_n(stat.impressions)} times")
         if stat.visits is not None:
-            reach.append(f"{_n(stat.visits)} visited the profile")
+            reach.append(f"{_n(stat.visits)} visited the {w['profile']}")
         if stat.confirms is not None:
-            reach.append(f"{_n(stat.confirms)} tapped Done after the follow step")
-        result = f"{_n(day['followers'])} new followers (estimated)" if day["followers"] is not None else ""
+            reach.append(f"{_n(stat.confirms)} tapped Done after the {w['follow']} step")
+        result = f"{_n(day['followers'])} new {w['audience']} (estimated)" if day["followers"] is not None else ""
         countries = ", ".join(f"{code} {_n(v.get('impressions'))}" for code, v in
                               sorted(stat.countries.items(), key=lambda kv: -kv[1].get("impressions", 0))[:6])
         parts = [p for p in ("; ".join(reach), result, f"countries (people shown): {countries}" if countries else "") if p]
-        account = f" (account: {_n(stat.followers)} followers)" if stat.followers is not None else ""
+        account = f" (account: {_n(stat.followers)} {w['audience']})" if stat.followers is not None else ""
         lines.append(f"{stat.date:%Y-%m-%d}: {'; '.join(parts) or 'reported'}{account}")
     return lines
 
@@ -55,24 +57,29 @@ def activity_log(sub):
 
 CARRYOVER_POLICY = (
     "Current merchant commitment (terms section 2a.1, effective 2026-11-13): monthly growth can fall below "
-    "the applicable target (for example 1,000 followers). Verified shortfalls for paid periods are recorded "
+    "the applicable target (for example 1,000 {audience}). Verified shortfalls for paid periods are recorded "
     "and completed in addition to later months' normal growth, at no extra charge. Canceling the subscription, "
     "stopping Stripe automatic payments or removing the payment method does not erase this obligation; no new "
-    "subscription or payment is required. The profile must remain public and accessible. This commitment is "
+    "subscription or payment is required. The {profile} must remain public and accessible. This commitment is "
     "not proof of completed delivery and does not restrict mandatory consumer, refund or payment dispute rights. "
     "It does not establish that a customer accepted a later terms version."
 )
 
 
+def carryover_policy(sub):
+    return CARRYOVER_POLICY.format(**sub.words)
+
+
 def carryover_record(sub):
+    w = sub.words
     if sub.outstanding_followers is None:
-        return ("Outstanding follower balance: not yet reconciled. Paid-period targets and verified delivery "
+        return (f"Outstanding {w['one']} balance: not yet reconciled. Paid-period targets and verified delivery "
                 "must be reviewed before stating a number; missing data is not a zero balance. "
                 "Daily delivery estimates below are not a verified reconciliation.")
     return (
         f"Reconciliation as of {_utc(sub.reconciled_at)}: total applicable target for paid periods "
-        f"{_n(sub.reconciled_target)} followers; verified delivery allocated to those targets "
-        f"{_n(sub.reconciled_delivered)}; outstanding follower balance {_n(sub.outstanding_followers)} "
+        f"{_n(sub.reconciled_target)} {w['audience']}; verified delivery allocated to those targets "
+        f"{_n(sub.reconciled_delivered)}; outstanding {w['one']} balance {_n(sub.outstanding_followers)} "
         f"(max(target - delivery, 0)). Basis: {sub.reconciliation_note}. "
         "This is a staff-reviewed snapshot, not an automatically verified total or proof of full delivery "
         "for the disputed invoice. Cancellation does not clear the recorded balance."
@@ -89,12 +96,15 @@ def build(sub):
     activity = activity_log(sub)
     reports = sub.stats.count()
     carryover = carryover_record(sub)
+    policy = carryover_policy(sub)
+    w = sub.words
+    joins = "subscribe, watch, like and comment" if w["audience"] == "subscribers" else "follow, like and comment"
 
     product = (
         f"Sterr Agency {sub.get_plan_display()}: a monthly growth-agency subscription (${sub.amount:.2f} a month) for the "
         f"customer's {sub.platform_name} account @{sub.handle} ({profile}), target audience: {sub.location}. "
-        f"During every 30-day period we promote the customer's public profile to real people through our partner "
-        f"network; people who like it follow, like and comment on their own (typically {low:,}-{high:,} new followers a month, "
+        f"During every 30-day period we promote the customer's public {w['profile']} to real people through our partner "
+        f"network; people who like it {joins} on their own (typically {low:,}-{high:,} new {w['audience']} a month, "
         f"described on the site as a typical range, not a fixed count). It is a digital service delivered every day "
         f"from the first payment; no password or account access is needed. The customer follows the results day by day "
         f"in their account dashboard at {settings.SITE_URL}{reverse('growth:account')}."
@@ -115,18 +125,18 @@ def build(sub):
                     "or the billing portal on record, although canceling takes one click.")
     if sub.reminded_for:
         rebuttal += f" The renewal reminder, saying how to cancel, was emailed to {sub.email} before the renewal of {_utc(sub.reminded_for)}."
-    disclosure += " " + CARRYOVER_POLICY
-    rebuttal += " " + CARRYOVER_POLICY + " " + carryover
+    disclosure += " " + policy
+    rebuttal += " " + policy + " " + carryover
     summary = [
-        CARRYOVER_POLICY, carryover, "",
+        policy, carryover, "",
         f"Subscription started {_utc(sub.started_at)}; status {sub.status}; current period ends {_utc(sub.current_period_end)}.",
         f"Welcome email with the terms sent to {sub.email} on activation.",
-        f"Account followers at the start: {_n(sub.start_followers)}; latest: {_n(sub.current_followers)}"
+        f"Account {w['audience']} at the start: {_n(sub.start_followers)}; latest: {_n(sub.current_followers)}"
         f" ({_utc(sub.stats_at)}); {reports} daily delivery reports on record.",
         "", "Daily delivery log (UTC days, from our delivery system). Visits are taps that opened the customer's "
-            "profile. New followers are estimated: the day's views of the follow step times the follow rate measured "
-            "from the account's real follower counts, never more than the visits. 'Tapped Done' is the visitor's own "
-            "confirmation and is not a follow count:", *delivery,
+            f"{w['profile']}. New {w['audience']} are estimated: the day's views of the {w['follow']} step times the {w['follow']} rate measured "
+            f"from the account's real {w['one']} counts, never more than the visits. 'Tapped Done' is the visitor's own "
+            f"confirmation and is not a {w['follow']} count:", *delivery,
     ]
     evidence = {
         "product_description": product,
@@ -142,7 +152,7 @@ def build(sub):
         "refund_refusal_explanation": (
             "Delivery records and the reviewed balance are supplied for assessment. We do not assert full "
             "delivery solely because a subscription existed or a shortfall is scheduled for completion. "
-            + carryover + " " + CARRYOVER_POLICY),
+            + carryover + " " + policy),
         "access_activity_log": "\n".join(activity) or "No sign-ins on record.",
         "uncategorized_text": "\n".join(summary),
     }

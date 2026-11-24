@@ -1,7 +1,10 @@
-"""Real-follower package pages (Instagram and TikTok) in 16 languages.
+"""Real-follower package pages: Instagram and TikTok in 16 languages, YouTube in English.
 
-    apps/growth/i18n/<code>.py               UI: forms, packages, account, shared blocks ({platform} placeholders)
-    apps/growth/pages/<platform>/<code>.py   DATA: slugs and the copy of every page in PAGES (+ geo:<key>)
+    apps/growth/i18n/<code>.py               UI: forms, packages, account, shared blocks ({platform} placeholders);
+                                             YOUTUBE = {...} there replaces the strings that differ on YouTube
+                                             (subscribers, channel, the video link field)
+    apps/growth/pages/<platform>/<code>.py   DATA: slugs and the copy of every page in PAGES (+ geo:<key>);
+                                             a platform may have its own shorter page list (constants.PLATFORM_PAGES)
     apps/growth/pages/creators/<code>.py     DATA: the "influencer agency for creators" hub (CREATOR_PAGES)
 
 Turkish lives at the site root, the other languages under /<code>/. The main page is the
@@ -15,17 +18,22 @@ from importlib import import_module
 
 from apps.core.languages import DEFAULT, LANGS, is_public, public_langs
 
-from .constants import ACCOUNT_NAV, CREATOR_PAGES, FOLLOWERS_NAV, GROUPS, GUIDES, PACKAGE_PAGES, PAGE_PLAN, PAGES, PLATFORM_NAMES, PLATFORMS, PROFILE_URL  # noqa: F401
+from .constants import (ACCOUNT_NAV, AUDIENCE, CREATOR_PAGES, FOLLOWERS_NAV, GROUPS, GUIDES, PACKAGE_PAGES, PAGE_PLAN, PAGES,  # noqa: F401
+                        PLATFORM_NAMES, PLATFORMS, PROFILE_URL, has_language, pages_for)
 
 UI = {}
+PLATFORM_UI = {platform: {} for platform in PLATFORMS}   # {platform: {lang: the UI strings that differ on it}}
 CONTENT = {platform: {} for platform in PLATFORMS}
 CREATORS = {}
 for _lang in LANGS:
     try:
-        UI[_lang.code] = import_module(f"apps.growth.i18n.{_lang.code}").UI
+        _module = import_module(f"apps.growth.i18n.{_lang.code}")
     except ModuleNotFoundError:
         continue
+    UI[_lang.code] = _module.UI
     for _platform in PLATFORMS:
+        if getattr(_module, _platform.upper(), None):
+            PLATFORM_UI[_platform][_lang.code] = getattr(_module, _platform.upper())
         try:
             CONTENT[_platform][_lang.code] = import_module(f"apps.growth.pages.{_platform}.{_lang.code}").DATA
         except ModuleNotFoundError:
@@ -37,7 +45,8 @@ for _lang in LANGS:
 
 
 def ui_for(code, platform):
-    """UI strings with {platform} filled in."""
+    """UI strings with {platform} filled in, and the platform's own wording where the language
+    has it (YouTube: subscribers). A language without it keeps its general strings."""
     name = PLATFORM_NAMES[platform]
 
     def fill(value):
@@ -48,7 +57,7 @@ def ui_for(code, platform):
         return value
 
     # English fills any key a language doesn't have yet (the copy check reports it).
-    return {k: fill(v) for k, v in {**UI["en"], **UI[code]}.items()}
+    return {k: fill(v) for k, v in {**UI["en"], **UI[code], **PLATFORM_UI[platform].get(code, {})}.items()}
 
 
 def has_page(code, page, platform="instagram"):
@@ -126,9 +135,19 @@ def creator_alternates(page):
     return alts + [("x-default", creator_path(DEFAULT, page))] if DEFAULT in CREATORS else alts
 
 
+def platform_home(code, platform):
+    """(language, url) of a platform's hub for a visitor in `code`: their language when the
+    platform has pages in it, else English; None when it has neither."""
+    for lang in (code, DEFAULT):
+        if lang in CONTENT[platform]:
+            return lang, page_path(lang, "main", platform)
+    return None
+
+
 def followers_menu(code):
     """[(label, url)] for the navbar 'Followers' dropdown: per platform followers, packages, likes,
-    views and comments; then creators and the account."""
+    views and comments; then creators and the account. A platform this language has no pages
+    for (YouTube outside English) gets one link to its English hub."""
     from django.urls import reverse
 
     items = []
@@ -139,6 +158,8 @@ def followers_menu(code):
             navs = data.get("navs", {})
             items += [(navs[page], page_path(code, page, p)) for page in ("packages", "likes", "views", "comments")
                       if page in navs and has_page(code, page, p)]
+        elif DEFAULT in CONTENT[p]:
+            items.append((f"{PLATFORM_NAMES[p]} (EN)", page_path(DEFAULT, "main", p)))
     if code in CREATORS and is_public(code):
         items.append((CREATORS[code]["nav"], creator_path(code, "main")))
     if items:

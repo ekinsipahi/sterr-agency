@@ -24,12 +24,12 @@ DATA = {
         "title": "Influencer Agency for Creators: Grow on Instagram & TikTok",
         "description": "A social media influencer agency for creators, small creators included: real followers on Instagram and TikTok. No bots, no password, brand-ready.",
         "h1": ("An influencer agency for creators. ", "We grow you with real people."),
-        "lede": "You're the creator. We're the growth. Sterr is a social media agency for influencers that builds your audience on Instagram and TikTok with real people, so brands notice you for the right reasons.",
+        "lede": "You're the creator. We're the growth. Sterr is a social media agency for influencers that builds your audience on Instagram, TikTok and YouTube with real people, so brands notice you for the right reasons.",
         "platforms": [
             ("Instagram", "Real followers from the places you choose, delivered gradually. The influencer agency Instagram creators use to grow without bots."),
             ("TikTok", "Active, real growth so your videos keep reaching new people. An influencer agency TikTok creators can trust with just a username."),
-            ("YouTube", "Not yet. We only sell what we can deliver with real people, and today that's Instagram and TikTok."),
-            ("Gaming", "Gaming creators grow with us through their Instagram and TikTok clips, targeted to the countries where their viewers play."),
+            ("YouTube", "Real subscribers for your channel, from the places you choose: people who watch, like and comment. You can name the video new viewers start with."),
+            ("Gaming", "Gaming creators grow with us through their YouTube videos and their Instagram and TikTok clips, targeted to the countries where their viewers play."),
         ],
         "body": [
             ("h2", "Why creators look for an influencer agency"),
@@ -42,7 +42,7 @@ DATA = {
             ("p", "You don't need a big account to start. Micro influencers, with a few thousand followers and a clear niche, are who many brands look for, because a small real audience trusts the creator it follows. Fashion and beauty creators grow with us through their looks and Reels, gaming creators through their clips, local creators through the city they post from. Whatever the niche, the work is the same: more real people in it who see what you make."),
             ("h2", "A global influencer agency, based in Türkiye"),
             ("p", "We work worldwide, with a team across Europe, and everything runs online, so it doesn't matter where you live. Creators come to us looking for an influencer agency in the USA, in the UK, in Canada, in Australia, in the UAE or somewhere in Europe. What matters to us is where your audience should be: name the country or the city, from London to Dubai, and we grow you there."),
-            ("callout", "The best influencer agency for you is one that grows real people. Start on Instagram or TikTok."),
+            ("callout", "The best influencer agency for you is one that grows real people. Start on Instagram, TikTok or YouTube."),
         ],
         "faqs": [
             ("What if growth falls short of the monthly target?", "Growth can vary from month to month. For example, if we fall short of a target of 1,000 new followers in a month, we record the difference as growth carried forward for you. That number is not lost: we make it up in later months, on top of those months’ growth, at no extra charge."),
@@ -71,7 +71,7 @@ DATA = {
             ("h2", "How an influencer agency makes its revenue"),
             ("p", "It helps to know who pays whom. An influencer marketing agency earns its revenue from brands: a fee or a margin on the campaign budget. A talent or management agency earns a commission on the deals it negotiates for you. A growth agency like ours charges the creator a flat monthly fee. If an agency's revenue comes from you, ask what you get for it; if it comes from your deals, ask what share it takes."),
             ("h2", "Where Sterr fits"),
-            ("p", "We're a growth agency. We bring real followers to your Instagram and TikTok, so when a marketing agency or a brand looks you up, the audience they see is real."),
+            ("p", "We're a growth agency. We bring real followers to your Instagram and TikTok and real subscribers to your YouTube channel, so when a marketing agency or a brand looks you up, the audience they see is real."),
         ],
         "faqs": [
             ("Do influencer marketing agencies pay creators?", "Brands pay; the agency runs the campaign and pays creators from the budget. Terms vary, so read them before you agree."),
@@ -134,7 +134,7 @@ DATA = {
             ("p", "You don't have to be signed to get paid work. Influencer marketing gigs, one-off paid posts or short campaigns, are posted on creator marketplaces and offered by local brands directly. They are a good way to build a track record before an agency takes you on, and brands check the same thing an agency would: whether your audience is real."),
             ("h2", "Getting brand-ready faster"),
             ("p", "Keep creating, post consistently, and grow your audience with real people in the markets you want to work in. That last part is what we help with."),
-            ("callout", "Get brand-ready with real followers on Instagram or TikTok."),
+            ("callout", "Get brand-ready with a real audience on Instagram, TikTok or YouTube."),
         ],
         "faqs": [
             ("How many followers do I need to get signed?", "It depends on the agency and the niche; many sign creators from around 10,000 real followers, some earlier if engagement is strong."),

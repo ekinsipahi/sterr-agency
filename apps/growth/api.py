@@ -5,7 +5,8 @@ running, renewed, resumed or ended.
 
 GET  /growth/api/subscriptions/?status=active   accounts to grow, newest first (default: active;
      several: status=active,past_due,canceled; packages that ended over 90 days ago are left out;
-     the Linksterr token sees only paid packages in those three statuses)
+     the Linksterr token sees only paid packages in those three statuses). platform is instagram,
+     tiktok or youtube; a YouTube package may carry video_url, the video its viewers are sent to.
 POST /growth/api/stats/                         one day's numbers or {"updates": [...]}:
      {"subscription_id": 12, "date": "2026-11-04", "followers": 5120,
       "new_followers": 140, "start_followers": 4300}
@@ -59,6 +60,8 @@ def _iso(value):
 
 def _sub_json(s):
     return {"id": s.pk, "platform": s.platform, "handle": s.handle, "location": s.location, "status": s.status,
+            # YouTube: the video Linksterr sends new viewers to ("" = the channel page).
+            "video_url": s.video_url if s.platform == "youtube" else "",
             "plan": s.plan, "amount": float(s.amount), "started_at": _iso(s.started_at),
             "current_period_end": _iso(s.current_period_end), "cancel_at_period_end": s.cancel_at_period_end,
             "canceled_at": _iso(s.canceled_at), "start_followers": s.start_followers,

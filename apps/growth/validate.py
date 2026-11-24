@@ -8,7 +8,7 @@ import json
 import re
 from importlib import import_module
 
-from .constants import CREATOR_PAGES, PAGES, PLATFORMS
+from .constants import CREATOR_PAGES, PLATFORMS, has_language, pages_for
 
 TITLE_MAX, DESCRIPTION_MAX = 68, 165
 # Never on the site: search-engine talk, promises we can't make, competitor brands,
@@ -21,10 +21,21 @@ FORBIDDEN = re.compile(r"\bSEO\b|guarantee|garanti|garan[țt]|gwaranc|гаран
 STALE = re.compile(r"34[.,]99|59[.,]99|124[.,]99|229[.,]99|\b(?:7|14|24|30|60)[–-](?:14|24|36|60|120)\b")
 
 
+# A page of one platform must not talk about the others (each has its own section).
+OTHER_PLATFORMS = {"instagram": ("tiktok",), "tiktok": ("instagram",), "youtube": ("instagram", "tiktok")}
+
+
+def sections(code):
+    """The platforms that have pages in this language, plus the creators hub."""
+    return tuple(p for p in PLATFORMS if has_language(p, code)) + ("creators",)
+
+
 def load(code):
-    ui = import_module(f"apps.growth.i18n.{code}").UI
-    pages = {p: import_module(f"apps.growth.pages.{p}.{code}").DATA for p in PLATFORMS + ("creators",)}
-    return ui, pages
+    """(UI, {platform: its UI overrides}, {section: DATA}) of a language."""
+    module = import_module(f"apps.growth.i18n.{code}")
+    extras = {p: getattr(module, p.upper()) for p in PLATFORMS if getattr(module, p.upper(), None)}
+    pages = {p: import_module(f"apps.growth.pages.{p}.{code}").DATA for p in sections(code)}
+    return module.UI, extras, pages
 
 
 def shape(value, skip=("body", "faqs", "keywords", "geo", "subs")):
@@ -47,9 +58,9 @@ def page_text(page):
 def check(code):
     """List of problems (empty when the language is complete and clean)."""
     problems = []
-    ref_ui, ref_pages = load("en")
+    ref_ui, _, ref_pages = load("en")
     try:
-        ui, pages = load(code)
+        ui, extras, pages = load(code)
     except Exception as exc:  # noqa: BLE001 - report import/syntax errors as a problem
         return [f"{code}: cannot import: {exc!r}"]
 
@@ -64,15 +75,25 @@ def check(code):
             for ph in re.findall(r"\{[a-z_]+\}", ref_text) if isinstance(ref_text, str) else []:
                 if text is not None and ph not in text:
                     problems.append(f"{code} UI[{key!r}] lost placeholder {ph}")
-    everything = json.dumps([ui, pages], ensure_ascii=False)
+    # A platform's own wording replaces general strings: same shape and placeholders as what it replaces.
+    for platform, extra in extras.items():
+        if not has_language(platform, code):
+            problems.append(f"{code}: {platform.upper()} wording for a platform this language has no pages for")
+        for key, value in extra.items():
+            if key in ref_ui and shape(value) != shape(ref_ui[key]):
+                problems.append(f"{code} {platform.upper()}[{key!r}] shape differs from UI[{key!r}]")
+            for ph in re.findall(r"\{[a-z_]+\}", ref_ui[key]) if isinstance(ref_ui.get(key), str) else []:
+                if ph != "{platform}" and ph not in value:
+                    problems.append(f"{code} {platform.upper()}[{key!r}] lost placeholder {ph}")
+    everything = json.dumps([ui, extras, pages], ensure_ascii=False)
     for stale in STALE.findall(everything):
         problems.append(f"{code}: left over from the one-time packages: {stale!r}")
-    if FORBIDDEN.search(json.dumps(ui, ensure_ascii=False)):
-        problems.append(f"{code} UI: forbidden word {FORBIDDEN.search(json.dumps(ui, ensure_ascii=False)).group(0)!r}")
+    if FORBIDDEN.search(json.dumps([ui, extras], ensure_ascii=False)):
+        problems.append(f"{code} UI: forbidden word {FORBIDDEN.search(json.dumps([ui, extras], ensure_ascii=False)).group(0)!r}")
 
-    for platform in PLATFORMS + ("creators",):
+    for platform in sections(code):
         data, ref = pages[platform], ref_pages[platform]
-        page_keys = CREATOR_PAGES if platform == "creators" else PAGES
+        page_keys = CREATOR_PAGES if platform == "creators" else pages_for(platform)
         where = f"{code}/{platform}"
         if shape(data) != shape(ref):
             problems.append(f"{where}: page structure differs from English (keys, tuple sizes, list lengths)")
@@ -104,9 +125,9 @@ def check(code):
             m = FORBIDDEN.search(text)
             if m:
                 problems.append(f"{where}/{page}: forbidden word {m.group(0)!r}")
-            other = {"instagram": "tiktok", "tiktok": "instagram"}.get(platform)
-            if other and other in text:
-                problems.append(f"{where}/{page}: mentions {other}")
+            for other in OTHER_PLATFORMS.get(platform, ()):
+                if other in text:
+                    problems.append(f"{where}/{page}: mentions {other}")
             for kw in data.get("keywords", {}).get(page, []):
                 if fold(kw) not in text:
                     problems.append(f"{where}/{page}: keyword not used: {kw!r}")

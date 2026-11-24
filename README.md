@@ -60,9 +60,9 @@ GA4, GTM, Meta Pixel, Consent Mode v2 ve lead yaşam döngüsü olayları: [`ANA
 .venv/bin/python manage.py test apps
 ```
 
-## Instagram ve TikTok influencer paketleri (aylık abonelik)
+## Instagram, TikTok ve YouTube influencer paketleri (aylık abonelik)
 
-Büyüme yalnızca **paket** olarak satılır (ajans modeli). Tek başına beğeni, izlenme ya da yorum satılmaz. Üç aylık paket iki platformda da aynı (`apps/growth/plan.py`). Teslimat 30 güne yayılır, abonelik iptal edilene kadar her ay yenilenir ve ödenen ay iade edilmez:
+Büyüme yalnızca **paket** olarak satılır (ajans modeli). Tek başına beğeni, izlenme ya da yorum satılmaz. Üç aylık paket üç platformda da aynı (`apps/growth/plan.py`). YouTube'da "takipçi" abonedir: kod ve alan adları her platformda `followers` der, metinler YouTube'da *subscribers* der. Teslimat 30 güne yayılır, abonelik iptal edilene kadar her ay yenilenir ve ödenen ay iade edilmez:
 
 | Paket | Aylık | Takipçi / ay (tipik) | Beğeni / ay | Yorum / ay | Ek |
 |---|---|---|---|---|---|
@@ -72,19 +72,26 @@ Büyüme yalnızca **paket** olarak satılır (ajans modeli). Tek başına beğe
 
 Rakamlar sözü verilen sayılar değil, tipik aralıklardır. Oranlar: yeni takipçi başına 2–3 beğeni, her 10 takipçide yaklaşık 1 yorum. Başlangıç paketi 1.000–4.000 takipçi/ay alındı; diğer paketler bunun 2 ve 4 katı.
 
-**Sayfalar (her platform × 16 dil, 31 sayfa + geo; hepsi takipçi ana sayfasındaki gruplu hub'dan bağlı):**
+**Sayfalar (Instagram ve TikTok: 16 dil × 29 sayfa, Instagram'da ayrıca 5 ülke sayfası; YouTube: yalnızca İngilizce, 15 sayfa; hepsi platformun ana sayfasındaki gruplu hub'dan bağlı):**
 - Takipçi: ana sayfa, real/active, pricing, "1000/2000/3000/5000/10k takipçi" sayfaları (her biri hangi paketle kaç ayda ulaşılacağını anlatır ve o paketi seçili getirir), growth agency, non-drop, hız rehberi, satın alma rehberi, legit
 - Kendi üst seviye adresleriyle: influencer paketleri (`/instagram-packages/`), beğeni (`/instagram-likes-packages/`, aylık `/monthly-instagram-likes/`, kademeli, Reels), izlenme (`/instagram-views-packages/`, Reels, story), yorum (`/instagram-comments-packages/`, özel yorum `/custom-instagram-comments/`), instant vs kademeli (`/instagram-instant-vs-gradual/`). TikTok'ta da aynıları var (`/tiktok-likes-packages/`, `/tiktok-video-views/` …).
 - Blog: beğeni paketi nasıl seçilir, izlenme başına para, 2026'da hâlâ işe yarıyor mu, yorum limiti, daha fazla izlenmenin 10 yolu
-- Navbar'daki **Takipçi** menüsü: her platform için Followers / Packages / Likes / Views / Comments, ardından creator sayfası ve Hesabım.
+- Navbar'daki **Takipçi** menüsü: her platform için Followers / Packages / Likes / Views / Comments (platform başına bir sütun), ardından creator sayfası ve Hesabım. YouTube sayfası olmayan dillerde menüde tek satır vardır: **YouTube (EN)**, İngilizce YouTube ana sayfasına gider.
+
+**YouTube bölümü (24 Kasım 2026, yalnızca İngilizce):** Growsterr'dan taşınan 133 İngilizce keyword için açıldı.
+- Sayfalar (`constants.PLATFORM_PAGES`): `/en/youtube-subscribers/` (ana sayfa; ülke aramaları da burada), real, pricing, 1000 ve 10k abone (10k sayfası 50k/100k'yı da yanıtlar), growth agency, satın alma rehberi, legit, monetization rehberi, `/en/youtube-packages/`, `/en/youtube-likes-packages/`, `/en/youtube-views-packages/`, `/en/youtube-shorts-views/` (Shorts izlenme ve beğeni), `/en/youtube-comments-packages/`, `/en/youtube-instant-vs-gradual/`.
+- YouTube'a özel arayüz metinleri `apps/growth/i18n/en.py` içindeki `YOUTUBE` sözlüğündedir (subscribers, channel, video alanı); listede olmayan her şey ortak `UI`'dan gelir. Dil eklemek için o dilin i18n dosyasına `YOUTUBE`, `apps/growth/pages/youtube/<dil>.py` ve `constants.PLATFORM_LANGS` yeter.
+- Sipariş formu YouTube'da kanalın **@adını** ister (`youtube.com/@ad` linki de olur; `/channel/UC…` kabul edilmez, çünkü Linksterr @ad ile eşleştirir) ve isteğe bağlı bir **video linki** alır: yeni izleyiciler önce abone olur, sonra o videoyu izler. Video `AgencySubscription.video_url` alanında durur, abonelik API'sinde `video_url` olarak Linksterr'a gider; admin'den değiştirilebilir.
+- Metin kuralları: izlenme sayısı, izlenme saati, retention ya da para kazanma (monetization) **vaat edilmez**; abone, beğeni ve yorum için tipik aralık verilir, izlenme için verilmez. YouTube sayfaları Instagram ve TikTok'tan söz etmez (kopya kontrolü engeller).
+- Stripe: YouTube için ayrı ürün/fiyat şart değil (ödeme sayfası fiyatı kendisi kurar). Raporlarda ayrı ürün görmek istenirse `python manage.py setup_stripe` üç YouTube fiyatını da açar.
 
 Bir sayfa bir dilde henüz yoksa o dil için yayına çıkmaz: route, hreflang, sitemap ve menü yalnızca var olan sayfaları gösterir.
 
 **İçerik dosyaları:**
-- `apps/growth/i18n/<dil>.py`: arayüz metinleri (paket kartları, form, hesap, ortak bloklar; `{platform}` yer tutucusu)
-- `apps/growth/pages/instagram|tiktok|creators/<dil>.py`: slug'lar (`/` ile başlayan değer üst seviye adres demek), sayfa metinleri ve her sayfanın `keywords` listesi
-- Bir dili kontrol etmek için `python manage.py check_growth_copy de` kullanılır. Kontrol edilenler: yapı, meta uzunlukları, yasak kelimeler, eski tek seferlik fiyatların kalmaması ve keyword'lerin sayfada geçmesi. Testler 16 dilin hepsini bu kontrolden geçirir.
-- Keyword planı: [`keywords/FOLLOWERS_KEYWORDS.md`](keywords/FOLLOWERS_KEYWORDS.md)
+- `apps/growth/i18n/<dil>.py`: arayüz metinleri (paket kartları, form, hesap, ortak bloklar; `{platform}` yer tutucusu; `YOUTUBE = {...}` o platformda değişen metinler)
+- `apps/growth/pages/instagram|tiktok|youtube|creators/<dil>.py`: slug'lar (`/` ile başlayan değer üst seviye adres demek), sayfa metinleri ve her sayfanın `keywords` listesi
+- Bir dili kontrol etmek için `python manage.py check_growth_copy de` kullanılır. Kontrol edilenler: yapı, meta uzunlukları, yasak kelimeler, eski tek seferlik fiyatların kalmaması ve keyword'lerin sayfada geçmesi. Gövde bölümleri, SSS sayısı ve keyword listesi dile özeldir (İngilizce sayfalarda yalnız İngilizce aramalar için ek bölümler var). Testler 16 dilin hepsini bu kontrolden geçirir.
+- Keyword planı: [`keywords/FOLLOWERS_KEYWORDS.md`](keywords/FOLLOWERS_KEYWORDS.md). Growsterr'dan taşınan keyword'ler: [`keywords/GROWSTERR_HARVEST.md`](keywords/GROWSTERR_HARVEST.md) (243'ü sayfalara yazıldı; kayıt `keywords/growsterr_added.csv`)
 
 **Hesaplar ve abonelikler:**
 - Formda paket seçilir, ardından kullanıcı adı ve hedef konum girilir. Hesap için iki yol var: e-posta + şifre (hesap yoksa açılır, varsa şifreyle giriş yapılır) ya da "Google ile devam et".

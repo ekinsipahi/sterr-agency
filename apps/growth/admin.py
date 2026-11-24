@@ -42,7 +42,7 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
                        "stripe_checkout_session_id", "stripe_subscription_id", "stripe_customer_id", "notified", "mail_error",
                        "ip", "source_page", "utm_source", "utm_medium", "utm_campaign", "gclid", "created_at", "updated_at")
     fieldsets = (
-        (None, {"fields": ("platform", "handle", "location", "amount", "status", "note")}),
+        (None, {"fields": ("platform", "handle", "video_url", "location", "amount", "status", "note")}),
         ("Müşteri", {"fields": ("user", "email", "phone", "lang", "panel", "terms_accepted_at", "terms_version", "user_agent", "evidence_link")}),
         ("Abonelik", {"fields": ("started_at", "current_period_end", "cancel_at_period_end", "cancel_requested_at",
                                  "cancel_source", "canceled_at", "reminded_for",
@@ -103,7 +103,8 @@ class AgencySubscriptionAdmin(admin.ModelAdmin):
         p = obj.projection
         if not p:
             return "-"
-        return f"~{p['new_followers']:,} takipçi ({p['low']:,}–{p['high']:,}) · günde ~{p['per_day']:.0f}".replace(",", ".")
+        unit = "abone" if obj.platform == "youtube" else "takipçi"
+        return f"~{p['new_followers']:,} {unit} ({p['low']:,}–{p['high']:,}) · günde ~{p['per_day']:.0f}".replace(",", ".")
 
     @admin.display(description="Yenileme / bitiş", ordering="current_period_end")
     def renews(self, obj):

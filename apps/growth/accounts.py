@@ -25,7 +25,7 @@ from django.views.decorators.http import require_POST
 from apps.leads.views import _client_ip
 
 from . import activity, billing, linksterr
-from .content import CONTENT, PLATFORM_NAMES, PLATFORMS, UI, page_path, ui_for
+from .content import CONTENT, PLATFORM_NAMES, PLATFORMS, UI, page_path, platform_home, ui_for
 from .forms import LoginForm, NewPasswordForm, ResetRequestForm, SignupForm
 from .models import AgencySubscription, Customer
 from .notifications import send_password_reset, send_verification
@@ -62,7 +62,8 @@ def _ctx(request, code, mode, **extra):
     ctx.update({
         "mode": mode, "gu": gu, "robots": "noindex, nofollow", "followers_active": True,
         "lang_links": [], "alternates": [],
-        "order_links": [{"name": PLATFORM_NAMES[p], "url": page_path(code, "main", p) + "#start"} for p in PLATFORMS if code in CONTENT[p]],
+        # A platform without pages in this language (YouTube outside English) orders on its English page.
+        "order_links": [{"name": PLATFORM_NAMES[p], "url": home[1] + "#start"} for p in PLATFORMS if (home := platform_home(code, p))],
         "nav_cta_href": "#", "nav_cta_label": gu["nav_cta"],
         "google": google_enabled(), "google_failed": request.GET.get("google") == "failed",
     })
@@ -122,6 +123,7 @@ def _dashboard(owner, code, readonly=False):
         linksterr.sync([s for s in mine if s.started_at])  # Linksterr's numbers, fetched at most every 10 minutes
         today = timezone.now().astimezone(dt_timezone.utc).date()  # Linksterr counts UTC days
         for s in AgencySubscription.objects.filter(pk__in=[s.pk for s in mine]).prefetch_related("stats"):
+            ui = ui_for(code, s.platform)   # this package's labels: subscribers on YouTube, followers elsewhere
             daily = s.daily()
             visits = any(d["visits"] is not None for d in daily)
             since = (s.current_period_end - timedelta(days=30)).date() if s.current_period_end else None
@@ -134,7 +136,7 @@ def _dashboard(owner, code, readonly=False):
                      "visits": count(d["visits"], code) if d["visits"] is not None else "–"} for d in reversed(daily)]
             now = next((d for d in daily if d["date"] == today), None)
             subs.append({
-                "s": s, "status": ui[f"st_{s.status}"], "amount": f"${s.amount:.2f}", "name": ui[f"plan_{s.plan}"],
+                "s": s, "ui": ui, "status": ui[f"st_{s.status}"], "amount": f"${s.amount:.2f}", "name": ui[f"plan_{s.plan}"],
                 "started": ui["acc_ordered"].replace("{date}", day(s.started_at or s.created_at)),
                 "renews": renews,
                 # Only what Linksterr measured: new followers and profile visits (no likes or comments).
@@ -156,6 +158,9 @@ def _dashboard(owner, code, readonly=False):
             })
     summary = []
     live = [item["s"] for item in subs if item["s"].started_at]
+    # The totals speak of followers unless every running package is of one platform with its own word.
+    platforms = {s.platform for s in live}
+    ui = ui_for(code, platforms.pop()) if len(platforms) == 1 else UI[code]
     if live:
         latest = max((s for s in live if s.current_followers is not None), key=lambda s: s.stats_at, default=None)
         visits = sum(d["visits"] or 0 for s in live for d in s.daily())

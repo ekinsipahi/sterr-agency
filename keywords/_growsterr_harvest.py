@@ -25,7 +25,7 @@ sys.path.insert(0, str(STERR))
 
 from apps.growth.validate import FORBIDDEN, fold, page_text  # noqa: E402
 
-DATA = {p: import_module(f"apps.growth.pages.{p}.en").DATA for p in ("instagram", "tiktok", "creators")}
+DATA = {p: import_module(f"apps.growth.pages.{p}.en").DATA for p in ("instagram", "tiktok", "youtube", "creators")}
 ns = {}
 exec((GROW / "apps/pages/archive.py").read_text(), ns)
 ARCHIVED = ns["ARCHIVED"]
@@ -145,6 +145,9 @@ AUDIENCE = {"real": "real", "organic": "real", "active": "real", "targeted": "re
             "no-drop": "non_drop", "safe": "legit", "private-account": "guide_buy", "viral": "main", "monthly": "pricing",
             "cheap": "pricing", "fast": "instant", "promote": "agency", "live": "guide_speed"}
 PROMOTE_NEW = "'TikTok Promote işe yarar mı' rehberi (yeni sayfa)"
+# YouTube has a shorter page list (apps.growth.constants.PLATFORM_PAGES): these intents live on another of its pages.
+YOUTUBE_PAGE = {"likes_reels": "views_reels", "guide_speed": "instant", "non_drop": "real",
+                "geo:usa": "main", "geo:uk": "main", "geo:australia": "main"}
 LIKES = {"real": "likes", "organic": "likes", "safe": "likes", "no-drop": "likes_gradual", "private-account": "likes",
          "viral": "likes", "cheap": "likes", "monthly": "likes_monthly", "gradual": "likes_gradual", "reels": "likes_reels",
          "shorts": "likes_reels", "comment-likes": "comments", "fast": "instant"}
@@ -385,8 +388,11 @@ def main():
                     row.update(decision="SKIP", reason="reklam ürünü araması (AdWords vb.)")
                 continue
             if platform == "youtube":
-                row.update(decision="NEW", section="youtube", page=page, reason="sterr-agency'de YouTube bölümü yok")
-                continue
+                # Its own page where it has one; goal pages above 10k are answered on the 10k page.
+                page = YOUTUBE_PAGE.get(page, "pack_10k" if page.startswith("pack_") and page not in DATA["youtube"] else page)
+                if page not in DATA["youtube"]["keywords"]:
+                    row.update(decision="NEW", section="youtube", page=page, reason="YouTube bölümünde bu sayfa yok")
+                    continue
             if page.startswith("geo:") and platform != "instagram":
                 row.update(decision="NEW", section=platform, page=page, reason="TikTok'ta ülke sayfası yok (yalnız Instagram'da var)")
                 continue
@@ -449,8 +455,8 @@ HOW = {
     ("agency (intl)", "intl:social-media-agency-pricing"): "'Instagram marketing agency pricing' alt başlığı.",
 }
 NEW_GROUPS = [
-    ("YouTube bölümü", lambda r: r["section"] == "youtube",
-     "Sterr Agency'de YouTube yok (yalnız Instagram ve TikTok). Açılırsa aynı sayfa şablonu kullanılır; sipariş formuna ve Linksterr teslimatına YouTube eklenmesi gerekir. Karar senin."),
+    ("YouTube bölümünde sayfası olmayanlar", lambda r: r["section"] == "youtube",
+     "YouTube bölümü 24 Kasım 2026'da İngilizce açıldı; bu niyetlerin o bölümde karşılığı yok."),
     ("TikTok paylaşım, kaydetme, repost sayfası", lambda r: "paylaşım" in r["page"],
      "Tek yeni sayfa: paylaşım, kaydetme ve repost'un pakette nasıl geldiğini anlatır (ayrı satılmaz)."),
     ("'TikTok Promote işe yarar mı' rehberi", lambda r: "Promote" in r["page"],
@@ -466,7 +472,8 @@ HEAD_TERMS = [
     ("buy instagram followers", "instagram", "main"), ("instagram followers", "instagram", "main"),
     ("buy tiktok followers", "tiktok", "main"), ("tiktok followers", "tiktok", "main"),
     ("buy followers", "instagram", "main"), ("follower bot", "instagram", "instant"),
-    ("youtube subscribers", None, None),
+    ("buy youtube subscribers", "youtube", "main"), ("youtube subscribers", "youtube", "main"),
+    ("buy subscribers for youtube", "youtube", "main"), ("buy youtube views", "youtube", "views"),
 ]
 
 
@@ -474,10 +481,7 @@ def head_terms():
     """One table row per head term: the page that owns it and how many English pages mention it."""
     out = []
     for term, section, page in HEAD_TERMS:
-        if section is None:
-            out.append(f"| {term} | **Yok.** Sterr Agency'de YouTube bölümü yok; bu listenin en büyük boşluğu (bölüm 2). |")
-            continue
-        mentions = sum(1 for sec in ("instagram", "tiktok") for pg in section_pages(sec) if term in _text(sec, pg)[0])
+        mentions = sum(1 for sec in ("instagram", "tiktok", "youtube") for pg in section_pages(sec) if term in _text(sec, pg)[0])
         owner = url(section, page)
         own = term in _text(section, page)[0]
         if own:
@@ -555,7 +559,7 @@ def write_report(out, clusters):
         if not rs:
             continue
         lines += [f"### {title} ({len(rs)})", "", note, ""]
-        if title.startswith("YouTube"):
+        if title.startswith("YouTube bölümü ("):   # (kept for a list too long for one line)
             sub = defaultdict(list)
             for r in rs:
                 sub[r["page"]].append(r)

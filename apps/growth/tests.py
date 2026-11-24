@@ -17,10 +17,11 @@ from django.utils import timezone
 from apps.core.languages import LANGS
 
 from . import billing, linksterr
-from .content import CONTENT, CREATORS, PAGES, PLATFORMS, UI, alternates, followers_menu, page_path, routes
-from .forms import clean_handle
+from . import evidence
+from .content import CONTENT, CREATORS, PAGES, PLATFORMS, UI, alternates, followers_menu, page_path, routes, ui_for
+from .forms import clean_handle, clean_video_url, valid_handle
 from .models import AccountActivity, AgencySubscription, Customer, Dispute, StripeEvent, SubscriptionStat
-from .constants import TERMS_VERSION
+from .constants import TERMS_VERSION, has_language, pages_for
 from .plan import PLANS
 from .validate import check
 
@@ -42,8 +43,11 @@ def stripe_sub(status="active", sub_id="sub_1", **extra):
 class ContentTests(SimpleTestCase):
     def test_every_language_and_platform_is_complete(self):
         self.assertEqual(set(UI), CODES)
+        self.assertEqual(PLATFORMS, ("instagram", "tiktok", "youtube"))
         for platform in PLATFORMS:
-            self.assertEqual(set(CONTENT[platform]), CODES, platform)
+            self.assertEqual(set(CONTENT[platform]), {code for code in CODES if has_language(platform, code)}, platform)
+        self.assertEqual(set(CONTENT["instagram"]), CODES)
+        self.assertEqual(set(CONTENT["youtube"]), {"en"})   # YouTube is written in English only
         self.assertEqual(set(CREATORS), CODES)
 
     def test_every_language_passes_the_copy_check(self):
@@ -53,7 +57,7 @@ class ContentTests(SimpleTestCase):
 
     def test_titles_are_unique_across_the_whole_language(self):
         for code in UI:
-            titles = [CONTENT[pl][code][page]["title"] for pl in PLATFORMS for page in PAGES]
+            titles = [CONTENT[pl][code][page]["title"] for pl in PLATFORMS if code in CONTENT[pl] for page in pages_for(pl)]
             titles += [CREATORS[code][page]["title"] for page in CREATORS[code]["keywords"]]
             self.assertEqual(len(titles), len(set(titles)), code)
 
@@ -78,7 +82,45 @@ class ContentTests(SimpleTestCase):
         labels = [label for label, url in followers_menu("en")]
         self.assertEqual(labels, ["Instagram Followers", "Instagram Packages", "Instagram Likes", "Instagram Views", "Instagram Comments",
                                   "TikTok Followers", "TikTok Packages", "TikTok Likes", "TikTok Views", "TikTok Comments",
+                                  "YouTube Subscribers", "YouTube Packages", "YouTube Likes", "YouTube Views", "YouTube Comments",
                                   "For creators", "My account"])
+        # A language without YouTube pages links to the English hub instead.
+        for code in ("tr", "de"):
+            self.assertIn(("YouTube (EN)", "/en/youtube-subscribers/"), followers_menu(code))
+            self.assertEqual(sum("youtube" in url for label, url in followers_menu(code)), 1)
+
+    def test_youtube_has_its_own_pages_words_and_languages(self):
+        self.assertEqual(len(pages_for("youtube")), 15)
+        self.assertEqual(pages_for("tiktok"), PAGES)
+        paths = {route for route, code, page, platform in routes() if platform == "youtube"}
+        self.assertEqual(len(paths), 15)
+        self.assertTrue(all(path.startswith("en/") for path in paths))
+        self.assertIn("en/youtube-shorts-views/", paths)
+        self.assertEqual(dict(alternates("views", "youtube")), {"en": "/en/youtube-views-packages/", "x-default": "/en/youtube-views-packages/"})
+        # Subscribers and a channel on YouTube; followers everywhere else; other languages keep their own strings.
+        you, insta = ui_for("en", "youtube"), ui_for("en", "instagram")
+        self.assertEqual(you["plan_followers"], "{followers} subscribers / month")
+        self.assertEqual(insta["plan_followers"], "{followers} followers / month")
+        self.assertIn("channel", you["public_warning"])
+        self.assertEqual(you["eyebrow"], "Real YouTube growth")   # not overridden: the shared string, filled
+        self.assertEqual(ui_for("de", "youtube")["plan_followers"], ui_for("de", "instagram")["plan_followers"])
+        self.assertNotIn("f_video", insta)
+
+    def test_youtube_handles_and_video_links(self):
+        for raw in ("@My-Channel", "https://www.youtube.com/@My-Channel/videos", "youtube.com/@My-Channel?si=abc", "m.youtube.com/@My-Channel"):
+            self.assertEqual(clean_handle(raw), "My-Channel")
+            self.assertTrue(valid_handle(clean_handle(raw), "youtube"))
+        self.assertFalse(valid_handle(clean_handle("https://www.youtube.com/channel/UCabcdefghijk"), "youtube"))   # no @name
+        self.assertFalse(valid_handle("ab", "youtube"))
+        self.assertFalse(valid_handle("my-channel", "instagram"))   # "-" only exists in YouTube handles
+        watch = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        for raw in (watch, "https://youtu.be/dQw4w9WgXcQ?si=x", "https://m.youtube.com/watch?feature=share&v=dQw4w9WgXcQ&t=3",
+                    "youtube.com/live/dQw4w9WgXcQ"):
+            self.assertEqual(clean_video_url(raw), watch)
+        self.assertEqual(clean_video_url("youtube.com/shorts/dQw4w9WgXcQ"), "https://www.youtube.com/shorts/dQw4w9WgXcQ")
+        self.assertEqual(clean_video_url(""), "")
+        for raw in ("https://www.youtube.com/@brand", "https://vimeo.com/1", "not a link"):
+            self.assertIsNone(clean_video_url(raw))
 
     def test_handle_cleaning(self):
         for raw in ("@Brand.Name", "brand.name", "https://www.instagram.com/brand.name/?igsh=abc", "instagram.com/brand.name",
@@ -107,7 +149,7 @@ class PageTests(TestCase):
     def test_main_page_links_to_every_page(self):
         for platform in PLATFORMS:
             html = self.client.get(page_path("en", "main", platform)).content.decode()
-            for page in PAGES[1:]:
+            for page in pages_for(platform)[1:]:
                 self.assertIn(f'href="{page_path("en", page, platform)}"', html)
 
     def test_creators_hub_renders_and_links_both_platforms(self):
@@ -144,8 +186,12 @@ class PageTests(TestCase):
 
     def test_sitemap_index_and_follower_sections(self):
         index = self.client.get("/sitemap.xml").content.decode()
-        for section in ("instagram-followers", "tiktok-followers", "creators"):
+        for section in ("instagram-followers", "tiktok-followers", "youtube-subscribers", "creators"):
             self.assertIn(f"/sitemaps/{section}.xml</loc>", index)
+        youtube = self.client.get("/sitemaps/youtube-subscribers.xml").content.decode()
+        self.assertEqual(youtube.count("<url>"), 15)
+        self.assertEqual(len(re.findall(r"<loc>https?://[^/]+/en/", youtube)), 15)   # English only
+        self.assertIn("/en/youtube-subscribers/</loc>", youtube)
         body = self.client.get("/sitemaps/tiktok-followers.xml").content.decode()
         self.assertEqual(body.count("<url>"), len(CODES) * len(PAGES))
         self.assertIn(page_path("tr", "pack_3k", "tiktok"), body)
@@ -170,6 +216,27 @@ class PageTests(TestCase):
         self.assertIn("public-warning", self.client.get(reverse("growth:success") + "?lang=en&platform=tiktok").content.decode())
         css = open("static/css/site.css", encoding="utf-8").read()
         self.assertRegex(css, r"\.public-warning \{[^}]*color: #ff6b6b")
+
+    def test_youtube_pages_speak_of_subscribers_and_take_a_video(self):
+        html = self.client.get("/en/youtube-subscribers/").content.decode()
+        form = html.split('id="start"')[1].split("</form>")[0]
+        self.assertIn('name="platform" value="youtube"', form)
+        self.assertIn("new subscribers", form)
+        self.assertNotIn("new followers", form)
+        self.assertIn('name="video_url"', form)
+        self.assertIn("YouTube channel handle", form)
+        self.assertRegex(form, r'class="public-warning"[^>]*>.*Your channel and its videos must be public')
+        self.assertIn('"serviceType":"Real YouTube subscribers"', html)
+        self.assertEqual(len(re.findall(r'<link rel="alternate" hreflang=', html)), 2)   # en + x-default
+        self.assertIn("Instant subscribers vs ", html)                                # the comparison table's own words
+        insta = self.client.get("/en/instagram-followers/").content.decode()
+        self.assertNotIn('name="video_url"', insta)
+        self.assertIn('"serviceType":"Real Instagram followers"', insta)
+        self.assertIn('href="/en/youtube-subscribers/"', insta)                       # in the menu and the hub cards
+        self.assertIn('href="/en/youtube-subscribers/"', self.client.get("/").content.decode())   # Turkish menu: the English hub
+        guide = self.client.get("/en/youtube-subscribers/youtube-monetization-requirements/").content.decode()
+        self.assertIn('"@type":"Article"', guide)
+        self.assertIn("We don't promise monetization", guide.replace("&#x27;", "'"))
 
     def test_pages_preselect_a_package(self):
         self.assertRegex(self.client.get(page_path("en", "pack_10k")).content.decode(), r'value="pro"[^>]*checked')
@@ -219,6 +286,33 @@ class RequestModeTests(FreshCache, TestCase):
         self.assertIn("lead-event", page)
         self.assertIn("signup-event", page)
         self.assertIn("Rising Influencer", page)
+
+    def test_youtube_order_takes_a_channel_handle_and_a_video(self):
+        data = order_data(platform="youtube", handle="https://www.youtube.com/@My-Channel/videos",
+                          video_url="https://youtu.be/dQw4w9WgXcQ?si=abc")
+        r = self.client.post(reverse("growth:order"), data)
+        sub = AgencySubscription.objects.get()
+        self.assertRedirects(r, f"{reverse('growth:success')}?lang=en&platform=youtube&sub={sub.pk}", fetch_redirect_response=False)
+        self.assertEqual((sub.platform, sub.handle, sub.video_url), ("youtube", "my-channel", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"))
+        self.assertIn("We received your request: Rising Influencer for @my-channel on YouTube", [m.subject for m in mail.outbox])
+        team = next(m for m in mail.outbox if "başvurusu" in m.subject)
+        self.assertIn("YouTube: @my-channel  (https://www.youtube.com/@my-channel)", team.body)
+        page = self.client.get(r["Location"]).content.decode()
+        self.assertIn("Your request for the Rising Influencer package for @my-channel is in", page)
+        self.assertIn("Your channel and its videos must be public", page)
+
+    def test_youtube_order_needs_an_at_handle_and_a_real_video_link(self):
+        bad_channel = order_data(platform="youtube", handle="https://www.youtube.com/channel/UCabcdefghijklmnop")
+        self.assertContains(self.client.post(reverse("growth:order"), bad_channel), "Enter your channel&#x27;s @handle", status_code=400)
+        bad_video = order_data(platform="youtube", handle="@my-channel", video_url="https://vimeo.com/1")
+        self.assertContains(self.client.post(reverse("growth:order"), bad_video), "Paste a link to a YouTube video", status_code=400)
+        self.assertFalse(AgencySubscription.objects.exists())
+        # The video is optional, and other platforms never store one.
+        self.client.post(reverse("growth:order"), order_data(platform="youtube", handle="@my-channel"))
+        self.assertEqual(AgencySubscription.objects.get().video_url, "")
+        self.client.post(reverse("growth:order"), order_data(password="s3cret-pass", video_url="https://youtu.be/dQw4w9WgXcQ"))
+        self.assertEqual(AgencySubscription.objects.get(platform="instagram").video_url, "")
+        self.assertEqual(self.client.post(reverse("growth:order"), order_data(password="s3cret-pass", handle="my-brand")).status_code, 400)
 
     def test_phone_is_required_and_checked(self):
         for phone in ("", "12-34", "call me"):
@@ -427,6 +521,27 @@ class WebhookTests(TestCase):
         self.assertIn("Rising Influencer", team[0].body)
         self.assertEqual(StripeEvent.objects.count(), 2)
 
+    def test_welcome_email_speaks_of_subscribers_on_youtube(self):
+        self.checkout()
+        insta = next(m for m in mail.outbox if m.subject.startswith("Your campaign has started"))
+        self.assertIn("a typical month brings 2,000-8,000 new followers, 2-3 likes for every new follower", insta.body)
+        self.assertIn("keep your account public while the package runs", insta.body)
+        self.assertNotIn("{", insta.body)
+        mail.outbox.clear()
+        AgencySubscription.objects.filter(pk=self.sub.pk).update(platform="youtube", handle="my-channel", status="pending",
+                                                                 started_at=None, stripe_subscription_id="")
+        self.send("evt_y", "checkout.session.completed", {"id": "cs_1", "mode": "subscription", "payment_status": "paid",
+                                                          "client_reference_id": str(self.sub.pk), "subscription": "sub_1"})
+        you = next(m for m in mail.outbox if m.subject.startswith("Your campaign has started"))
+        self.assertIn("for @my-channel on YouTube", you.subject)
+        self.assertIn("real people discover your channel every day. Those who like it subscribe, watch your videos", you.body)
+        self.assertIn("2,000-8,000 new subscribers, 2-3 likes for every new subscriber", you.body)
+        self.assertIn("instant subscribers are bots", you.body)
+        self.assertIn("keep your channel public while the package runs", you.body)
+        self.assertNotIn("follower", you.body)
+        self.assertNotIn("{", you.body)
+        self.assertIn("YouTube influencer paketi (ödendi)", self.team("paketi (ödendi)")[0].subject)
+
     def test_another_sites_checkout_is_skipped(self):
         # Other sites share the Stripe account: a numeric reference that happens to match our id is not ours.
         r = self.checkout(id="cs_other_site", client_reference_id=str(self.sub.pk), metadata={"subscription_id": str(self.sub.pk)})
@@ -609,6 +724,19 @@ class DisputeTests(FreshCache, TestCase):
         self.assertEqual(Dispute.objects.get().status, "won")
         self.assertIn("KAZANILDI", [m for m in mail.outbox if "itirazı sonuçlandı" in m.subject][0].body)
 
+    def test_youtube_evidence_speaks_of_subscribers_and_the_channel(self):
+        AgencySubscription.objects.filter(pk=self.sub.pk).update(platform="youtube", handle="my-channel")
+        self.sub.refresh_from_db()
+        text = " ".join(evidence.build(self.sub).values())
+        for part in ("YouTube account @my-channel (https://www.youtube.com/@my-channel)", "customer's public channel",
+                     "subscribe, watch, like and comment on their own (typically 2,000-8,000 new subscribers a month",
+                     "subscribe step shown 1,200 times", "310 visited the channel", "140 new subscribers (estimated)",
+                     "for example 1,000 subscribers", "Outstanding subscriber balance"):
+            self.assertIn(part, text)
+        for word in ("follower", "follow step", "follow rate", "the profile"):
+            self.assertNotIn(word, text)
+        self.assertNotIn("{", text)
+
     def test_unreconciled_shortfall_is_not_claimed_as_delivered(self):
         from .evidence import build
 
@@ -709,6 +837,12 @@ class StatsApiTests(TestCase):
         self.assertIsNotNone(item["current_period_end"])
         self.assertEqual(self.post({"subscription_id": self.sub.pk, "new_followers": 5}, token="agency-test-token").status_code, 401)
         self.assertFalse(SubscriptionStat.objects.exists())
+        self.assertEqual(item["video_url"], "")   # only YouTube packages carry a video
+        video = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        AgencySubscription.objects.filter(pk=self.sub.pk).update(platform="youtube", handle="my-channel", video_url=video)
+        r = self.client.get(reverse("growth:api_subscriptions") + "?status=active", HTTP_AUTHORIZATION="Bearer agency-test-token")
+        item = r.json()["subscriptions"][0]
+        self.assertEqual((item["platform"], item["handle"], item["video_url"]), ("youtube", "my-channel", video))
 
     def test_daily_stats(self):
         today = timezone.now().date()
@@ -927,6 +1061,34 @@ class LinksterrTests(FreshCache, TestCase):
         self.assertIn("These numbers come from our delivery system", html)
         self.assertNotIn("<span>Likes</span>", html)
         self.assertNotIn(">700<", html)  # impressions stay out of the customer's dashboard
+
+    def test_youtube_package_is_fetched_and_shown_as_subscribers(self):
+        AgencySubscription.objects.filter(pk=self.sub.pk).update(platform="youtube", handle="My-Channel")
+        self.sub.refresh_from_db()
+        self.assertEqual(linksterr.account_key(self.sub), "youtube:my-channel")
+        self.client.force_login(self.user)
+        account = linksterr_account("youtube:my-channel", days=[linksterr_day(self.today, new=41, visits=420)],
+                                    readings=[{"date": str(self.today), "followers": 1500}],
+                                    projection={"days": 30, "new_followers": 1230, "low": 1160, "high": 1290, "per_day": 41.0})
+        with self.respond(account) as get:
+            html = self.client.get(reverse("growth:account") + "?lang=en").content.decode()
+        self.assertIn(("account", "youtube:my-channel"), get.call_args.kwargs["params"])
+        self.assertEqual(SubscriptionStat.objects.get(subscription=self.sub).new_followers, 41)
+        self.assertIn("Starter Creator · YouTube", html)
+        self.assertIn("+41", html)
+        for text in ("New subscribers", "Channel visits", "New subscribers so far", "Your channel now: 1,500 subscribers",
+                     "on average about 1,230 new subscribers (1,160–1,290)", "Your channel and its videos must be public"):
+            self.assertIn(text, html)
+        self.assertNotIn("New followers", html)
+        with self.respond(account):
+            # A language without YouTube wording keeps its own general strings.
+            self.assertIn(UI["de"]["acc_gained"], self.client.get(reverse("growth:account") + "?lang=de").content.decode())
+            # One account with an Instagram and a YouTube package: each card in its own words, the totals in the general ones.
+            AgencySubscription.objects.create(user=self.user, email="me@example.com", handle="brand", location="Berlin", plan="starter",
+                                              amount="79.99", status="active", started_at=timezone.now() - timedelta(days=2))
+            html = self.client.get(reverse("growth:account") + "?lang=en").content.decode()
+        self.assertIn("New followers so far", html)
+        self.assertIn("New subscribers", html)
 
     def test_the_30_day_projection_reaches_the_dashboard_and_the_admin(self):
         projection = {"days": 30, "new_followers": 1230, "low": 1160, "high": 1290, "per_day": 41.0}

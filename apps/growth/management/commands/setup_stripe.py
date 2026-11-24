@@ -1,6 +1,6 @@
 """Stripe setup for the monthly influencer packages. Safe to run again.
 
-- One product + one monthly USD price per platform and package (6 in all), found again
+- One product + one monthly USD price per platform and package (9 in all), found again
   by lookup key `sterr_<platform>_<package>_monthly_usd`. A changed amount in plan.py gets
   a new price; the lookup key moves to it (transfer_lookup_key).
 - The customer portal configuration (card, invoices, cancel at period end), tagged
@@ -20,7 +20,7 @@ import stripe
 
 from apps.growth import plan
 from apps.growth.billing import PORTAL_TAG, lookup_key, metadata
-from apps.growth.constants import PLATFORM_NAMES, PLATFORMS
+from apps.growth.constants import PLATFORM_NAMES, PLATFORMS, words
 
 WEBHOOK_EVENTS = [
     "checkout.session.completed",
@@ -56,10 +56,11 @@ class Command(BaseCommand):
                     self.stdout.write(f"Price exists: {key} ({existing[0].id})")
                     continue
                 low, high = package["followers"]
+                w = words(platform)
                 product = client.v1.products.create(params={
                     "name": f"{plan.NAMES[package['key']]} · {PLATFORM_NAMES[platform]}",
-                    "description": (f"Monthly influencer package, spread over 30 days: real people who follow, like, watch "
-                                    f"and comment (typically {low:,}-{high:,} new followers a month). No bots, no password."),
+                    "description": (f"Monthly influencer package, spread over 30 days: real people who {w['follow']}, like, watch "
+                                    f"and comment (typically {low:,}-{high:,} new {w['audience']} a month). No bots, no password."),
                     "metadata": {"platform": platform, "plan": package["key"]},
                 })
                 price = client.v1.prices.create(params={

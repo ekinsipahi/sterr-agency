@@ -20,7 +20,9 @@ from apps.leads.ga4 import hashed_user_data
 from apps.leads.views import _client_ip
 
 from . import billing, evidence, linksterr
-from .content import has_page, ACCOUNT_NAV, CONTENT, CREATOR_PAGES, CREATORS, GROUPS, GUIDES, PAGE_PLAN, UI, PAGES, PLATFORM_NAMES, PLATFORMS, alternates, creator_alternates, creator_lang_links, creator_path, lang_links, page_path, ui_for
+from .content import (has_page, ACCOUNT_NAV, AUDIENCE, CONTENT, CREATOR_PAGES, CREATORS, GROUPS, GUIDES, PAGE_PLAN, UI, PAGES,  # noqa: F401
+                      PLATFORM_NAMES, PLATFORMS, alternates, creator_alternates, creator_lang_links, creator_path, lang_links,
+                      page_path, ui_for)
 from .constants import TERMS_VERSION
 from .forms import OrderForm
 from . import plan
@@ -75,12 +77,12 @@ def _context(request, code, page, platform="instagram", form=None):
     ctx = shell(code)
     ctx.update({
         "page": page, "kind": kind, "g": data, "gu": gu, "p": p,
-        "platform": platform, "platform_name": PLATFORM_NAMES[platform], "followers_active": True,
+        "platform": platform, "platform_name": PLATFORM_NAMES[platform], "audience": AUDIENCE[platform], "followers_active": True,
         "faqs": p.get("faqs"),
         "plans": plan.for_page(code, gu),
         "selected_plan": selected if selected in plan.PLAN_BY_KEY else plan.DEFAULT_PLAN,
         "lowest_price": plan.money(plan.LOWEST),
-        "form": form or OrderForm(ui=gu, user=request.user, initial={"location": p.get("place", "")}),
+        "form": form or OrderForm(ui=gu, user=request.user, platform=platform, initial={"location": p.get("place", "")}),
         "lang_links": lang_links(page, platform),
         "alternates": alternates(page, platform),
         "canonical_url": settings.SITE_URL + page_path(code, page, platform),
@@ -131,7 +133,8 @@ def creators(request, lang, page):
                             "agency_url": page_path(lang, "agency", q), "agency": CONTENT[q][lang]["agency"]}
                            for q in PLATFORMS if lang in CONTENT[q]],
         "hub": [{"url": creator_path(lang, k), "p": data[k]} for k in CREATOR_PAGES if k != page],
-        "blocks": [(gu["bots_title"], UI[lang]["bots_text"].replace("{platform}", "Instagram / TikTok"))],
+        "blocks": [(gu["bots_title"], UI[lang]["bots_text"].replace(
+            "{platform}", " / ".join(PLATFORM_NAMES[q] for q in PLATFORMS if lang in CONTENT[q])))],
         "nav_cta_href": page_path(lang, "main", "instagram") + "#start" if lang in CONTENT["instagram"] else "#",
         "nav_cta_label": gu["nav_cta"],
     })
@@ -157,7 +160,7 @@ def see_other(url):
     return response
 
 
-ORDER_FIELDS = ("plan", "handle", "location", "phone")
+ORDER_FIELDS = ("plan", "handle", "location", "phone")   # + video_url on YouTube
 SOURCE_FIELDS = ("source_page", "utm_source", "utm_medium", "utm_campaign", "gclid")
 
 
@@ -173,7 +176,7 @@ def order(request):
     gu = ui_for(code, platform)
     # "Continue with Google": the order details are checked now, the account comes from Google.
     via_google = request.POST.get("via") == "google" and not request.user.is_authenticated and google_enabled()
-    form = OrderForm(request.POST, ui=gu, user=request.user, account_fields=not via_google)
+    form = OrderForm(request.POST, ui=gu, user=request.user, account_fields=not via_google, platform=platform)
     if form.is_spam():
         return redirect(f"{reverse('growth:success')}?lang={code}&platform={platform}")
     ip = _client_ip(request)
@@ -199,7 +202,7 @@ def order(request):
 
     pending = {"platform": platform, "lang": code, "page": page_key, "ip": ip,
                "terms_at": timezone.now().isoformat(), "terms_version": TERMS_VERSION, "user_agent": request.META.get("HTTP_USER_AGENT", "")[:300],
-               **{f: form.cleaned_data[f] for f in ORDER_FIELDS},
+               **{f: form.cleaned_data[f] for f in ORDER_FIELDS}, "video_url": form.cleaned_data.get("video_url", ""),
                **{f: request.POST.get(f, "")[:300 if f == "source_page" else 150] for f in SOURCE_FIELDS}}
     if via_google:
         request.session["google_order"] = pending
@@ -223,6 +226,7 @@ def place_order(request, user, pending):
     customer, _ = Customer.objects.get_or_create(user=user, defaults={"lang": code})
     package = plan.PLAN_BY_KEY[pending["plan"]]
     fields = {"email": user.email, "location": pending["location"], "phone": pending.get("phone", ""), "plan": package["key"], "amount": package["price"], "lang": code,
+              "video_url": pending.get("video_url", "") if platform == "youtube" else "",
               "ip": pending.get("ip"), **{f: pending.get(f, "") for f in SOURCE_FIELDS},
               # The terms box is required on the order form: when, which version, from which browser.
               "terms_accepted_at": parse_datetime(pending.get("terms_at") or "") or timezone.now(),

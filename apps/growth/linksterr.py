@@ -2,7 +2,8 @@
 GET {LINKSTERR_API_URL}/user-api/v1/agency/accounts/ with LINKSTERR_AGENCY_TOKEN (the same
 token is set on Linksterr) returns, per account and UTC day: new followers (Linksterr's
 calibrated count of real follows, never more than the profile visits), profile visits,
-impressions, "Done" taps and countries, plus dated follower readings.
+impressions, "Done" taps and countries, plus dated follower readings. The same for YouTube
+(youtube:<handle>), where "followers" means subscribers.
 
 sync() stores them in SubscriptionStat for the days the package ran, so the dashboard, the
 admin and dispute evidence fill themselves. A day is settled once it was fetched after it
@@ -32,7 +33,9 @@ FINAL_AFTER_DAYS = 2        # a day fetched after it ended is settled once it is
 MAX_ACCOUNTS, MAX_DAYS = 100, 400   # Linksterr's limits per request
 READING_LOOKBACK_DAYS = 14  # a follower reading this long before the package still counts as its start
 FIELDS = ("new_followers", "visits", "impressions", "confirms")
-HANDLE = re.compile(r"[A-Za-z0-9._]{1,30}")   # what Linksterr accepts
+# What Linksterr accepts: Instagram/TikTok usernames, YouTube handles (3-30, may hold "-"), no "@".
+HANDLES = {"instagram": re.compile(r"[A-Za-z0-9._]{1,30}"), "tiktok": re.compile(r"[A-Za-z0-9._]{1,30}"),
+           "youtube": re.compile(r"[A-Za-z0-9._-]{3,30}")}
 
 
 def enabled():
@@ -44,7 +47,8 @@ def account_key(sub):
 
 
 def _valid(sub):
-    return sub.platform in ("instagram", "tiktok") and bool(HANDLE.fullmatch(sub.handle.strip().lstrip("@")))
+    pattern = HANDLES.get(sub.platform)
+    return pattern is not None and bool(pattern.fullmatch(sub.handle.strip().lstrip("@")))
 
 
 def _utc_day(value):
