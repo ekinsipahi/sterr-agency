@@ -66,6 +66,7 @@ UI = {
     "submit_request": "Envoyer ma demande",
     "request_note": "Aucun paiement maintenant. Nous vous écrivons sous 24 heures pour lancer votre croissance.",
     "policy": "Facturé chaque mois, résiliable à tout moment depuis votre compte. La résiliation arrête le prochain paiement ; le mois déjà payé se poursuit jusqu'à son terme et n'est pas remboursé.",
+    "public_warning": "Votre compte doit être public, pas privé. Nous ne pouvons pas faire grandir un compte privé : gardez-le public tant que votre pack est actif.",
     "err_required": "Ce champ est obligatoire.",
     "err_email": "Saisissez un e-mail valide.",
     "err_handle": "Saisissez un nom d'utilisateur {platform} valide.",

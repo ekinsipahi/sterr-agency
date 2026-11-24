@@ -51,6 +51,7 @@
           {% endif %}
           <button class="btn btn--signal btn--lg mt-s" type="submit" style="width:100%">{% if payments %}{{ gu.submit }}{% else %}{{ gu.submit_request }}{% endif %} · <span data-order-amount>{% for pk in plans %}{% if pk.key == selected_plan %}{{ pk.amount }}{% endif %}{% endfor %}</span>{{ gu.per_month }}</button>
           <p class="muted mt-s" style="font-size:13.5px">{% if payments %}{{ gu.secure_note }}{% else %}{{ gu.request_note }}{% endif %}</p>
+          <p class="public-warning" role="note">{% include "partials/icons/alert.svg" %}<span>{{ gu.public_warning }}</span></p>
           {% if not user.is_authenticated %}<p class="muted" style="font-size:13.5px">{{ gu.have_account }} <a href="{% url 'growth:login' %}?lang={{ code }}&amp;next={{ request.path|urlencode }}%23start">{{ gu.login_title }}</a></p>{% endif %}
         </div>
       </div>

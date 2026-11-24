@@ -66,6 +66,7 @@ UI = {
     "submit_request": "Skicka min förfrågan",
     "request_note": "Ingen betalning nu. Vi mejlar dig inom 24 timmar så att du kan komma igång.",
     "policy": "Debiteras månadsvis, säg upp när du vill i ditt konto. En uppsägning stoppar nästa betalning; månaden du redan har betalat för löper till sitt slut och återbetalas inte.",
+    "public_warning": "Ditt konto måste vara offentligt, inte privat. Vi kan inte få ett privat konto att växa: håll det offentligt så länge paketet löper.",
     "err_required": "Det här fältet är obligatoriskt.",
     "err_email": "Ange en giltig e-postadress.",
     "err_handle": "Ange ett giltigt användarnamn på {platform}.",

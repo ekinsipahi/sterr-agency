@@ -86,6 +86,7 @@
         <form method="post" action="{% url 'growth:resume' s.pk %}">{% csrf_token %}<input type="hidden" name="lang" value="{{ code }}"><button class="btn btn--signal btn--sm" type="submit">{{ gu.acc_resume }}</button></form>
         {% endif %}
         </div>
+        {% if s.status != "canceled" %}<p class="public-warning" role="note">{% include "partials/icons/alert.svg" %}<span>{{ gu.public_warning }}</span></p>{% endif %}
       </article>
       {% endwith %}{% endfor %}
     </div>

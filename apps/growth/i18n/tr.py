@@ -71,6 +71,7 @@ UI = {
     "submit_request": "Talebimi gönder",
     "request_note": "Şimdi ödeme yok. Başlamanız için 24 saat içinde size e-posta göndereceğiz.",
     "policy": "Aylık faturalandırılır; hesabınızdan istediğiniz zaman iptal edebilirsiniz. İptal, bir sonraki ödemeyi durdurur; ödemesini yaptığınız ay sonuna kadar devam eder ve iade edilmez.",
+    "public_warning": "Hesabınız gizli değil, herkese açık olmalı. Gizli hesabı büyütemeyiz: paketiniz sürdüğü sürece hesabınızı herkese açık tutun.",
     "err_required": "Bu alan zorunludur.",
     "err_email": "Geçerli bir e-posta adresi girin.",
     "err_handle": "Geçerli bir {platform} kullanıcı adı girin.",

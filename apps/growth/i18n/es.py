@@ -66,6 +66,7 @@ UI = {
     "submit_request": "Enviar mi solicitud",
     "request_note": "Sin pago ahora. Te escribimos en menos de 24 horas para ponerlo en marcha.",
     "policy": "Cobro mensual, cancela cuando quieras desde tu cuenta. Al cancelar se detiene el próximo pago; el mes que ya pagaste sigue hasta el final y no se reembolsa.",
+    "public_warning": "Tu cuenta tiene que ser pública, no privada. No podemos hacer crecer una cuenta privada: mantenla pública mientras tu paquete esté activo.",
     "err_required": "Este campo es obligatorio.",
     "err_email": "Introduce un email válido.",
     "err_handle": "Introduce un usuario de {platform} válido.",

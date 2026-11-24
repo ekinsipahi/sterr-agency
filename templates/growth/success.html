@@ -14,6 +14,7 @@
     <h1 class="h1 reveal" style="max-width:900px">{{ gu.pending_title }}</h1>
     {% endif %}
     {% if success_text %}<p class="lede reveal">{{ success_text }}</p>{% endif %}
+    <div class="reveal" style="max-width:640px"><p class="public-warning" role="note">{% include "partials/icons/alert.svg" %}<span>{{ gu.public_warning }}</span></p></div>
     <div class="btn-row mt-m reveal">
       <a class="btn btn--signal btn--lg" href="{{ account_url }}">{{ gu.to_account }} {% include "partials/icons/arrow.svg" %}</a>
       <a class="btn btn--ghost btn--lg" href="{{ whatsapp_url }}" target="_blank" rel="noopener">{% include "partials/icons/whatsapp.svg" %} WhatsApp</a>

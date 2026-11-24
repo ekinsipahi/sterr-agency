@@ -66,6 +66,7 @@ UI = {
     "submit_request": "Invia la mia richiesta",
     "request_note": "Nessun pagamento ora. Ti scriviamo entro 24 ore per farti partire.",
     "policy": "Addebito mensile, disdici quando vuoi dal tuo account. La disdetta blocca il pagamento successivo; il mese già pagato prosegue fino alla fine e non viene rimborsato.",
+    "public_warning": "Il tuo profilo deve essere pubblico, non privato. Non possiamo far crescere un profilo privato: tienilo pubblico finché il pacchetto è attivo.",
     "err_required": "Questo campo è obbligatorio.",
     "err_email": "Inserisci un'email valida.",
     "err_handle": "Inserisci un nome utente {platform} valido.",

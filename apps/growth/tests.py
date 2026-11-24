@@ -160,6 +160,17 @@ class PageTests(TestCase):
             for amount in ("$79.99", "$149.99", "$279.99"):
                 self.assertIn(amount, html.split('id="start"')[0])
 
+    def test_order_form_warns_in_red_that_the_account_must_be_public(self):
+        for code, text in (("en", "Your account must be public, not private."),
+                           ("tr", "Hesabınız gizli değil, herkese açık olmalı."), ("de", "Ihr Konto muss öffentlich sein, nicht privat.")):
+            for platform in ("instagram", "tiktok"):
+                html = self.client.get(page_path(code, "main", platform)).content.decode()
+                form = html.split('id="start"')[1].split("</form>")[0]
+                self.assertRegex(form, r'class="public-warning"[^>]*>.*' + re.escape(text))
+        self.assertIn("public-warning", self.client.get(reverse("growth:success") + "?lang=en&platform=tiktok").content.decode())
+        css = open("static/css/site.css", encoding="utf-8").read()
+        self.assertRegex(css, r"\.public-warning \{[^}]*color: #ff6b6b")
+
     def test_pages_preselect_a_package(self):
         self.assertRegex(self.client.get(page_path("en", "pack_10k")).content.decode(), r'value="pro"[^>]*checked')
         self.assertRegex(self.client.get(page_path("en", "pack_1k")).content.decode(), r'value="starter"[^>]*checked')
@@ -753,6 +764,11 @@ class StatsApiTests(TestCase):
         self.assertIn("<rect", html)  # new followers per day
         self.assertIn("Day by day", html)
         self.assertIn("Renews on", html)
+        # The red rule at the bottom of a running package: the account must be public.
+        self.assertRegex(html, r'class="public-warning"[^>]*>.*Your account must be public, not private')
+        self.sub.status, self.sub.canceled_at = "canceled", timezone.now()
+        self.sub.save()
+        self.assertNotIn("public-warning", self.client.get(reverse("growth:account") + "?lang=en").content.decode())
 
 
 def linksterr_account(account="instagram:brand", days=(), readings=(), projection=None):

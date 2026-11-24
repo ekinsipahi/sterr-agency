@@ -66,6 +66,7 @@ UI = {
     "submit_request": "Müraciətimi göndər",
     "request_note": "İndi ödəniş yoxdur. Başlamaq üçün 24 saat ərzində sizə e-poçt yazacağıq.",
     "policy": "Aylıq ödəniş, hesabınızdan istənilən vaxt ləğv edə bilərsiniz. Ləğv növbəti ödənişi dayandırır; ödənilmiş ay sonuna qədər davam edir və geri qaytarılmır.",
+    "public_warning": "Hesabınız gizli deyil, açıq olmalıdır. Gizli hesabı böyüdə bilmirik: paket davam etdiyi müddətdə hesabınızı açıq saxlayın.",
     "err_required": "Bu sahə mütləqdir.",
     "err_email": "Düzgün e-poçt ünvanı daxil edin.",
     "err_handle": "Düzgün {platform} istifadəçi adı daxil edin.",

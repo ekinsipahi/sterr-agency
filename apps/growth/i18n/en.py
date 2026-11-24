@@ -67,6 +67,7 @@ UI = {
     "submit_request": "Send my request",
     "request_note": "No payment now. We'll email you within 24 hours to get you started.",
     "policy": "Billed monthly, cancel any time in your account. Canceling stops the next payment; the month you've paid for runs to its end and isn't refunded.",
+    "public_warning": "Your account must be public, not private. We can't grow a private account: keep it public for as long as your package runs.",
     "err_required": "This field is required.",
     "err_email": "Enter a valid email.",
     "err_handle": "Enter a valid {platform} username.",

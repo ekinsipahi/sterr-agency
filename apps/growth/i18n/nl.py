@@ -71,6 +71,7 @@ UI = {
     "submit_request": "Aanvraag versturen",
     "request_note": "Nu nog niet betalen. We mailen u binnen 24 uur om van start te gaan.",
     "policy": "Maandelijks gefactureerd, altijd opzegbaar in uw account. Opzeggen stopt de volgende betaling; de maand die u al betaald heeft loopt door tot het einde en wordt niet terugbetaald.",
+    "public_warning": "Uw account moet openbaar zijn, niet privé. Een privéaccount kunnen we niet laten groeien: houd het openbaar zolang uw pakket loopt.",
     "err_required": "Dit veld is verplicht.",
     "err_email": "Vul een geldig e-mailadres in.",
     "err_handle": "Vul een geldige {platform}-gebruikersnaam in.",

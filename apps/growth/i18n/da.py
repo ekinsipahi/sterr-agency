@@ -66,6 +66,7 @@ UI = {
     "submit_request": "Send min forespørgsel",
     "request_note": "Ingen betaling nu. Vi skriver til dig inden for 24 timer, så du kan komme i gang.",
     "policy": "Betales månedligt, opsig når som helst på din konto. En opsigelse stopper næste betaling; den måned, du allerede har betalt for, kører til ende og refunderes ikke.",
+    "public_warning": "Din konto skal være offentlig, ikke privat. Vi kan ikke få en privat konto til at vokse: hold den offentlig, så længe pakken kører.",
     "err_required": "Dette felt skal udfyldes.",
     "err_email": "Indtast en gyldig e-mail.",
     "err_handle": "Indtast et gyldigt brugernavn på {platform}.",

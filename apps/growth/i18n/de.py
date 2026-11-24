@@ -71,6 +71,7 @@ UI = {
     "submit_request": "Anfrage senden",
     "request_note": "Jetzt keine Zahlung. Wir melden uns innerhalb von 24 Stunden per E-Mail, damit es losgehen kann.",
     "policy": "Monatliche Abrechnung, jederzeit in Ihrem Konto kündbar. Eine Kündigung stoppt die nächste Zahlung; der bezahlte Monat läuft bis zu seinem Ende und wird nicht erstattet.",
+    "public_warning": "Ihr Konto muss öffentlich sein, nicht privat. Ein privates Konto können wir nicht wachsen lassen: Lassen Sie es öffentlich, solange Ihr Paket läuft.",
     "err_required": "Dieses Feld ist erforderlich.",
     "err_email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
     "err_handle": "Bitte geben Sie einen gültigen {platform}-Benutzernamen ein.",

@@ -69,6 +69,7 @@ UI = {
     "submit_request": "Wyślij zgłoszenie",
     "request_note": "Teraz bez płatności. W ciągu 24 godzin napiszemy e-mail, żeby wszystko uruchomić.",
     "policy": "Płatność co miesiąc, anulujesz w dowolnym momencie na swoim koncie. Anulowanie zatrzymuje kolejną płatność; opłacony miesiąc trwa do końca i nie jest zwracany.",
+    "public_warning": "Twoje konto musi być publiczne, a nie prywatne. Konta prywatnego nie da się rozwijać: zostaw je publiczne przez cały czas działania pakietu.",
     "err_required": "To pole jest wymagane.",
     "err_email": "Podaj prawidłowy adres e-mail.",
     "err_handle": "Podaj prawidłową nazwę użytkownika {platform}.",

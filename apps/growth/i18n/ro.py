@@ -66,6 +66,7 @@ UI = {
     "submit_request": "Trimite cererea",
     "request_note": "Fără plată acum. Îți scriem în 24 de ore ca să pornim.",
     "policy": "Facturare lunară, anulezi oricând din contul tău. Anularea oprește plata următoare; luna deja plătită continuă până la final și nu se rambursează.",
+    "public_warning": "Contul tău trebuie să fie public, nu privat. Nu putem crește un cont privat: păstrează-l public cât timp pachetul este activ.",
     "err_required": "Acest câmp este obligatoriu.",
     "err_email": "Introdu un e-mail valid.",
     "err_handle": "Introdu un nume de utilizator {platform} valid.",
