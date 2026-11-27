@@ -27,6 +27,7 @@ from apps.leads.views import _client_ip
 from . import activity, billing, linksterr
 from .content import CONTENT, PLATFORM_NAMES, PLATFORMS, UI, page_path, platform_home, ui_for
 from .forms import LoginForm, NewPasswordForm, ResetRequestForm, SignupForm
+from .constants import PROFILE_URL
 from .models import AgencySubscription, Customer
 from .notifications import send_password_reset, send_verification
 from .plan import count
@@ -147,6 +148,7 @@ def _dashboard(owner, code, readonly=False):
                 "visits": visits,
                 "countries": _countries(month),
                 "projection": _projection(s, ui, code),
+                "proof": _proof(s, ui, code),
                 "days": days[:14], "more_days": days[14:],
                 "now": ui["acc_now"].replace("{count}", count(s.current_followers, code)) if s.current_followers is not None else "",
                 "updated": ui["acc_updated"].replace("{date}", formats.date_format(s.stats_at, "DATETIME_FORMAT")) if s.stats_at else "",
@@ -179,6 +181,17 @@ def _projection(s, ui, code):
         return ""
     return (ui["acc_projection"].replace("{count}", count(p["new_followers"], code))
             .replace("{low}", count(p["low"], code)).replace("{high}", count(p["high"], code)))
+
+
+def _proof(s, ui, code):
+    """Large accounts: visitors who typed their username after following, each account checked to exist."""
+    names = [r for r in (s.shared_usernames or []) if r.get("status") == "exists"]
+    if not names:
+        return None
+    url = PROFILE_URL.get(s.platform)
+    return {"title": ui["acc_proof"], "note": ui["acc_proof_note"].replace("{count}", count(len(names), code)),
+            "names": [{"handle": r["handle"], "url": url.format(r["handle"]) if url else "", "date": r["date"],
+                       "country": r["country"]} for r in names]}
 
 
 def _countries(month, top=5):

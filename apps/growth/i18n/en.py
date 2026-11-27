@@ -119,6 +119,8 @@ UI = {
     "acc_countries": "Visits by country:",
     "acc_count_note": "These numbers come from our delivery system: new followers are the real people we brought who followed you, counted from their visits to your profile; profile visits are the people who opened your profile from our network. Your account's own total also changes with your other growth and with unfollows.",
     "acc_projection": "Next 30 days at today's pace: on average about {count} new followers ({low}–{high}). An estimate, not a promise.",
+    "acc_proof": 'Followers who shared their username',
+    "acc_proof_note": '{count} of the people we sent typed their {platform} username after following you. We checked that each account exists, and you can find them in your followers list. Typing a name is optional, so not everyone we send appears here.',
     "st_pending": "Awaiting payment",
     "st_requested": "Request received",
     "st_active": "Active",

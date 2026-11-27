@@ -959,6 +959,32 @@ class LinksterrTests(FreshCache, TestCase):
         self.assertEqual((self.sub.start_followers, self.sub.current_followers), (1000, 1071))
         self.assertIsNotNone(self.sub.stats_at)
 
+    def test_shared_usernames_are_kept_for_the_package_period_and_shown_when_verified(self):
+        start = self.today - timedelta(days=5)
+        shared = [{"handle": "real.fan", "status": "exists", "date": str(self.today), "country": "it"},
+                  {"handle": "made.up", "status": "missing", "date": str(self.today), "country": "IT"},
+                  {"handle": "older", "status": "exists", "date": str(start - timedelta(days=30)), "country": "IT"},
+                  {"handle": "<script>", "status": "exists", "date": str(self.today)},
+                  {"handle": "odd", "status": "hacked", "date": str(self.today)}]
+        with self.respond({**linksterr_account(days=[linksterr_day(self.today, new=3)]), "shared_usernames": shared}):
+            linksterr.sync([self.sub])
+        self.sub.refresh_from_db()
+        self.assertEqual([(r["handle"], r["status"], r["country"]) for r in self.sub.shared_usernames],
+                         [("real.fan", "exists", "IT"), ("made.up", "missing", "IT")])
+        with self.respond(linksterr_account(days=[linksterr_day(self.today, new=3)])):   # older Linksterr: keep
+            linksterr.sync([self.sub], force=True)
+        self.sub.refresh_from_db()
+        self.assertEqual(len(self.sub.shared_usernames), 2)
+        self.client.force_login(self.user)
+        with mock.patch("apps.growth.linksterr.sync", return_value=0):
+            html = self.client.get(reverse("growth:account")).content.decode()
+        self.assertIn("@real.fan", html)
+        self.assertIn("https://www.instagram.com/real.fan/", html)
+        self.assertNotIn("made.up", html)
+        text = evidence.build(self.sub)["uncategorized_text"]
+        self.assertIn("@real.fan (" + str(self.today) + ", IT)", text)
+        self.assertNotIn("made.up", text)
+
     def test_settled_days_are_not_rewritten(self):
         old, recent = self.today - timedelta(days=4), self.today - timedelta(days=1)
         with self.respond(linksterr_account(days=[linksterr_day(old, new=30), linksterr_day(recent, new=30)])):

@@ -117,6 +117,8 @@ UI = {
     "acc_countries": "Besøg pr. land:",
     "acc_count_note": "Tallene kommer fra vores leveringssystem: nye følgere er de rigtige mennesker, vi har bragt til dig, og som følger dig, talt ud fra deres besøg på din profil; profilbesøg er de mennesker, der har åbnet din profil via vores netværk. Din kontos samlede tal ændrer sig også med din øvrige vækst og med folk, der stopper med at følge dig.",
     "acc_projection": "De næste 30 dage i dagens tempo: i gennemsnit omkring {count} nye følgere ({low}–{high}). Et skøn, ikke et løfte.",
+    "acc_proof": 'Følgere, der delte deres brugernavn',
+    "acc_proof_note": '{count} af de personer, vi sendte, skrev deres {platform}-brugernavn efter at have fulgt dig. Vi har tjekket, at hver konto findes, og du kan finde dem på din følgerliste. Det er frivilligt at skrive navnet, så ikke alle, vi sender, vises her.',
     "st_pending": "Afventer betaling",
     "st_requested": "Forespørgsel modtaget",
     "st_active": "Aktiv",

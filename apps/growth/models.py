@@ -149,6 +149,9 @@ class AgencySubscription(models.Model):
     # Linksterr's estimate for the next 30 days at today's pace:
     # {"days": 30, "new_followers": 1230, "low": 1160, "high": 1290, "per_day": 41.0}
     projection = models.JSONField("30 gün tahmini", null=True, blank=True)
+    # Büyük hesap kanıtı (Linksterr): takip ettikten sonra isteğe bağlı kullanıcı adı yazan ziyaretçiler, bu paketin
+    # dönemi içinde. [{"handle", "status" (exists|missing|pending|unknown), "date", "country"}]; müşteriye yalnız exists.
+    shared_usernames = models.JSONField("Kullanıcı adı kanıtı", default=list, blank=True)
     reconciled_target = models.PositiveIntegerField(
         "Ödenmiş dönemlerin toplam takipçi hedefi", null=True, blank=True,
         help_text="Biten ödenmiş dönemleri ve iptalde kesinleşen kapsamı ödeme kayıtlarıyla doğrulayın; tahmini aralık üst sınırı değildir.")

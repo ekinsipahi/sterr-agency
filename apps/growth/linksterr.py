@@ -138,6 +138,26 @@ def _readings(account):
     return sorted(out.items())
 
 
+SHARED_STATUSES = {"exists", "missing", "pending", "unknown"}
+
+
+def _shared(value, platform, start, end):
+    """Usernames visitors typed after following (large accounts), validated and limited to [start, end]."""
+    pattern = HANDLES.get(platform)
+    out = []
+    for item in value if isinstance(value, list) else []:
+        if not isinstance(item, dict) or pattern is None:
+            continue
+        handle, status = str(item.get("handle", "")), item.get("status")
+        date = parse_date(str(item.get("date", "")))
+        if not pattern.fullmatch(handle) or status not in SHARED_STATUSES or date is None or not start <= date <= end:
+            continue
+        country = str(item.get("country", "")).upper()
+        out.append({"handle": handle.lower(), "status": status, "date": date.isoformat(),
+                    "country": country if re.fullmatch(r"[A-Z]{2}", country) else ""})
+    return out[:2000]
+
+
 def store(sub, account, today, start=None, end=None):
     """Write one account's days into the subscription's stats for [start, end] (default: the
     subscription's period). Returns the days written."""
@@ -177,8 +197,12 @@ def store(sub, account, today, start=None, end=None):
         if recent:
             sub.current_followers = recent[-1][1]
         sub.projection = _projection(account.get("projection"))
+        fields = ["start_followers", "current_followers", "projection", "stats_at", "updated_at"]
+        if "shared_usernames" in account:      # older Linksterr builds don't send it: keep what we have
+            sub.shared_usernames = _shared(account.get("shared_usernames"), sub.platform, start, end)
+            fields.append("shared_usernames")
         sub.stats_at = now
-        sub.save(update_fields=["start_followers", "current_followers", "projection", "stats_at", "updated_at"])
+        sub.save(update_fields=fields)
     return written
 
 
