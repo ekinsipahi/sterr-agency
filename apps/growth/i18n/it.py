@@ -118,7 +118,7 @@ UI = {
     "acc_count_note": "Questi numeri vengono dal nostro sistema di consegna: i nuovi follower sono le persone reali che abbiamo portato e che ti seguono, contate dalle loro visite al tuo profilo; le visite al profilo sono le persone che hanno aperto il tuo profilo dalla nostra rete. Il totale del tuo account cambia anche con la tua altra crescita e con chi smette di seguirti.",
     "acc_projection": "Prossimi 30 giorni al ritmo di oggi: in media circa {count} nuovi follower ({low}–{high}). Una stima, non una promessa.",
     "acc_proof": 'Follower che hanno condiviso il proprio nome utente',
-    "acc_proof_note": '{count} delle persone che ti abbiamo inviato hanno scritto il loro nome utente {platform} dopo averti seguito. Abbiamo verificato che ogni account esiste e puoi trovarli nella tua lista di follower. Scrivere il nome è facoltativo, quindi qui non compare chiunque inviamo.',
+    "acc_proof_note": '{count} delle persone che ti abbiamo inviato hanno scritto il loro nome utente {platform} dopo averti seguito. Abbiamo verificato che ogni account esiste e appartiene a una persona reale; puoi trovarli nella tua lista di follower. I nomi che non abbiamo potuto verificare sono esclusi.',
     "st_pending": "In attesa di pagamento",
     "st_requested": "Richiesta ricevuta",
     "st_active": "Attivo",

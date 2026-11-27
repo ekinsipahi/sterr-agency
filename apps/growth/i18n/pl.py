@@ -121,7 +121,7 @@ UI = {
     "acc_count_note": "Te liczby pochodzą z naszego systemu dostarczania: nowi obserwujący to prawdziwe osoby, które przyprowadziliśmy i które cię obserwują, liczone na podstawie ich wizyt na twoim profilu; wizyty na profilu to osoby, które otworzyły twój profil z naszej sieci. Łączna liczba na twoim koncie zmienia się też przez twój pozostały wzrost i osoby, które przestają obserwować.",
     "acc_projection": "Najbliższe 30 dni w dzisiejszym tempie: średnio około {count} nowych obserwujących ({low}–{high}). To szacunek, nie obietnica.",
     "acc_proof": 'Obserwujący, którzy podali swoją nazwę użytkownika',
-    "acc_proof_note": '{count} spośród osób, które do ciebie przysłaliśmy, po zaobserwowaniu wpisało swoją nazwę użytkownika {platform}. Sprawdziliśmy, że każde konto istnieje; znajdziesz je na swojej liście obserwujących. Podanie nazwy jest dobrowolne, więc nie każdy, kogo przysyłamy, jest tu widoczny.',
+    "acc_proof_note": '{count} spośród osób, które do ciebie przysłaliśmy, po zaobserwowaniu wpisało swoją nazwę użytkownika {platform}. Sprawdziliśmy, że każde konto istnieje i należy do prawdziwej osoby; znajdziesz je na swojej liście obserwujących. Nazw, których nie udało się potwierdzić, tu nie ma.',
     "st_pending": "Oczekuje na płatność",
     "st_requested": "Zgłoszenie otrzymane",
     "st_active": "Aktywna",

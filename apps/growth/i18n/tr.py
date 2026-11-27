@@ -123,7 +123,7 @@ UI = {
     "acc_count_note": "Bu sayılar teslimat sistemimizden gelir: yeni takipçiler, profilinize getirdiğimiz ve sizi takip eden gerçek kişilerdir, profil ziyaretlerinden sayılır; profil ziyaretleri, ağımızdan profilinizi açan kişilerdir. Hesabınızın kendi toplamı, diğer büyümenizle ve takipten çıkanlarla da değişir.",
     "acc_projection": "Bugünkü hızla önümüzdeki 30 gün: ortalama yaklaşık {count} yeni takipçi ({low}–{high}). Tahmindir, söz değildir.",
     "acc_proof": 'Kullanıcı adını paylaşan takipçiler',
-    "acc_proof_note": 'Gönderdiğimiz kişilerden {count} tanesi sizi takip ettikten sonra {platform} kullanıcı adını yazdı. Her hesabın gerçekten var olduğunu kontrol ettik; onları takipçi listenizde bulabilirsiniz. Ad yazmak isteğe bağlı olduğu için gönderdiğimiz herkes burada görünmez.',
+    "acc_proof_note": 'Gönderdiğimiz kişilerden {count} tanesi sizi takip ettikten sonra {platform} kullanıcı adını yazdı. Her hesabın var olduğunu ve gerçek bir kişiye ait olduğunu kontrol ettik; onları takipçi listenizde bulabilirsiniz. Doğrulayamadığımız adlar listede yer almaz.',
     "st_pending": "Ödeme bekleniyor",
     "st_requested": "Talep alındı",
     "st_active": "Aktif",

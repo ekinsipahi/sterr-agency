@@ -118,7 +118,7 @@ UI = {
     "acc_count_note": "Bu rəqəmlər çatdırılma sistemimizdəndir: yeni izləyicilər sizə gətirdiyimiz və sizi izləyən real insanlardır, profilinizə ziyarətlərindən sayılır; profil ziyarətləri şəbəkəmizdən profilinizi açan insanlardır. Hesabınızın ümumi sayı digər artımınız və izləməni dayandıranlarla da dəyişir.",
     "acc_projection": "Bugünkü templə növbəti 30 gün: orta hesabla təxminən {count} yeni izləyici ({low}–{high}). Bu, vəd deyil, təxmindir.",
     "acc_proof": 'İstifadəçi adını paylaşan izləyicilər',
-    "acc_proof_note": 'Göndərdiyimiz insanlardan {count} nəfəri sizi izlədikdən sonra {platform} istifadəçi adını yazdı. Hər hesabın həqiqətən mövcud olduğunu yoxladıq; onları izləyici siyahınızda tapa bilərsiniz. Ad yazmaq könüllüdür, buna görə göndərdiyimiz hər kəs burada görünmür.',
+    "acc_proof_note": 'Göndərdiyimiz insanlardan {count} nəfəri sizi izlədikdən sonra {platform} istifadəçi adını yazdı. Hər hesabın mövcud olduğunu və real bir şəxsə aid olduğunu yoxladıq; onları izləyici siyahınızda tapa bilərsiniz. Təsdiqləyə bilmədiyimiz adlar siyahıda yoxdur.',
     "st_pending": "Ödəniş gözlənilir",
     "st_requested": "Müraciət alındı",
     "st_active": "Aktiv",

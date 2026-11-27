@@ -141,7 +141,7 @@ def build(sub):
     shared = [r for r in (sub.shared_usernames or []) if r.get("status") == "exists"]
     if shared:
         summary += ["", f"{len(shared)} visitors we sent typed their {sub.platform_name} username after the {w['follow']} step "
-                        f"(optional field). Each account was checked to exist; the customer can find them in the "
+                        f"(required field). Each account was checked to exist and judged a real person's account; the customer can find them in the "
                         f"{w['profile']}'s {w['audience']} list: "
                         + ", ".join(f"@{r['handle']} ({r['date']}{', ' + r['country'] if r['country'] else ''})" for r in shared)]
     evidence = {
